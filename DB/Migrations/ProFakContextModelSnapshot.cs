@@ -540,6 +540,11 @@ namespace ProFak.DB.Migrations
                         .HasColumnType("TEXT")
                         .HasDefaultValue("");
 
+                    b.Property<string>("SzablonFaktury")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("Faktura");
+
                     b.Property<bool>("SkrotyKlawiaturoweAkcji")
                         .HasColumnType("INTEGER");
 

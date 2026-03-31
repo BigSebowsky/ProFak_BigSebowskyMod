@@ -19,6 +19,7 @@ class Wyglad
 	public static int SzerokoscMenu { get; set; }
 	public static int? RozmiarCzcionki { get; set; }
 	public static string? NazwaCzcionki { get; set; }
+	public static string SzablonFaktury { get; set; } = "Faktura";
 
 	public static string NazwaAkcji(AdapterAkcji adapter)
 	{
@@ -115,6 +116,7 @@ class Wyglad
 		SzerokoscMenu = konfiguracja.SzerokoscMenu;
 		RozmiarCzcionki = konfiguracja.RozmiarCzcionki == 0 ? null : konfiguracja.RozmiarCzcionki;
 		NazwaCzcionki = konfiguracja.NazwaCzcionki;
+		SzablonFaktury = konfiguracja.SzablonFaktury;
 		UstawCzcionke();
 	}
 }

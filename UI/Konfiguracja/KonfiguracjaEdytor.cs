@@ -31,6 +31,11 @@ partial class KonfiguracjaEdytor : KonfiguracjaEdytorBase
 		kontroler.Powiazanie(textBoxRozmiarCzcionki, konfiguracja => konfiguracja.RozmiarCzcionki == 0 ? "" : konfiguracja.RozmiarCzcionki.ToString(), (konfiguracja, wartosc) => konfiguracja.RozmiarCzcionki = Int32.TryParse(wartosc, out var rozmiar) ? rozmiar : 0);
 		kontroler.Powiazanie(textBoxNazwaCzcionki, konfiguracja => konfiguracja.NazwaCzcionki);
 
+		comboBoxSzablonFaktury.Items.AddRange(new[] { "Klasyczny (PL)", "Nowoczesny (PL)", "Nowoczesny (PL/EN)" });
+		kontroler.Powiazanie(comboBoxSzablonFaktury,
+			k => k.SzablonFaktury == "FakturaEN" ? "Nowoczesny (PL/EN)" : k.SzablonFaktury == "FakturaPL" ? "Nowoczesny (PL)" : "Klasyczny (PL)",
+			(k, v) => k.SzablonFaktury = v == "Nowoczesny (PL/EN)" ? "FakturaEN" : v == "Nowoczesny (PL)" ? "FakturaPL" : "Faktura");
+
 		textBoxRozmiarCzcionki.PlaceholderText = DefaultFont.Size.ToString();
 		textBoxNazwaCzcionki.PlaceholderText = DefaultFont.FontFamily.Name;
 	}

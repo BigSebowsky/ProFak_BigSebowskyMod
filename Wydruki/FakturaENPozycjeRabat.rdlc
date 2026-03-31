@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="DzialGosWydruki">
+      <ConnectionProperties>
+        <DataProvider>System.Data.DataSet</DataProvider>
+        <ConnectString>/* Local Connection */</ConnectString>
+      </ConnectionProperties>
+      <rd:DataSourceID>485715e7-4286-469f-b693-1bd6145215e0</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DSFaktury">
+      <Query>
+        <DataSourceName>DzialGosWydruki</DataSourceName>
+        <CommandText>/* Local Query */</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="Numer"><DataField>Numer</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="Rodzaj"><DataField>Rodzaj</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="Korekta"><DataField>Korekta</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="DataWystawienia"><DataField>DataWystawienia</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="DataSprzedazy"><DataField>DataSprzedazy</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="NazwaSprzedawcy"><DataField>NazwaSprzedawcy</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="AdresSprzedawcy"><DataField>AdresSprzedawcy</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="NIPSprzedawcy"><DataField>NIPSprzedawcy</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="NazwaNabywcy"><DataField>NazwaNabywcy</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="AdresNabywcy"><DataField>AdresNabywcy</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="NIPNabywcy"><DataField>NIPNabywcy</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="Slownie"><DataField>Slownie</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="TerminPlatnosci"><DataField>TerminPlatnosci</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="FormaPlatnosci"><DataField>FormaPlatnosci</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="DoZaplaty"><DataField>DoZaplaty</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="DoZwrotu"><DataField>DoZwrotu</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="NumerRachunku"><DataField>NumerRachunku</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="Uwagi"><DataField>Uwagi</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="LP"><DataField>LP</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="NaglowekPozycji"><DataField>NaglowekPozycji</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="OpisPozycji"><DataField>OpisPozycji</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="CenaNetto"><DataField>CenaNetto</DataField><rd:TypeName>System.Decimal</rd:TypeName></Field>
+        <Field Name="Ilosc"><DataField>Ilosc</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="WartoscNetto"><DataField>WartoscNetto</DataField><rd:TypeName>System.Decimal</rd:TypeName></Field>
+        <Field Name="StawkaVAT"><DataField>StawkaVAT</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="WartoscVat"><DataField>WartoscVat</DataField><rd:TypeName>System.Decimal</rd:TypeName></Field>
+        <Field Name="WartoscBrutto"><DataField>WartoscBrutto</DataField><rd:TypeName>System.Decimal</rd:TypeName></Field>
+        <Field Name="RabatRazem"><DataField>RabatRazem</DataField><rd:TypeName>System.Decimal</rd:TypeName></Field>
+        <Field Name="Rabat"><DataField>Rabat</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="Waluta"><DataField>Waluta</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="WalutaVAT"><DataField>WalutaVAT</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="JestVAT"><DataField>JestVAT</DataField><rd:TypeName>System.Boolean</rd:TypeName></Field>
+        <Field Name="JestRabat"><DataField>JestRabat</DataField><rd:TypeName>System.Boolean</rd:TypeName></Field>
+        <Field Name="NumerKSeF"><DataField>NumerKSeF</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+        <Field Name="KodKSeF"><DataField>KodKSeF</DataField><rd:TypeName>System.String</rd:TypeName></Field>
+      </Fields>
+      <rd:DataSetInfo>
+        <rd:DataSetName>Wydruki</rd:DataSetName>
+        <rd:TableName>FakturaDTO</rd:TableName>
+      </rd:DataSetInfo>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Tablix Name="Tablix2">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn><Width>0.1cm</Width></TablixColumn>
+                <TablixColumn><Width>0.8cm</Width></TablixColumn>
+                <TablixColumn><Width>9.8cm</Width></TablixColumn>
+                <TablixColumn><Width>2cm</Width></TablixColumn>
+                <TablixColumn><Width>1cm</Width></TablixColumn>
+                <TablixColumn><Width>2cm</Width></TablixColumn>
+                <TablixColumn><Width>2cm</Width></TablixColumn>
+                <TablixColumn><Width>0.1cm</Width></TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.12375cm</Height>
+                  <TablixCells>
+                    <TablixCell><CellContents><Textbox Name="ENPR_Sp1"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_Sp1</rd:DefaultName><Style><Border><Style>None</Style></Border><BackgroundColor>White</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_Sp2"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_Sp2</rd:DefaultName><Style><Border><Style>None</Style></Border><BackgroundColor>White</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_Sp3"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_Sp3</rd:DefaultName><Style><Border><Style>None</Style></Border><BackgroundColor>White</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_Sp4"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_Sp4</rd:DefaultName><Style><Border><Style>None</Style></Border><BackgroundColor>White</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_Sp5"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_Sp5</rd:DefaultName><Style><Border><Style>None</Style></Border><BackgroundColor>White</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_Sp6"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_Sp6</rd:DefaultName><Style><Border><Style>None</Style></Border><BackgroundColor>White</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_Sp7"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_Sp7</rd:DefaultName><Style><Border><Style>None</Style></Border><BackgroundColor>White</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_Sp8"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_Sp8</rd:DefaultName><Style><Border><Style>None</Style></Border><BackgroundColor>White</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.658cm</Height>
+                  <TablixCells>
+                    <TablixCell><CellContents><Textbox Name="ENPR_H0"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_H0</rd:DefaultName><Style><Border><Style>None</Style></Border><BackgroundColor>White</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ENPR_HLp"><CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph><TextRuns><TextRun><Value>Lp</Value><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph>
+                            <Paragraph><TextRuns><TextRun><Value>no</Value><Style><FontFamily>Calibri</FontFamily><FontSize>7pt</FontSize><FontStyle>Italic</FontStyle></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>ENPR_HLp</rd:DefaultName><Style><Border><Style>Solid</Style></Border><BackgroundColor>LightGrey</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ENPR_HNazwa"><CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph><TextRuns><TextRun><Value>Nazwa towaru lub usługi</Value><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph>
+                            <Paragraph><TextRuns><TextRun><Value>Product or service name</Value><Style><FontFamily>Calibri</FontFamily><FontSize>7pt</FontSize><FontStyle>Italic</FontStyle></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>ENPR_HNazwa</rd:DefaultName><Style><Border><Style>None</Style></Border><TopBorder><Style>Solid</Style></TopBorder><BottomBorder><Style>Solid</Style></BottomBorder><RightBorder><Style>Solid</Style></RightBorder><BackgroundColor>LightGrey</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ENPR_HIlosc"><CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph><TextRuns><TextRun><Value>Ilość</Value><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph>
+                            <Paragraph><TextRuns><TextRun><Value>Qty</Value><Style><FontFamily>Calibri</FontFamily><FontSize>7pt</FontSize><FontStyle>Italic</FontStyle></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>ENPR_HIlosc</rd:DefaultName><Style><Border><Style>None</Style></Border><TopBorder><Style>Solid</Style></TopBorder><BottomBorder><Style>Solid</Style></BottomBorder><RightBorder><Style>Solid</Style></RightBorder><BackgroundColor>LightGrey</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ENPR_HJm"><CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph><TextRuns><TextRun><Value>j.m.</Value><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph>
+                            <Paragraph><TextRuns><TextRun><Value>unit</Value><Style><FontFamily>Calibri</FontFamily><FontSize>7pt</FontSize><FontStyle>Italic</FontStyle></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>ENPR_HJm</rd:DefaultName><Style><Border><Style>None</Style></Border><TopBorder><Style>Solid</Style></TopBorder><BottomBorder><Style>Solid</Style></BottomBorder><RightBorder><Style>Solid</Style></RightBorder><BackgroundColor>LightGrey</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ENPR_HWartosc"><CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph><TextRuns><TextRun><Value>Wartość netto</Value><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph>
+                            <Paragraph><TextRuns><TextRun><Value>Total net</Value><Style><FontFamily>Calibri</FontFamily><FontSize>7pt</FontSize><FontStyle>Italic</FontStyle></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>ENPR_HWartosc</rd:DefaultName><Style><Border><Style>None</Style></Border><TopBorder><Style>Solid</Style></TopBorder><BottomBorder><Style>Solid</Style></BottomBorder><RightBorder><Style>Solid</Style></RightBorder><BackgroundColor>LightGrey</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ENPR_HRabat"><CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph><TextRuns><TextRun><Value>Rabat</Value><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph>
+                            <Paragraph><TextRuns><TextRun><Value>Discount</Value><Style><FontFamily>Calibri</FontFamily><FontSize>7pt</FontSize><FontStyle>Italic</FontStyle></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>ENPR_HRabat</rd:DefaultName><Style><Border><Style>None</Style></Border><TopBorder><Style>Solid</Style></TopBorder><BottomBorder><Style>Solid</Style></BottomBorder><RightBorder><Style>Solid</Style></RightBorder><BackgroundColor>LightGrey</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_H8"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_H8</rd:DefaultName><Style><Border><Style>None</Style></Border><BackgroundColor>White</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.658cm</Height>
+                  <TablixCells>
+                    <TablixCell><CellContents><Textbox Name="ENPR_D0"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_D0</rd:DefaultName><Style><Border><Style>None</Style></Border><BackgroundColor>White</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ENPR_NagSub"><CanGrow>true</CanGrow>
+                          <Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!NaglowekPozycji.Value</Value><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs>
+                          <rd:DefaultName>ENPR_NagSub</rd:DefaultName>
+                          <ColSpan>6</ColSpan>
+                          <Style><Border><Style>None</Style></Border><BottomBorder><Style>Solid</Style></BottomBorder><LeftBorder><Style>Solid</Style></LeftBorder><RightBorder><Style>Solid</Style></RightBorder><BackgroundColor>#ebebeb</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell /><TablixCell /><TablixCell /><TablixCell /><TablixCell />
+                    <TablixCell><CellContents><Textbox Name="ENPR_D8"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_D8</rd:DefaultName><Style><Border><Style>None</Style></Border><BackgroundColor>White</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.658cm</Height>
+                  <TablixCells>
+                    <TablixCell><CellContents><Textbox Name="ENPR_R0"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_R0</rd:DefaultName><Style><Border><Style>None</Style></Border><BackgroundColor>White</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_DLp"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!LP.Value</Value><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_DLp</rd:DefaultName><Style><Border><Style>None</Style></Border><BottomBorder><Style>Solid</Style></BottomBorder><LeftBorder><Style>Solid</Style></LeftBorder><RightBorder><Style>Solid</Style></RightBorder><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_DNazwa"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!OpisPozycji.Value</Value><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><rd:DefaultName>ENPR_DNazwa</rd:DefaultName><Style><Border><Style>None</Style></Border><BottomBorder><Style>Solid</Style></BottomBorder><RightBorder><Style>Solid</Style></RightBorder><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_DIlosc"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!Ilosc.Value</Value><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_DIlosc</rd:DefaultName><Style><Border><Style>None</Style></Border><BottomBorder><Style>Solid</Style></BottomBorder><RightBorder><Style>Solid</Style></RightBorder><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_DJm"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_DJm</rd:DefaultName><Style><Border><Style>None</Style></Border><BottomBorder><Style>Solid</Style></BottomBorder><RightBorder><Style>Solid</Style></RightBorder><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_DWartosc"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!WartoscNetto.Value</Value><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize><Format>n2</Format></Style></TextRun><TextRun><Value xml:space="preserve"> </Value><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun><TextRun><Value>=Fields!Waluta.Value</Value><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_DWartosc</rd:DefaultName><Style><Border><Style>None</Style></Border><BottomBorder><Style>Solid</Style></BottomBorder><RightBorder><Style>Solid</Style></RightBorder><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_DRabat"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!Rabat.Value</Value><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_DRabat</rd:DefaultName><Style><Border><Style>None</Style></Border><BottomBorder><Style>Solid</Style></BottomBorder><RightBorder><Style>Solid</Style></RightBorder><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_R8"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_R8</rd:DefaultName><Style><Border><Style>None</Style></Border><BackgroundColor>White</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.658cm</Height>
+                  <TablixCells>
+                    <TablixCell><CellContents><Textbox Name="ENPR_T0"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><rd:DefaultName>ENPR_T0</rd:DefaultName><Style><Border><Style>None</Style></Border><BackgroundColor>White</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_T1"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><rd:DefaultName>ENPR_T1</rd:DefaultName><Style><Border><Style>None</Style></Border><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_T2"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_T2</rd:DefaultName><Style><Border><Style>None</Style></Border><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_T3"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_T3</rd:DefaultName><Style><Border><Style>None</Style></Border><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_T4"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value>Razem / Total</Value><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_T4</rd:DefaultName><Style><Border><Style>None</Style></Border><BottomBorder><Style>Solid</Style></BottomBorder><LeftBorder><Style>Solid</Style></LeftBorder><RightBorder><Style>Solid</Style></RightBorder><BackgroundColor>LightGrey</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_TSumWartosc"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Sum(Fields!WartoscNetto.Value)</Value><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize><Format>n2</Format></Style></TextRun><TextRun><Value xml:space="preserve"> </Value><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun><TextRun><Value>=Fields!Waluta.Value</Value><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_TSumWartosc</rd:DefaultName><Style><Border><Style>None</Style></Border><BottomBorder><Style>Solid</Style></BottomBorder><RightBorder><Style>Solid</Style></RightBorder><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_TSumRabat"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Sum(Fields!RabatRazem.Value)</Value><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize><Format>n2</Format></Style></TextRun><TextRun><Value xml:space="preserve"> </Value><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun><TextRun><Value>=Fields!Waluta.Value</Value><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_TSumRabat</rd:DefaultName><Style><Border><Style>None</Style></Border><BottomBorder><Style>Solid</Style></BottomBorder><RightBorder><Style>Solid</Style></RightBorder><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_T8"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_T8</rd:DefaultName><Style><Border><Style>None</Style></Border><BackgroundColor>White</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.1cm</Height>
+                  <TablixCells>
+                    <TablixCell><CellContents><Textbox Name="ENPR_E0"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><rd:DefaultName>ENPR_E0</rd:DefaultName><Style><Border><Style>None</Style></Border><BackgroundColor>White</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_E1"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><rd:DefaultName>ENPR_E1</rd:DefaultName><Style><Border><Style>None</Style></Border><BackgroundColor>White</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_E2"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_E2</rd:DefaultName><Style><Border><Style>None</Style></Border><BackgroundColor>White</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_E3"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_E3</rd:DefaultName><Style><Border><Style>None</Style></Border><BackgroundColor>White</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_E4"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_E4</rd:DefaultName><Style><Border><Style>None</Style></Border><BackgroundColor>White</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_E5"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_E5</rd:DefaultName><Style><Border><Style>None</Style></Border><BackgroundColor>White</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_E6"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_E6</rd:DefaultName><Style><Border><Style>None</Style></Border><BackgroundColor>White</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                    <TablixCell><CellContents><Textbox Name="ENPR_E7"><CanGrow>true</CanGrow><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Calibri</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ENPR_E7</rd:DefaultName><Style><Border><Style>None</Style></Border><BackgroundColor>White</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember>
+                  <Group Name="NaglowekPozycjiR">
+                    <GroupExpressions>
+                      <GroupExpression>=Fields!NaglowekPozycji.Value</GroupExpression>
+                    </GroupExpressions>
+                    <Filters>
+                      <Filter>
+                        <FilterExpression>=Fields!OpisPozycji.Value</FilterExpression>
+                        <Operator>NotEqual</Operator>
+                        <FilterValues><FilterValue /></FilterValues>
+                      </Filter>
+                    </Filters>
+                  </Group>
+                  <SortExpressions>
+                    <SortExpression>
+                      <Value>=Fields!NaglowekPozycji.Value</Value>
+                      <Direction>Descending</Direction>
+                    </SortExpression>
+                  </SortExpressions>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Visibility><Hidden>=Fields!NaglowekPozycji.Value = ""</Hidden></Visibility>
+                      <KeepWithGroup>After</KeepWithGroup>
+                    </TablixMember>
+                    <TablixMember>
+                      <Group Name="DetailsR">
+                        <Filters>
+                          <Filter>
+                            <FilterExpression>=Fields!OpisPozycji.Value</FilterExpression>
+                            <Operator>NotEqual</Operator>
+                            <FilterValues><FilterValue>""</FilterValue></FilterValues>
+                          </Filter>
+                        </Filters>
+                      </Group>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixMember>
+                <TablixMember><KeepWithGroup>Before</KeepWithGroup></TablixMember>
+                <TablixMember><KeepWithGroup>Before</KeepWithGroup></TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <DataSetName>DSFaktury</DataSetName>
+            <Filters>
+              <Filter>
+                <FilterExpression>=Fields!Numer.Value</FilterExpression>
+                <Operator>Equal</Operator>
+                <FilterValues>
+                  <FilterValue>=Parameters!Numer.Value</FilterValue>
+                </FilterValues>
+              </Filter>
+            </Filters>
+            <Height>2.85575cm</Height>
+            <Width>17.8cm</Width>
+            <Style><Border><Style>None</Style></Border></Style>
+          </Tablix>
+        </ReportItems>
+        <Height>1.12431in</Height>
+        <Style />
+      </Body>
+      <Width>17.8cm</Width>
+      <Page>
+        <PageHeight>29.7cm</PageHeight>
+        <PageWidth>21cm</PageWidth>
+        <LeftMargin>1.5cm</LeftMargin>
+        <RightMargin>1.5cm</RightMargin>
+        <TopMargin>1.5cm</TopMargin>
+        <BottomMargin>1.5cm</BottomMargin>
+        <ColumnSpacing>0.13cm</ColumnSpacing>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="Numer">
+      <DataType>String</DataType>
+      <Nullable>true</Nullable>
+      <AllowBlank>true</AllowBlank>
+      <Prompt>ReportParameter1</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <Language>pl-PL</Language>
+  <rd:ReportUnitType>Cm</rd:ReportUnitType>
+  <rd:ReportID>f3939edd-7419-5h08-c243-247675h990hk</rd:ReportID>
+</Report>

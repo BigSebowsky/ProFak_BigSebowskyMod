@@ -10,9 +10,11 @@ namespace ProFak.Wydruki;
 public class Faktura : Wydruk
 {
 	private readonly List<FakturaDTO> dane;
+	private readonly string szablon;
 
-	public Faktura(Baza baza, IEnumerable<Ref<DB.Faktura>> fakturyRefs, bool duplikat = false)
+	public Faktura(Baza baza, IEnumerable<Ref<DB.Faktura>> fakturyRefs, bool duplikat = false, string szablon = "Faktura")
 	{
+		this.szablon = szablon;
 		dane = new List<FakturaDTO>();
 		foreach (var fakturaRef in fakturyRefs)
 		{
@@ -174,13 +176,14 @@ public class Faktura : Wydruk
 
 	public override void Przygotuj(LocalReport report)
 	{
-		using var rdlc = WczytajSzablon("Faktura");
+		using var rdlc = WczytajSzablon(szablon);
 		report.DisplayName = String.Join(", ", dane.Select(e => e.Numer).Distinct().Order());
 		report.LoadReportDefinition(rdlc);
-		report.LoadSubreportDefinition("PozycjeVatRabat", WczytajSzablon("FakturaPozycjeVatRabat"));
-		report.LoadSubreportDefinition("PozycjeVat", WczytajSzablon("FakturaPozycjeVat"));
-		report.LoadSubreportDefinition("PozycjeRabat", WczytajSzablon("FakturaPozycjeRabat"));
-		report.LoadSubreportDefinition("Pozycje", WczytajSzablon("FakturaPozycje"));
+		var subPrefix = szablon == "FakturaEN" ? "FakturaEN" : "Faktura";
+		report.LoadSubreportDefinition("PozycjeVatRabat", WczytajSzablon(subPrefix + "PozycjeVatRabat"));
+		report.LoadSubreportDefinition("PozycjeVat", WczytajSzablon(subPrefix + "PozycjeVat"));
+		report.LoadSubreportDefinition("PozycjeRabat", WczytajSzablon(subPrefix + "PozycjeRabat"));
+		report.LoadSubreportDefinition("Pozycje", WczytajSzablon(subPrefix + "Pozycje"));
 		report.SubreportProcessing += SubreportProcessing;
 		report.DataSources.Add(new ReportDataSource("DSFaktury", dane));
 

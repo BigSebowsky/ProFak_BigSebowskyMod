@@ -65,6 +65,8 @@ partial class KonfiguracjaEdytor
 		buttonWybierzCzcionke = new ButtonDPI();
 		textBoxRozmiarCzcionki = new TextBox();
 		label10 = new Label();
+		label11 = new Label();
+		comboBoxSzablonFaktury = new ComboBox();
 		tableLayoutPanel2 = new TableLayoutPanel();
 		checkBoxPrzywrocUstawieniaSpisow = new CheckBox();
 		checkBoxPrzywrocUstawieniaMenu = new CheckBox();
@@ -329,12 +331,15 @@ partial class KonfiguracjaEdytor
 		tableLayoutPanel3.Controls.Add(buttonWybierzCzcionke, 3, 11);
 		tableLayoutPanel3.Controls.Add(textBoxRozmiarCzcionki, 2, 11);
 		tableLayoutPanel3.Controls.Add(label10, 0, 12);
+		tableLayoutPanel3.Controls.Add(label11, 0, 13);
+		tableLayoutPanel3.Controls.Add(comboBoxSzablonFaktury, 1, 13);
 		tableLayoutPanel3.Controls.Add(checkBoxPrzywrocUstawieniaSpisow, 0, 8);
 		tableLayoutPanel3.Controls.Add(checkBoxPrzywrocUstawieniaMenu, 0, 9);
 		tableLayoutPanel3.Dock = DockStyle.Fill;
 		tableLayoutPanel3.Location = new Point(3, 3);
 		tableLayoutPanel3.Name = "tableLayoutPanel3";
-		tableLayoutPanel3.RowCount = 14;
+		tableLayoutPanel3.RowCount = 15;
+		tableLayoutPanel3.RowStyles.Add(new RowStyle());
 		tableLayoutPanel3.RowStyles.Add(new RowStyle());
 		tableLayoutPanel3.RowStyles.Add(new RowStyle());
 		tableLayoutPanel3.RowStyles.Add(new RowStyle());
@@ -513,7 +518,27 @@ partial class KonfiguracjaEdytor
 		label10.Size = new Size(774, 15);
 		label10.TabIndex = 4;
 		label10.Text = "Zmiana czcionki i szerokości menu będzie obowiązywać od kolejnego uruchomienia programu.";
-		// 
+		//
+		// label11
+		//
+		label11.Anchor = AnchorStyles.Right;
+		label11.AutoSize = true;
+		label11.Location = new Point(3, 340);
+		label11.Name = "label11";
+		label11.Size = new Size(149, 15);
+		label11.TabIndex = 14;
+		label11.Text = "Szablon faktury";
+		//
+		// comboBoxSzablonFaktury
+		//
+		tableLayoutPanel3.SetColumnSpan(comboBoxSzablonFaktury, 3);
+		comboBoxSzablonFaktury.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+		comboBoxSzablonFaktury.DropDownStyle = ComboBoxStyle.DropDownList;
+		comboBoxSzablonFaktury.Location = new Point(158, 337);
+		comboBoxSzablonFaktury.Name = "comboBoxSzablonFaktury";
+		comboBoxSzablonFaktury.Size = new Size(120, 23);
+		comboBoxSzablonFaktury.TabIndex = 15;
+		//
 		// tableLayoutPanel2
 		// 
 		tableLayoutPanel2.ColumnCount = 2;
@@ -617,4 +642,6 @@ partial class KonfiguracjaEdytor
 	private Label label10;
 	private CheckBox checkBoxPrzywrocUstawieniaSpisow;
 	private CheckBox checkBoxPrzywrocUstawieniaMenu;
+	private Label label11;
+	private ComboBox comboBoxSzablonFaktury;
 }

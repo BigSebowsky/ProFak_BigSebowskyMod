@@ -27,6 +27,9 @@ public class Konfiguracja : Rekord<Konfiguracja>
 	public int RozmiarCzcionki { get; set; }
 	public string NazwaCzcionki { get; set; } = "";
 
+	// Wersja 2
+	public string SzablonFaktury { get; set; } = "Faktura";
+
 	public bool CzyDomyslna => SMTPSerwer == Domyslna.SMTPSerwer || String.IsNullOrEmpty(SMTPSerwer);
 
 	public override bool CzyPasuje(string fraza) => false;
@@ -58,6 +61,11 @@ public class Konfiguracja : Rekord<Konfiguracja>
 			RozmiarCzcionki = 0;
 			NazwaCzcionki = "";
 			Wersja = 1;
+		}
+		if (Wersja < 2)
+		{
+			SzablonFaktury = "Faktura";
+			Wersja = 2;
 		}
 	}
 

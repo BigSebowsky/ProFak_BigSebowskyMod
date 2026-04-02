@@ -16,11 +16,13 @@ class MojaFirmaAkcja : AkcjaNaSpisie<Kontrahent>
 		using var transakcja = nowyKontekst.Transakcja();
 		var rekord = nowyKontekst.Baza.Kontrahenci.FirstOrDefault(kontrahent => kontrahent.CzyPodmiot);
 		if (rekord == null) rekord = new Kontrahent { CzyPodmiot = true };
+		nowyKontekst.Baza.Zapisz(rekord);
 		nowyKontekst.Dodaj(rekord);
 		using var edytor = new KontrahentEdytor();
 		using var okno = new Dialog("Edycja danych", edytor, nowyKontekst);
 		edytor.Przygotuj(nowyKontekst, rekord);
 		if (okno.ShowDialog() != DialogResult.OK) return;
+		edytor.KoniecEdycji();
 		nowyKontekst.Baza.Zapisz(rekord);
 		transakcja.Zatwierdz();
 	}

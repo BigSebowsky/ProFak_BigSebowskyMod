@@ -87,6 +87,9 @@ public class Faktura : Rekord<Faktura>
 	public bool CzyKSeF => !String.IsNullOrEmpty(NumerKSeF) || DataKSeF.HasValue;
 	public bool CzyPliki => Pliki?.Count() > 0;
 	public int? DniPoTerminie => CzyZaplacona || DateTime.Now.Date < TerminPlatnosci.Date ? null : (int)((DateTime.Now.Date - TerminPlatnosci.Date).TotalDays);
+	public decimal RazemNettoPLN => (RazemNetto * KursWaluty).Zaokragl();
+	public decimal RazemVatPLN => (RazemVat * KursWaluty).Zaokragl();
+	public decimal RazemBruttoPLN => (RazemBrutto * KursWaluty).Zaokragl();
 
 	public decimal VatNaliczony => (RazemVat * ProcentVatNaliczonego / 100m).Zaokragl();
 	public decimal VatJakoKoszty => ((RazemVat - VatNaliczony) * ProcentKosztow / 100m).Zaokragl();

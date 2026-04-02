@@ -32,6 +32,7 @@ class FakturaSpis : Spis<Faktura>
 	protected virtual RodzajFaktury[] Rodzaje => [];
 	protected virtual bool CzyWidocznySprzedawca => false;
 	protected virtual bool CzyWidocznyNabywca => false;
+	protected virtual bool CzyWidoczneKwotyPLN => false;
 	protected virtual bool CzySprzedaz
 		=> Rodzaje.Contains(RodzajFaktury.Sprzedaż)
 		|| Rodzaje.Contains(RodzajFaktury.KorektaSprzedaży)
@@ -77,6 +78,12 @@ class FakturaSpis : Spis<Faktura>
 		DodajKolumneKwota(nameof(Faktura.RazemVat), "VAT");
 		DodajKolumneKwota(nameof(Faktura.RazemBrutto), "Brutto");
 		DodajKolumne(nameof(Faktura.WalutaFmt), "Waluta", szerokosc: 70);
+		if (CzyWidoczneKwotyPLN)
+		{
+			DodajKolumneKwota(nameof(Faktura.RazemNettoPLN), "Netto (PLN)");
+			DodajKolumneKwota(nameof(Faktura.RazemVatPLN), "VAT (PLN)");
+			DodajKolumneKwota(nameof(Faktura.RazemBruttoPLN), "Brutto (PLN)");
+		}
 		DodajKolumneBool(nameof(Faktura.CzyZaplacona), "Zapł.", szerokosc: 50, tooltip: faktura => faktura.SumaWplat.ToString(Format.Kwota));
 		DodajKolumneBool(nameof(Faktura.CzyKSeF), "KSeF", szerokosc: 50, tooltip: faktura => faktura.NumerKSeF);
 		DodajKolumneBool(nameof(Faktura.CzyPliki), "Pliki", szerokosc: 50, tooltip: faktura => String.Join("\n", faktura.Pliki.Select(e => e.Nazwa)));

@@ -132,7 +132,7 @@ public partial class PierwszyStartBaza : Form
 		using var db = new DB.Baza();
 
 		backgroundWorker.ReportProgress(0, "Aktualizacja struktury");
-		db.Database.Migrate();
+		db.Migruj();
 
 		backgroundWorker.ReportProgress(0, "Tworzenie danych startowych");
 		DB.DaneStartowe.Zaladuj(db);

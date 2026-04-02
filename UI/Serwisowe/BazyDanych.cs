@@ -125,7 +125,7 @@ partial class BazyDanych : UserControl, IKontrolkaZKontekstem
 			// Tu nie potrzeba korzystać z mechanizmów SQLite'a - plik źródłowy nie jest aktywną bazą
 			File.Copy(openFileDialogBackup.FileName, Baza.Sciezka);
 			using var baza = new DB.Baza();
-			baza.Database.Migrate();
+			baza.Migruj();
 		}
 		catch (Exception exc)
 		{

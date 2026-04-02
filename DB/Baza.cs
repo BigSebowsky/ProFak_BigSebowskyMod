@@ -68,8 +68,16 @@ public class Baza : DbContext
 #else
 		using var baza = new DB.Baza();
 #endif
-		baza.Database.Migrate();
+		baza.Migruj();
 		DaneStartowe.Zaladuj(baza);
+	}
+
+	public void Migruj()
+	{
+#if !SQLSERVER
+		NaprawHistorieMigracjiSqlite();
+#endif
+		Database.Migrate();
 	}
 
 	private static void WykonajAutomatycznaKopieBazy()
@@ -100,6 +108,56 @@ public class Baza : DbContext
 		{
 		}
 	}
+
+#if !SQLSERVER
+	private void NaprawHistorieMigracjiSqlite()
+	{
+		if (String.IsNullOrEmpty(Sciezka) || !File.Exists(Sciezka)) return;
+		using var connection = new SqliteConnection(PrzygotujParametryPolaczenia(Sciezka));
+		connection.Open();
+
+		// W części baz kolumna SzablonFaktury została dodana ręcznie lub przez niepełną migrację,
+		// więc wpis w historii EF może nie istnieć mimo poprawnej struktury tabeli.
+		if (!CzyIstniejeTabela(connection, "__EFMigrationsHistory")) return;
+		if (!CzyIstniejeTabela(connection, "Konfiguracja")) return;
+		if (!CzyIstniejeKolumna(connection, "Konfiguracja", "SzablonFaktury")) return;
+		if (CzyIstniejeMigracja(connection, "20260331120000_SzablonFaktury")) return;
+
+		using var command = connection.CreateCommand();
+		command.CommandText = "INSERT INTO \"__EFMigrationsHistory\" (\"MigrationId\", \"ProductVersion\") VALUES (@migrationId, @productVersion)";
+		command.Parameters.AddWithValue("@migrationId", "20260331120000_SzablonFaktury");
+		command.Parameters.AddWithValue("@productVersion", typeof(DbContext).Assembly.GetName().Version?.ToString(3) ?? "10.0.2");
+		command.ExecuteNonQuery();
+	}
+
+	private static bool CzyIstniejeTabela(SqliteConnection connection, string nazwaTabeli)
+	{
+		using var command = connection.CreateCommand();
+		command.CommandText = "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = @nazwa";
+		command.Parameters.AddWithValue("@nazwa", nazwaTabeli);
+		return command.ExecuteScalar() != null;
+	}
+
+	private static bool CzyIstniejeKolumna(SqliteConnection connection, string nazwaTabeli, string nazwaKolumny)
+	{
+		using var command = connection.CreateCommand();
+		command.CommandText = $"PRAGMA table_info(\"{nazwaTabeli}\")";
+		using var reader = command.ExecuteReader();
+		while (reader.Read())
+		{
+			if (String.Equals(reader["name"]?.ToString(), nazwaKolumny, StringComparison.OrdinalIgnoreCase)) return true;
+		}
+		return false;
+	}
+
+	private static bool CzyIstniejeMigracja(SqliteConnection connection, string migrationId)
+	{
+		using var command = connection.CreateCommand();
+		command.CommandText = "SELECT 1 FROM \"__EFMigrationsHistory\" WHERE \"MigrationId\" = @migrationId";
+		command.Parameters.AddWithValue("@migrationId", migrationId);
+		return command.ExecuteScalar() != null;
+	}
+#endif
 
 	public static void WykonajKopie(string plikDocelowy)
 	{

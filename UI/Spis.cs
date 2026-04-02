@@ -572,6 +572,7 @@ abstract class Spis<T> : Spis
 		if (Kontekst == null) return;
 		var spis = GetType().Name;
 		var kolumny = Kontekst.Baza.KolumnySpisow.Where(e => e.Spis == spis).OrderBy(e => e.Kolejnosc);
+		var maksymalnaKolejnosc = Columns.Count - 1;
 		kolumnyKolejnosci.Clear();
 
 		foreach (var kolumna in kolumny.Where(e => e.PoziomSortowania != 0).OrderBy(e => Math.Abs(e.PoziomSortowania)))
@@ -600,7 +601,7 @@ abstract class Spis<T> : Spis
 			}
 			if (kolumna.Szerokosc == -1) kolumnaSpisu.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 			kolumnaSpisu.Visible = kolumna.Szerokosc != 0;
-			kolumnaSpisu.DisplayIndex = kolumna.Kolejnosc;
+			if (maksymalnaKolejnosc >= 0) kolumnaSpisu.DisplayIndex = Math.Clamp(kolumna.Kolejnosc, 0, maksymalnaKolejnosc);
 			kolumnaSpisu.HeaderCell.SortGlyphDirection = kolumna.PoziomSortowania < 0 ? SortOrder.Descending : kolumna.PoziomSortowania > 0 ? SortOrder.Ascending : SortOrder.None;
 		}
 		kolumnyZmienione = false;

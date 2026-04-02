@@ -15,6 +15,9 @@ public class Faktura : Wydruk
 	public Faktura(Baza baza, IEnumerable<Ref<DB.Faktura>> fakturyRefs, bool duplikat = false, string szablon = "Faktura")
 	{
 		this.szablon = szablon;
+		var dwujezyczny = String.Equals(this.szablon, "FakturaEN", StringComparison.Ordinal);
+		var tylkoEn = String.Equals(this.szablon, "FakturaOnlyEN", StringComparison.Ordinal);
+		string Tekst(string pl, string plEn, string en) => tylkoEn ? en : dwujezyczny ? plEn : pl;
 		dane = new List<FakturaDTO>();
 		foreach (var fakturaRef in fakturyRefs)
 		{
@@ -40,14 +43,14 @@ public class Faktura : Wydruk
 			var jestrabat = pozycje.Any(e => e.RabatProcent > 0 || e.RabatCena > 0 || e.RabatWartosc > 0);
 
 			var fakturaDTO = new FakturaDTO();
-			if (faktura.Rodzaj == RodzajFaktury.Sprzedaż) fakturaDTO.Rodzaj = jestvat ? "Faktura VAT" : "Faktura";
-			if (faktura.Rodzaj == RodzajFaktury.Rachunek) fakturaDTO.Rodzaj = "Rachunek";
-			else if (faktura.Rodzaj == RodzajFaktury.Proforma) fakturaDTO.Rodzaj = "Faktura pro forma";
-			else if (faktura.Rodzaj == RodzajFaktury.KorektaSprzedaży) fakturaDTO.Rodzaj = jestvat ? "Korekta faktury VAT" : "Korekta faktury";
-			else if (faktura.Rodzaj == RodzajFaktury.KorektaRachunku) fakturaDTO.Rodzaj = "Korekta rachunku";
-			else if (faktura.Rodzaj == RodzajFaktury.DowódWewnętrzny) fakturaDTO.Rodzaj = "Dowód wewnętrzny";
-			else if (faktura.Rodzaj == RodzajFaktury.VatMarża) fakturaDTO.Rodzaj = "Faktura VAT marża";
-			else if (faktura.Rodzaj == RodzajFaktury.KorektaVatMarży) fakturaDTO.Rodzaj = "Korekta faktury VAT marża";
+			if (faktura.Rodzaj == RodzajFaktury.Sprzedaż) fakturaDTO.Rodzaj = Tekst(jestvat ? "Faktura VAT" : "Faktura", jestvat ? "Faktura VAT (VAT Invoice)" : "Faktura (Invoice)", jestvat ? "VAT Invoice" : "Invoice");
+			else if (faktura.Rodzaj == RodzajFaktury.Rachunek) fakturaDTO.Rodzaj = Tekst("Rachunek", "Rachunek (Bill)", "Bill");
+			else if (faktura.Rodzaj == RodzajFaktury.Proforma) fakturaDTO.Rodzaj = Tekst("Faktura pro forma", "Faktura pro forma (Pro forma invoice)", "Pro forma invoice");
+			else if (faktura.Rodzaj == RodzajFaktury.KorektaSprzedaży) fakturaDTO.Rodzaj = Tekst(jestvat ? "Korekta faktury VAT" : "Korekta faktury", jestvat ? "Korekta faktury VAT (VAT Invoice correction)" : "Korekta faktury (Invoice correction)", jestvat ? "VAT Invoice correction" : "Invoice correction");
+			else if (faktura.Rodzaj == RodzajFaktury.KorektaRachunku) fakturaDTO.Rodzaj = Tekst("Korekta rachunku", "Korekta rachunku (Bill correction)", "Bill correction");
+			else if (faktura.Rodzaj == RodzajFaktury.DowódWewnętrzny) fakturaDTO.Rodzaj = Tekst("Dowód wewnętrzny", "Dowód wewnętrzny (Internal document)", "Internal document");
+			else if (faktura.Rodzaj == RodzajFaktury.VatMarża) fakturaDTO.Rodzaj = Tekst("Faktura VAT marża", "Faktura VAT marża (Margin VAT invoice)", "Margin VAT invoice");
+			else if (faktura.Rodzaj == RodzajFaktury.KorektaVatMarży) fakturaDTO.Rodzaj = Tekst("Korekta faktury VAT marża", "Korekta faktury VAT marża (Margin VAT invoice correction)", "Margin VAT invoice correction");
 			else fakturaDTO.Rodzaj = faktura.Rodzaj.ToString();
 
 			fakturaDTO.Numer = faktura.Numer;
@@ -61,15 +64,15 @@ public class Faktura : Wydruk
 			if (faktura.FakturaPierwotnaRef.IsNotNull)
 			{
 				var fakturaBazowa = baza.Znajdz(faktura.FakturaPierwotnaRef);
-				if (fakturaBazowa.Rodzaj == RodzajFaktury.Proforma) fakturaDTO.Korekta = "do faktury pro forma <b>" + fakturaBazowa.Numer + "</b>";
-				else if (fakturaBazowa.Rodzaj == RodzajFaktury.VatMarża) fakturaDTO.Korekta = "<b>do faktury VAT marża</b> " + fakturaBazowa.Numer + "<br/><b>z dnia</b> " + fakturaBazowa.DataWystawienia.ToString(UI.Format.Data) + "<br/>";
-				else fakturaDTO.Korekta = (jestvat ? "<b>do faktury VAT</b> " : "<b>do faktury</b> ") + fakturaBazowa.Numer + "<br/><b>z dnia</b> " + fakturaBazowa.DataWystawienia.ToString(UI.Format.Data) + "<br/>";
+				if (fakturaBazowa.Rodzaj == RodzajFaktury.Proforma) fakturaDTO.Korekta = Tekst("do faktury pro forma <b>", "do faktury pro forma / related to pro forma invoice <b>", "<b>related to pro forma invoice</b> ") + fakturaBazowa.Numer + "</b>";
+				else if (fakturaBazowa.Rodzaj == RodzajFaktury.VatMarża) fakturaDTO.Korekta = Tekst("<b>do faktury VAT marża</b> ", "<b>do faktury VAT marża / related to margin VAT invoice</b> ", "<b>related to margin VAT invoice</b> ") + fakturaBazowa.Numer + "<br/>" + Tekst("<b>z dnia</b> ", "<b>z dnia / issued on</b> ", "<b>issued on</b> ") + fakturaBazowa.DataWystawienia.ToString(UI.Format.Data) + "<br/>";
+				else fakturaDTO.Korekta = Tekst(jestvat ? "<b>do faktury VAT</b> " : "<b>do faktury</b> ", jestvat ? "<b>do faktury VAT / related to VAT invoice</b> " : "<b>do faktury / related to invoice</b> ", jestvat ? "<b>related to VAT invoice</b> " : "<b>related to invoice</b> ") + fakturaBazowa.Numer + "<br/>" + Tekst("<b>z dnia</b> ", "<b>z dnia / issued on</b> ", "<b>issued on</b> ") + fakturaBazowa.DataWystawienia.ToString(UI.Format.Data) + "<br/>";
 			}
 
 			if (duplikat)
 			{
 				if (!String.IsNullOrEmpty(fakturaDTO.Korekta)) fakturaDTO.Korekta += "<br/>";
-				fakturaDTO.Korekta += "<b>Duplikat z dnia</b> " + DateTime.Now.ToString(UI.Format.Data);
+				fakturaDTO.Korekta += Tekst("<b>Duplikat z dnia</b> ", "<b>Duplikat z dnia / Duplicate issued on</b> ", "<b>Duplicate issued on</b> ") + DateTime.Now.ToString(UI.Format.Data);
 			}
 
 			fakturaDTO.DataWystawienia = faktura.DataWystawienia.ToString(UI.Format.Data);
@@ -87,13 +90,13 @@ public class Faktura : Wydruk
 			{
 				fakturaDTO.DaneOdbiorcy = odbiorca.Nazwa;
 				if (!String.IsNullOrEmpty(odbiorca.Adres)) fakturaDTO.DaneOdbiorcy += "<br/>" + odbiorca.Adres.Replace("\n", "<br/>");
-				if (!String.IsNullOrEmpty(odbiorca.NIP)) fakturaDTO.DaneOdbiorcy += "<br/><b>NIP:</b> " + odbiorca.NIP;
-				if (!String.IsNullOrEmpty(odbiorca.VatUE)) fakturaDTO.DaneOdbiorcy += "<br/><b>Nr VAT UE:</b> " + odbiorca.VatUE;
+				if (!String.IsNullOrEmpty(odbiorca.NIP)) fakturaDTO.DaneOdbiorcy += "<br/><b>" + Tekst("NIP:", "NIP / Tax ID:", "Tax ID:") + "</b> " + odbiorca.NIP;
+				if (!String.IsNullOrEmpty(odbiorca.VatUE)) fakturaDTO.DaneOdbiorcy += "<br/><b>" + Tekst("Nr VAT UE:", "Nr VAT UE / EU VAT No.:", "EU VAT No.:") + "</b> " + odbiorca.VatUE;
 			}
 
 			if (dozaplaty < 0)
 			{
-				fakturaDTO.Slownie = SlowniePL.Slownie(-dozaplaty, walutaSkrot);
+				fakturaDTO.Slownie = tylkoEn ? SlownieEN.Slownie(-dozaplaty, walutaSkrot) : dwujezyczny ? $"{SlowniePL.Slownie(-dozaplaty, walutaSkrot)} / {SlownieEN.Slownie(-dozaplaty, walutaSkrot)}" : SlowniePL.Slownie(-dozaplaty, walutaSkrot);
 				fakturaDTO.TerminPlatnosci = "";
 				fakturaDTO.FormaPlatnosci = "";
 				fakturaDTO.DoZwrotu = (-dozaplaty).ToString(UI.Format.Kwota) + " " + walutaSkrot;
@@ -105,7 +108,7 @@ public class Faktura : Wydruk
 			{
 				fakturaDTO.TerminPlatnosci = faktura.TerminPlatnosci.ToString(UI.Format.Data);
 				fakturaDTO.FormaPlatnosci = faktura.OpisSposobuPlatnosci;
-				fakturaDTO.Slownie = SlowniePL.Slownie(dozaplaty, walutaSkrot);
+				fakturaDTO.Slownie = tylkoEn ? SlownieEN.Slownie(dozaplaty, walutaSkrot) : dwujezyczny ? $"{SlowniePL.Slownie(dozaplaty, walutaSkrot)} / {SlownieEN.Slownie(dozaplaty, walutaSkrot)}" : SlowniePL.Slownie(dozaplaty, walutaSkrot);
 				fakturaDTO.DoZwrotu = "";
 				fakturaDTO.DoZaplaty = dozaplaty.ToString(UI.Format.Kwota) + " " + walutaSkrot;
 				fakturaDTO.NumerRachunku = faktura.RachunekBankowy;
@@ -117,7 +120,7 @@ public class Faktura : Wydruk
 			{
 				if (!String.IsNullOrEmpty(fakturaDTO.Rozliczenia)) fakturaDTO.Rozliczenia += "<br/>";
 				if (wplata.CzyRozliczenie) fakturaDTO.Rozliczenia += "<b>" + wplata.Uwagi + ":</b> " + wplata.Kwota.ToString(UI.Format.Kwota) + " " + walutaSkrot;
-				else fakturaDTO.Rozliczenia += "<b>Zapłacono " + wplata.Data.ToString(UI.Format.Data) + ":</b> " + wplata.Kwota.ToString(UI.Format.Kwota) + " " + walutaSkrot;
+				else fakturaDTO.Rozliczenia += Tekst("<b>Zapłacono " + wplata.Data.ToString(UI.Format.Data) + ":</b> ", "<b>Zapłacono " + wplata.Data.ToString(UI.Format.Data) + " / Paid on " + wplata.Data.ToString(UI.Format.Data) + ":</b> ", "<b>Paid on " + wplata.Data.ToString(UI.Format.Data) + ":</b> ") + wplata.Kwota.ToString(UI.Format.Kwota) + " " + walutaSkrot;
 			}
 
 			fakturaDTO.NumerKSeF = faktura.NumerKSeF;
@@ -151,7 +154,7 @@ public class Faktura : Wydruk
 				pozycjaDTO.JestRabat = jestrabat;
 
 				if (faktura.Rodzaj == RodzajFaktury.KorektaSprzedaży || faktura.Rodzaj == RodzajFaktury.KorektaVatMarży)
-					pozycjaDTO.NaglowekPozycji = pozycja.CzyPrzedKorekta ? "Przed korektą" : "Po korekcie";
+					pozycjaDTO.NaglowekPozycji = Tekst(pozycja.CzyPrzedKorekta ? "Przed korektą" : "Po korekcie", pozycja.CzyPrzedKorekta ? "Przed korektą (Before correction)" : "Po korekcie (After correction)", pozycja.CzyPrzedKorekta ? "Before correction" : "After correction");
 				else
 					pozycjaDTO.NaglowekPozycji = "";
 
@@ -177,13 +180,18 @@ public class Faktura : Wydruk
 	public override void Przygotuj(LocalReport report)
 	{
 		using var rdlc = WczytajSzablon(szablon);
+		var prefiksSubraportu = szablon switch
+		{
+			"FakturaEN" => "FakturaEN",
+			"FakturaOnlyEN" => "FakturaOnlyEN",
+			_ => "Faktura"
+		};
 		report.DisplayName = String.Join(", ", dane.Select(e => e.Numer).Distinct().Order());
 		report.LoadReportDefinition(rdlc);
-		var subPrefix = szablon == "FakturaEN" ? "FakturaEN" : "Faktura";
-		report.LoadSubreportDefinition("PozycjeVatRabat", WczytajSzablon(subPrefix + "PozycjeVatRabat"));
-		report.LoadSubreportDefinition("PozycjeVat", WczytajSzablon(subPrefix + "PozycjeVat"));
-		report.LoadSubreportDefinition("PozycjeRabat", WczytajSzablon(subPrefix + "PozycjeRabat"));
-		report.LoadSubreportDefinition("Pozycje", WczytajSzablon(subPrefix + "Pozycje"));
+		report.LoadSubreportDefinition("PozycjeVatRabat", WczytajSzablon(prefiksSubraportu + "PozycjeVatRabat"));
+		report.LoadSubreportDefinition("PozycjeVat", WczytajSzablon(prefiksSubraportu + "PozycjeVat"));
+		report.LoadSubreportDefinition("PozycjeRabat", WczytajSzablon(prefiksSubraportu + "PozycjeRabat"));
+		report.LoadSubreportDefinition("Pozycje", WczytajSzablon(prefiksSubraportu + "Pozycje"));
 		report.SubreportProcessing += SubreportProcessing;
 		report.DataSources.Add(new ReportDataSource("DSFaktury", dane));
 

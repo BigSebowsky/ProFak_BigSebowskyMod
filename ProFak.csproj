@@ -36,6 +36,11 @@
     <EmbeddedResource Include="Wydruki\FakturaENPozycjeVat.rdlc" />
     <EmbeddedResource Include="Wydruki\FakturaENPozycjeRabat.rdlc" />
     <EmbeddedResource Include="Wydruki\FakturaENPozycjeVatRabat.rdlc" />
+    <EmbeddedResource Include="Wydruki\FakturaOnlyEN.rdlc" />
+    <EmbeddedResource Include="Wydruki\FakturaOnlyENPozycje.rdlc" />
+    <EmbeddedResource Include="Wydruki\FakturaOnlyENPozycjeVat.rdlc" />
+    <EmbeddedResource Include="Wydruki\FakturaOnlyENPozycjeRabat.rdlc" />
+    <EmbeddedResource Include="Wydruki\FakturaOnlyENPozycjeVatRabat.rdlc" />
     <EmbeddedResource Include="Wydruki\EwidencjaPrzychodow.rdlc" />
     <EmbeddedResource Include="Wydruki\PKPiR.rdlc" />
   </ItemGroup>

@@ -4,11 +4,25 @@ namespace ProFak.UI;
 
 class WydrukFakturyAkcja : AkcjaNaSpisie<Faktura>
 {
+	private sealed class OpcjaSzablonu
+	{
+		public required string Text { get; init; }
+		public required string Value { get; init; }
+	}
+
 	private sealed class WyborSzablonuWydruku : UserControl
 	{
+		private static readonly OpcjaSzablonu[] DostepneSzablony =
+		{
+			new() { Text = "Klasyczny (PL)", Value = "Faktura" },
+			new() { Text = "Nowoczesny (PL)", Value = "FakturaPL" },
+			new() { Text = "Nowoczesny (PL/EN)", Value = "FakturaEN" },
+			new() { Text = "Tylko EN", Value = "FakturaOnlyEN" }
+		};
+
 		private readonly ComboBox comboBoxSzablon;
 
-		public string Szablon => comboBoxSzablon.SelectedValue?.ToString() ?? "Faktura";
+		public string Szablon => (comboBoxSzablon.SelectedItem as OpcjaSzablonu)?.Value ?? "Faktura";
 
 		public WyborSzablonuWydruku(string domyslnySzablon)
 		{
@@ -27,13 +41,8 @@ class WydrukFakturyAkcja : AkcjaNaSpisie<Faktura>
 				Margin = new Padding(3, 0, 3, 0),
 				Width = 220
 			};
-			comboBoxSzablon.Items.Add(new { Text = "Klasyczny (PL)", Value = "Faktura" });
-			comboBoxSzablon.Items.Add(new { Text = "Nowoczesny (PL)", Value = "FakturaPL" });
-			comboBoxSzablon.Items.Add(new { Text = "Nowoczesny (PL/EN)", Value = "FakturaEN" });
-			comboBoxSzablon.SelectedIndex = Math.Max(0, comboBoxSzablon.FindStringExact(
-				domyslnySzablon == "FakturaEN" ? "Nowoczesny (PL/EN)" :
-				domyslnySzablon == "FakturaPL" ? "Nowoczesny (PL)" :
-				"Klasyczny (PL)"));
+			comboBoxSzablon.DataSource = DostepneSzablony;
+			comboBoxSzablon.SelectedItem = DostepneSzablony.FirstOrDefault(opcja => opcja.Value == domyslnySzablon) ?? DostepneSzablony[0];
 
 			var tableLayoutPanel = new TableLayoutPanel
 			{

@@ -103,3 +103,81 @@ class SlowniePL
 		return wynik;
 	}
 }
+
+class SlownieEN
+{
+	private static readonly string[] Jednosci = { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
+	private static readonly string[] Nastki = { "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen" };
+	private static readonly string[] Dziesiatki = { "", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety" };
+	private static readonly string[] Rzedy = { "", "thousand", "million", "billion" };
+
+	private static string SlownieDo1000(int wartosc)
+	{
+		if (wartosc == 0) return "";
+
+		var wynik = new StringBuilder();
+
+		if (wartosc >= 100)
+		{
+			wynik.Append(Jednosci[wartosc / 100]);
+			wynik.Append(" hundred");
+			wartosc %= 100;
+		}
+
+		if (wartosc >= 20)
+		{
+			if (wynik.Length > 0) wynik.Append(" ");
+			wynik.Append(Dziesiatki[wartosc / 10]);
+			if (wartosc % 10 > 0)
+			{
+				wynik.Append(" ");
+				wynik.Append(Jednosci[wartosc % 10]);
+			}
+		}
+		else if (wartosc >= 10)
+		{
+			if (wynik.Length > 0) wynik.Append(" ");
+			wynik.Append(Nastki[wartosc - 10]);
+		}
+		else if (wartosc > 0)
+		{
+			if (wynik.Length > 0) wynik.Append(" ");
+			wynik.Append(Jednosci[wartosc]);
+		}
+
+		return wynik.ToString();
+	}
+
+	public static string Slownie(long wartosc)
+	{
+		if (wartosc == 0) return Jednosci[0];
+
+		var czesci = new List<string>();
+		var rzad = 0;
+
+		while (wartosc > 0 && rzad < Rzedy.Length)
+		{
+			var fragment = (int)(wartosc % 1000);
+			if (fragment > 0)
+			{
+				var opis = SlownieDo1000(fragment);
+				if (!String.IsNullOrEmpty(Rzedy[rzad])) opis += " " + Rzedy[rzad];
+				czesci.Insert(0, opis);
+			}
+
+			wartosc /= 1000;
+			rzad++;
+		}
+
+		return String.Join(" ", czesci);
+	}
+
+	public static string Slownie(decimal kwota, string waluta)
+	{
+		var cale = (long)Math.Floor(kwota);
+		var setne = (int)((kwota - cale) * 100);
+		var wynik = Slownie(cale) + " " + waluta;
+		if (setne > 0) wynik += " and " + Slownie(setne) + " " + (waluta == "zł" ? "grosz" : waluta + "/100");
+		return wynik;
+	}
+}

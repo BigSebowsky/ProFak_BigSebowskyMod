@@ -31,10 +31,22 @@ partial class KonfiguracjaEdytor : KonfiguracjaEdytorBase
 		kontroler.Powiazanie(textBoxRozmiarCzcionki, konfiguracja => konfiguracja.RozmiarCzcionki == 0 ? "" : konfiguracja.RozmiarCzcionki.ToString(), (konfiguracja, wartosc) => konfiguracja.RozmiarCzcionki = Int32.TryParse(wartosc, out var rozmiar) ? rozmiar : 0);
 		kontroler.Powiazanie(textBoxNazwaCzcionki, konfiguracja => konfiguracja.NazwaCzcionki);
 
-		comboBoxSzablonFaktury.Items.AddRange(new[] { "Klasyczny (PL)", "Nowoczesny (PL)", "Nowoczesny (PL/EN)" });
+		comboBoxSzablonFaktury.Items.AddRange(new[] { "Klasyczny (PL)", "Nowoczesny (PL)", "Nowoczesny (PL/EN)", "Tylko EN" });
 		kontroler.Powiazanie(comboBoxSzablonFaktury,
-			k => k.SzablonFaktury == "FakturaEN" ? "Nowoczesny (PL/EN)" : k.SzablonFaktury == "FakturaPL" ? "Nowoczesny (PL)" : "Klasyczny (PL)",
-			(k, v) => k.SzablonFaktury = v == "Nowoczesny (PL/EN)" ? "FakturaEN" : v == "Nowoczesny (PL)" ? "FakturaPL" : "Faktura");
+			k => k.SzablonFaktury switch
+			{
+				"FakturaPL" => "Nowoczesny (PL)",
+				"FakturaEN" => "Nowoczesny (PL/EN)",
+				"FakturaOnlyEN" => "Tylko EN",
+				_ => "Klasyczny (PL)"
+			},
+			(k, v) => k.SzablonFaktury = v switch
+			{
+				"Nowoczesny (PL)" => "FakturaPL",
+				"Nowoczesny (PL/EN)" => "FakturaEN",
+				"Tylko EN" => "FakturaOnlyEN",
+				_ => "Faktura"
+			});
 
 		textBoxRozmiarCzcionki.PlaceholderText = DefaultFont.Size.ToString();
 		textBoxNazwaCzcionki.PlaceholderText = DefaultFont.FontFamily.Name;

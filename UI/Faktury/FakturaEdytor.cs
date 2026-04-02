@@ -15,6 +15,7 @@ partial class FakturaEdytor : FakturaEdytorBase
 	private Slownik<Kontrahent> slownikNabywcaNIP = default!;
 	private Slownik<Kontrahent> slownikSprzedawcaNazwa = default!;
 	private Slownik<Kontrahent> slownikSprzedawcaNIP = default!;
+	private bool czyAutomatycznyKursAktywny;
 
 	public virtual bool CzySprzedaz => true;
 
@@ -172,7 +173,7 @@ partial class FakturaEdytor : FakturaEdytorBase
 			Kontekst, comboBoxWaluta, buttonWaluta,
 			Kontekst.Baza.Waluty.OrderBy(waluta => waluta.Nazwa).ToList,
 			waluta => waluta.Skrot,
-			waluta => { if (waluta == null) return; numericUpDownKurs.Enabled = !waluta.CzyDomyslna; if (waluta.CzyDomyslna && Rekord.KursWaluty != 1) numericUpDownKurs.Value = 1; },
+			UstawWalute,
 			Spisy.Waluty)
 			.Zainstaluj();
 
@@ -239,9 +240,37 @@ partial class FakturaEdytor : FakturaEdytorBase
 		if (rekord.DataWystawienia == dataWystawienia) return;
 		rekord.DataWystawienia = dataWystawienia;
 		var sposobPlatnosci = Kontekst.Baza.ZnajdzLubNull(Rekord.SposobPlatnosciRef);
-		if (sposobPlatnosci == null) return;
-		Rekord.TerminPlatnosci = Rekord.DataWystawienia.AddDays(sposobPlatnosci.LiczbaDni);
+		if (sposobPlatnosci != null) Rekord.TerminPlatnosci = Rekord.DataWystawienia.AddDays(sposobPlatnosci.LiczbaDni);
+		if (czyAutomatycznyKursAktywny) AktualizujKursWaluty();
 		kontroler.AktualizujKontrolki();
+	}
+
+	private void UstawWalute(Waluta? waluta)
+	{
+		if (waluta == null) return;
+		numericUpDownKurs.Enabled = !waluta.CzyDomyslna;
+		if (waluta.CzyDomyslna)
+		{
+			if (Rekord.KursWaluty != 1m) numericUpDownKurs.Value = 1m;
+			return;
+		}
+
+		if (czyAutomatycznyKursAktywny) AktualizujKursWaluty(waluta);
+	}
+
+	private void AktualizujKursWaluty(Waluta? waluta = null)
+	{
+		waluta ??= Kontekst.Baza.ZnajdzLubNull(Rekord.WalutaRef);
+		if (waluta == null) return;
+		if (waluta.CzyDomyslna)
+		{
+			if (numericUpDownKurs.Value != 1m) numericUpDownKurs.Value = 1m;
+			return;
+		}
+
+		var kurs = NBPService.ZnajdzKurs(Kontekst.Baza, waluta.Skrot, Rekord.DataWystawienia);
+		if (!kurs.HasValue) return;
+		if (numericUpDownKurs.Value != kurs.Value) numericUpDownKurs.Value = kurs.Value;
 	}
 
 	private bool UstawSposobPlatnosci(Faktura rekord, SposobPlatnosci? sposobPlatnosci)
@@ -266,6 +295,7 @@ partial class FakturaEdytor : FakturaEdytorBase
 	protected override void PrzygotujRekord(Faktura rekord)
 	{
 		base.PrzygotujRekord(rekord);
+		czyAutomatycznyKursAktywny = false;
 		if (rekord.WalutaRef.IsNull) rekord.WalutaRef = Kontekst.Baza.Waluty.FirstOrDefault(waluta => waluta.CzyDomyslna);
 		if (rekord.SposobPlatnosciRef.IsNull) UstawSposobPlatnosci(rekord, Kontekst.Baza.SposobyPlatnosci.FirstOrDefault(sposobPlatnosci => sposobPlatnosci.CzyDomyslny));
 		if (rekord.SprzedawcaRef.IsNull && rekord.CzySprzedaz) UstawSprzedawce(rekord, Kontekst.Baza.Kontrahenci.FirstOrDefault(kontrahent => kontrahent.CzyPodmiot && !kontrahent.CzyArchiwalny));
@@ -280,6 +310,9 @@ partial class FakturaEdytor : FakturaEdytorBase
 	protected override void RekordGotowy()
 	{
 		base.RekordGotowy();
+		czyAutomatycznyKursAktywny = true;
+		var waluta = Kontekst.Baza.ZnajdzLubNull(Rekord.WalutaRef);
+		if (waluta != null && !waluta.CzyDomyslna && Rekord.KursWaluty == 1m) AktualizujKursWaluty(waluta);
 		UstawRazem();
 		wplaty.Spis.FakturaRef = Rekord;
 		wplaty.Spis.Kontekst = Kontekst;

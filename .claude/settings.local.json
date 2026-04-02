@@ -1,7 +1,20 @@
 {
   "permissions": {
     "allow": [
-      "Bash(dotnet build:*)"
+      "Bash(dotnet build:*)",
+      "Read(//c/Users/sebas/AppData/Roaming/Claude/local-agent-mode-sessions/skills-plugin/facb2612-ae6d-45d5-b244-f51c08693d40/03658913-6de9-4bdf-9145-6b3867734782/skills/docx/**)",
+      "Bash(pandoc --track-changes=all \"D:\\\\_TEMP_D\\\\UC2603002.docx\" -o /tmp/uc_output.md)",
+      "Read(//tmp/**)",
+      "Bash(python scripts/office/unpack.py \"D:\\\\_TEMP_D\\\\UC2603002.docx\" /tmp/uc_unpacked/)",
+      "Bash(pip install:*)",
+      "Bash(find D:GITPro_Faktura -type f -name *.rpt)",
+      "Bash(ls -la \"D:\\\\GIT\\\\Pro_Faktura\\\\Wydruki\"\" | grep -i \".rdlc)",
+      "Bash(.cs \")",
+      "Bash(ls -lh \"D:\\\\GIT\\\\Pro_Faktura\\\\Wydruki\"\" | grep -E \"Faktura.*.rdlc)",
+      "Bash(.cs$ \")",
+      "Bash(ls -1 *.rdlc)",
+      "Bash(python3 -c \":*)",
+      "Bash(python -c \":*)"
     ]
   }
 }

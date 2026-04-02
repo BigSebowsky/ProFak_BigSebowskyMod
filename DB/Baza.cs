@@ -118,16 +118,33 @@ public class Baza : DbContext
 		using var connection = new SqliteConnection(PrzygotujParametryPolaczenia(Sciezka));
 		connection.Open();
 
-		// W części baz kolumna SzablonFaktury została dodana ręcznie lub przez niepełną migrację,
-		// więc wpis w historii EF może nie istnieć mimo poprawnej struktury tabeli.
 		if (!CzyIstniejeTabela(connection, "__EFMigrationsHistory")) return;
-		if (!CzyIstniejeTabela(connection, "Konfiguracja")) return;
-		if (!CzyIstniejeKolumna(connection, "Konfiguracja", "SzablonFaktury")) return;
-		if (CzyIstniejeMigracja(connection, "20260331120000_SzablonFaktury")) return;
+
+		// W części baz struktura została już zmieniona ręcznie albo przez niepełną migrację,
+		// więc wpis w historii EF może nie istnieć mimo poprawnego schematu.
+		if (CzyIstniejeTabela(connection, "Konfiguracja") && CzyIstniejeKolumna(connection, "Konfiguracja", "SzablonFaktury"))
+		{
+			DodajMigracjeJesliBrakuje(connection, "20260331120000_SzablonFaktury");
+		}
+
+		if (CzyIstniejeTabela(connection, "RachunekBankowy"))
+		{
+			DodajMigracjeJesliBrakuje(connection, "20260402142946_RachunkiBankoweKontrahenta");
+		}
+
+		if (CzyIstniejeTabela(connection, "KursNBP"))
+		{
+			DodajMigracjeJesliBrakuje(connection, "20260402144112_KursyNBP");
+		}
+	}
+
+	private static void DodajMigracjeJesliBrakuje(SqliteConnection connection, string migrationId)
+	{
+		if (CzyIstniejeMigracja(connection, migrationId)) return;
 
 		using var command = connection.CreateCommand();
 		command.CommandText = "INSERT INTO \"__EFMigrationsHistory\" (\"MigrationId\", \"ProductVersion\") VALUES (@migrationId, @productVersion)";
-		command.Parameters.AddWithValue("@migrationId", "20260331120000_SzablonFaktury");
+		command.Parameters.AddWithValue("@migrationId", migrationId);
 		command.Parameters.AddWithValue("@productVersion", typeof(DbContext).Assembly.GetName().Version?.ToString(3) ?? "10.0.2");
 		command.ExecuteNonQuery();
 	}

@@ -198,6 +198,20 @@ partial class KontrahentEdytor : KontrahentEdytorBase
 		base.KoniecEdycji();
 		if (String.IsNullOrEmpty(Rekord.PelnaNazwa)) Rekord.PelnaNazwa = Rekord.Nazwa;
 		if (String.IsNullOrEmpty(Rekord.AdresKorespondencyjny)) Rekord.AdresKorespondencyjny = Rekord.AdresRejestrowy;
+		SynchronizujDomyslnyRachunekBankowy();
+	}
+
+	private void SynchronizujDomyslnyRachunekBankowy()
+	{
+		var rachunki = Kontekst.Baza.RachunkiBankowe
+			.Where(rachunek => rachunek.KontrahentId == Rekord.Id)
+			.OrderByDescending(rachunek => rachunek.CzyDomyslny)
+			.ThenBy(rachunek => rachunek.Id)
+			.ToList();
+
+		var rachunek = rachunki.FirstOrDefault();
+		Rekord.RachunekBankowy = rachunek?.NumerRachunku ?? "";
+		Rekord.NazwaBanku = rachunek?.NazwaBanku ?? "";
 	}
 
 	private void buttonSprawdzMF_Click(object? sender, EventArgs e)

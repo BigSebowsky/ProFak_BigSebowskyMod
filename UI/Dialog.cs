@@ -13,6 +13,14 @@ partial class Dialog : Form
 
 	public FlowLayoutPanel Przyciski => flowLayoutPanelPrzyciski;
 
+	[Browsable(false)]
+	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+	public string TekstPrzyciskuZapisz { get => buttonZapisz.Text; set => buttonZapisz.Text = value; }
+
+	[Browsable(false)]
+	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+	public string TekstPrzyciskuAnuluj { get => buttonAnuluj.Text; set => buttonAnuluj.Text = value; }
+
 	private Dialog()
 	{
 		InitializeComponent();

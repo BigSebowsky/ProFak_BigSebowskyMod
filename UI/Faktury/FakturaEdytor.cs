@@ -16,12 +16,17 @@ partial class FakturaEdytor : FakturaEdytorBase
 	private Slownik<Kontrahent> slownikSprzedawcaNazwa = default!;
 	private Slownik<Kontrahent> slownikSprzedawcaNIP = default!;
 	private bool czyAutomatycznyKursAktywny;
+	private readonly TextBox textBoxNettoPLN = new() { ReadOnly = true, TabStop = false, TextAlign = HorizontalAlignment.Right, Anchor = AnchorStyles.Left | AnchorStyles.Right };
+	private readonly TextBox textBoxVatPLN = new() { ReadOnly = true, TabStop = false, TextAlign = HorizontalAlignment.Right, Anchor = AnchorStyles.Left | AnchorStyles.Right };
+	private readonly TextBox textBoxBruttoPLN = new() { ReadOnly = true, TabStop = false, TextAlign = HorizontalAlignment.Right, Anchor = AnchorStyles.Left | AnchorStyles.Right };
+	private readonly TextBox textBoxDataKursu = new() { ReadOnly = true, TabStop = false, Anchor = AnchorStyles.Left | AnchorStyles.Right };
 
 	public virtual bool CzySprzedaz => true;
 
 	public FakturaEdytor()
 	{
 		InitializeComponent();
+		ZainstalujPodgladPLN();
 
 		kontroler.Slownik<ProceduraMarży>(comboBoxProceduraMarzy);
 
@@ -91,7 +96,72 @@ partial class FakturaEdytor : FakturaEdytorBase
 		dateTimePickerDataWystawienia.Format = DateTimePickerFormat.Custom;
 		dateTimePickerTerminPlatnosci.Format = DateTimePickerFormat.Custom;
 
+		numericUpDownNetto.ValueChanged += (_, _) => AktualizujPodgladPLN();
+		numericUpDownVat.ValueChanged += (_, _) => AktualizujPodgladPLN();
+		numericUpDownBrutto.ValueChanged += (_, _) => AktualizujPodgladPLN();
+		numericUpDownKurs.ValueChanged += (_, _) => AktualizujPodgladPLN();
+
 		Wyglad.UsunSkrotyZakladek(tabControl1);
+	}
+
+	private void ZainstalujPodgladPLN()
+	{
+		var labelDataKursu = new Label
+		{
+			Anchor = AnchorStyles.Right,
+			AutoSize = true,
+			Text = "Data kursu"
+		};
+
+		tableLayoutPanel4.SuspendLayout();
+		tableLayoutPanel4.RowCount = 5;
+		tableLayoutPanel4.RowStyles.Clear();
+		tableLayoutPanel4.RowStyles.Add(new RowStyle());
+		tableLayoutPanel4.RowStyles.Add(new RowStyle());
+		tableLayoutPanel4.RowStyles.Add(new RowStyle());
+		tableLayoutPanel4.RowStyles.Add(new RowStyle());
+		tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+		tableLayoutPanel4.Controls.Add(labelDataKursu, 0, 3);
+		tableLayoutPanel4.Controls.Add(textBoxDataKursu, 1, 3);
+		tableLayoutPanel4.ResumeLayout();
+
+		var groupBoxRazemPLN = new GroupBox
+		{
+			AutoSize = true,
+			Dock = DockStyle.Fill,
+			Text = "Razem PLN"
+		};
+
+		var tableLayoutPanelRazemPLN = new TableLayoutPanel
+		{
+			AutoSize = true,
+			AutoSizeMode = AutoSizeMode.GrowAndShrink,
+			ColumnCount = 2,
+			Dock = DockStyle.Fill,
+			RowCount = 3
+		};
+		tableLayoutPanelRazemPLN.ColumnStyles.Add(new ColumnStyle());
+		tableLayoutPanelRazemPLN.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+		tableLayoutPanelRazemPLN.RowStyles.Add(new RowStyle());
+		tableLayoutPanelRazemPLN.RowStyles.Add(new RowStyle());
+		tableLayoutPanelRazemPLN.RowStyles.Add(new RowStyle());
+		tableLayoutPanelRazemPLN.Controls.Add(new Label { Anchor = AnchorStyles.Right, AutoSize = true, Text = "Netto" }, 0, 0);
+		tableLayoutPanelRazemPLN.Controls.Add(new Label { Anchor = AnchorStyles.Right, AutoSize = true, Text = "VAT" }, 0, 1);
+		tableLayoutPanelRazemPLN.Controls.Add(new Label { Anchor = AnchorStyles.Right, AutoSize = true, Text = "Brutto" }, 0, 2);
+		tableLayoutPanelRazemPLN.Controls.Add(textBoxNettoPLN, 1, 0);
+		tableLayoutPanelRazemPLN.Controls.Add(textBoxVatPLN, 1, 1);
+		tableLayoutPanelRazemPLN.Controls.Add(textBoxBruttoPLN, 1, 2);
+		groupBoxRazemPLN.Controls.Add(tableLayoutPanelRazemPLN);
+
+		tableLayoutPanelDatyKwoty.SuspendLayout();
+		tableLayoutPanelDatyKwoty.ColumnCount = 4;
+		tableLayoutPanelDatyKwoty.ColumnStyles.Clear();
+		tableLayoutPanelDatyKwoty.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+		tableLayoutPanelDatyKwoty.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 42F));
+		tableLayoutPanelDatyKwoty.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.5F));
+		tableLayoutPanelDatyKwoty.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.5F));
+		tableLayoutPanelDatyKwoty.Controls.Add(groupBoxRazemPLN, 3, 0);
+		tableLayoutPanelDatyKwoty.ResumeLayout();
 	}
 
 	private string? WalidacjaProceduryMarzy(ProceduraMarży wartosc)
@@ -117,6 +187,7 @@ partial class FakturaEdytor : FakturaEdytorBase
 	{
 		Rekord.PrzeliczRazem(Kontekst.Baza);
 		kontroler.AktualizujKontrolki();
+		AktualizujPodgladPLN();
 	}
 
 
@@ -243,6 +314,7 @@ partial class FakturaEdytor : FakturaEdytorBase
 		if (sposobPlatnosci != null) Rekord.TerminPlatnosci = Rekord.DataWystawienia.AddDays(sposobPlatnosci.LiczbaDni);
 		if (czyAutomatycznyKursAktywny) AktualizujKursWaluty();
 		kontroler.AktualizujKontrolki();
+		AktualizujPodgladPLN();
 	}
 
 	private void UstawWalute(Waluta? waluta)
@@ -252,10 +324,12 @@ partial class FakturaEdytor : FakturaEdytorBase
 		if (waluta.CzyDomyslna)
 		{
 			if (Rekord.KursWaluty != 1m) numericUpDownKurs.Value = 1m;
+			AktualizujPodgladPLN();
 			return;
 		}
 
 		if (czyAutomatycznyKursAktywny) AktualizujKursWaluty(waluta);
+		AktualizujPodgladPLN();
 	}
 
 	private void AktualizujKursWaluty(Waluta? waluta = null)
@@ -290,6 +364,27 @@ partial class FakturaEdytor : FakturaEdytorBase
 		numericUpDownNetto.Enabled = Rekord.CzyWartosciReczne;
 		numericUpDownVat.Enabled = Rekord.CzyWartosciReczne;
 		numericUpDownBrutto.Enabled = Rekord.CzyWartosciReczne;
+		AktualizujPodgladPLN();
+	}
+
+	private void AktualizujPodgladPLN()
+	{
+		if (Kontekst == null || Rekord == null) return;
+
+		var kurs = numericUpDownKurs.Value;
+		textBoxNettoPLN.Text = (numericUpDownNetto.Value * kurs).ToString(Format.Kwota);
+		textBoxVatPLN.Text = (numericUpDownVat.Value * kurs).ToString(Format.Kwota);
+		textBoxBruttoPLN.Text = (numericUpDownBrutto.Value * kurs).ToString(Format.Kwota);
+
+		var waluta = Kontekst.Baza.ZnajdzLubNull(Rekord.WalutaRef);
+		if (waluta == null || waluta.CzyDomyslna)
+		{
+			textBoxDataKursu.Text = "";
+			return;
+		}
+
+		var kursNBP = NBPService.ZnajdzKursZData(Kontekst.Baza, waluta.Skrot, dateTimePickerDataWystawienia.Value.Date);
+		textBoxDataKursu.Text = kursNBP?.Data.ToString(Format.Data) ?? "";
 	}
 
 	protected override void PrzygotujRekord(Faktura rekord)
@@ -314,6 +409,7 @@ partial class FakturaEdytor : FakturaEdytorBase
 		var waluta = Kontekst.Baza.ZnajdzLubNull(Rekord.WalutaRef);
 		if (waluta != null && !waluta.CzyDomyslna && Rekord.KursWaluty == 1m) AktualizujKursWaluty(waluta);
 		UstawRazem();
+		AktualizujPodgladPLN();
 		wplaty.Spis.FakturaRef = Rekord;
 		wplaty.Spis.Kontekst = Kontekst;
 		pozycjeFaktury.Spis.FakturaRef = Rekord;

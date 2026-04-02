@@ -14,15 +14,20 @@ static class NBPService
 
 	public static decimal? ZnajdzKurs(Baza baza, string walutaSkrot, DateTime data)
 	{
+		return ZnajdzKursZData(baza, walutaSkrot, data)?.KursSredni;
+	}
+
+	public static KursNBP? ZnajdzKursZData(Baza baza, string walutaSkrot, DateTime data)
+	{
 		if (String.IsNullOrWhiteSpace(walutaSkrot)) return null;
 		var waluta = baza.Waluty.FirstOrDefault(w => w.Skrot == walutaSkrot);
-		if (waluta == null || waluta.CzyDomyslna) return 1m;
+		if (waluta == null || waluta.CzyDomyslna) return null;
 
 		var szukana = data.Date.AddDays(-1);
 		for (int i = 0; i < MaxDniWstecz; i++, szukana = szukana.AddDays(-1))
 		{
 			var kurs = baza.KursyNBP.FirstOrDefault(k => k.WalutaId == waluta.Id && k.Data == szukana);
-			if (kurs != null) return kurs.KursSredni;
+			if (kurs != null) return kurs;
 		}
 		return null;
 	}

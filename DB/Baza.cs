@@ -32,6 +32,7 @@ public class Baza : DbContext
 	public IQueryable<KolumnaSpisu> KolumnySpisow => Set<KolumnaSpisu>();
 	public IQueryable<Konfiguracja> Konfiguracja => Set<Konfiguracja>();
 	public IQueryable<Kontrahent> Kontrahenci => Set<Kontrahent>();
+	public IQueryable<RachunekBankowy> RachunkiBankowe => Set<RachunekBankowy>();
 	public IQueryable<Numerator> Numeratory => Set<Numerator>();
 	public IQueryable<Plik> Pliki => Set<Plik>();
 	public IQueryable<PozycjaFaktury> PozycjeFaktur => Set<PozycjaFaktury>();

@@ -33,6 +33,7 @@ public class Kontrahent : Rekord<Kontrahent>
 
 	public SposobPlatnosci? SposobPlatnosci { get; set; }
 	public Waluta? DomyslnaWaluta { get; set; }
+	public List<RachunekBankowy> RachunkiBankowe { get; set; } = default!;
 
 	public string AdresRejestrowyFmt => AdresRejestrowy.JakoJednaLinia();
 	public string PelnaNazwaLubNazwa => String.IsNullOrEmpty(PelnaNazwa) ? Nazwa : PelnaNazwa;

@@ -13,6 +13,7 @@ static class ProFakModelBuilder
 		modelBuilder.Entity<KolumnaSpisu>(KolumnaSpisuBuilder.Configure);
 		modelBuilder.Entity<Konfiguracja>(KonfiguracjaBuilder.Configure);
 		modelBuilder.Entity<Kontrahent>(KontrahentBuilder.Configure);
+		modelBuilder.Entity<RachunekBankowy>(RachunekBankowyBuilder.Configure);
 		modelBuilder.Entity<Numerator>(NumeratorBuilder.Configure);
 		modelBuilder.Entity<Plik>(PlikBuilder.Configure);
 		modelBuilder.Entity<PozycjaFaktury>(PozycjaFakturyBuilder.Configure);

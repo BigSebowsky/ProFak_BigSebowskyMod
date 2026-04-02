@@ -107,7 +107,8 @@ public partial class GlowneOkno : Form
 		var stawkiVat = Wezel("Stawki VAT", "StawkiVat");
 		var urzedySkarbowe = Wezel("Urzędy skarbowe", "UrzedySkarbowe");
 		var waluty = Wezel("Waluty", "Waluty");
-		var slowniki = Wezel("Słowniki", "Slowniki", [jednostkiMiar, sposobyPlatnosci, stawkiVat, urzedySkarbowe, waluty]);
+		var kursyWalut = Wezel("Kursy walut", "KursyWalut");
+		var slowniki = Wezel("Słowniki", "Slowniki", [jednostkiMiar, sposobyPlatnosci, stawkiVat, urzedySkarbowe, waluty, kursyWalut]);
 		var numeracja = Wezel("Numeracja", "Numeratory");
 		var konfiguracja = Wezel("Konfiguracja", "Konfiguracja");
 #if !SQLSERVER
@@ -282,6 +283,7 @@ public partial class GlowneOkno : Form
 		else if (pozycja.Name == "SposobyPlatnosci") Wyswietl(Spisy.SposobyPlatnosci(), pozycja.Name);
 		else if (pozycja.Name == "StawkiVat") Wyswietl(Spisy.StawkiVat(), pozycja.Name);
 		else if (pozycja.Name == "Waluty") Wyswietl(Spisy.Waluty(), pozycja.Name);
+		else if (pozycja.Name == "KursyWalut") Wyswietl(new KursyWalutEkran(), pozycja.Name);
 		else if (pozycja.Name == "Towary") Wyswietl(Spisy.Towary(), pozycja.Name);
 		else if (pozycja.Name == "DeklaracjeVat") Wyswietl(Spisy.DeklaracjeVat(parametry), pozycja.Name);
 		else if (pozycja.Name == "SkladkiZus") Wyswietl(Spisy.SkladkiZus(parametry), pozycja.Name);

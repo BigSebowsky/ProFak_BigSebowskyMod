@@ -27,7 +27,26 @@ static class NBPService
 		return null;
 	}
 
+	public static Task UzupelnijKursyAsync(Baza baza, DateTime odDnia, CancellationToken cancellationToken = default)
+	{
+		var od = odDnia.Date;
+		var doDnia = DateTime.Today.AddDays(-1);
+		if (od > doDnia) return Task.CompletedTask;
+		return UzupelnijKursyAsync(baza, od, doDnia, cancellationToken);
+	}
+
 	public static async Task UzupelnijBrakujaceKursyAsync(Baza baza, CancellationToken cancellationToken = default)
+	{
+		await UzupelnijKursyAsync(baza, DateTime.Today.AddDays(-365), DateTime.Today.AddDays(-1), cancellationToken);
+	}
+
+	public static Task BackfillWalutyAsync(Baza baza, Waluta waluta, CancellationToken cancellationToken = default)
+	{
+		if (waluta.CzyDomyslna || String.IsNullOrWhiteSpace(waluta.Skrot)) return Task.CompletedTask;
+		return PobierzZakresWalutyAsync(baza, waluta, DateTime.Today.AddDays(-365), DateTime.Today.AddDays(-1), cancellationToken);
+	}
+
+	private static async Task UzupelnijKursyAsync(Baza baza, DateTime od, DateTime doDnia, CancellationToken cancellationToken)
 	{
 		var waluty = baza.Waluty
 			.Where(waluta => !waluta.CzyDomyslna && !String.IsNullOrWhiteSpace(waluta.Skrot))
@@ -37,21 +56,8 @@ static class NBPService
 		foreach (var waluta in waluty)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			var od = baza.KursyNBP
-				.Where(kurs => kurs.WalutaId == waluta.Id)
-				.OrderByDescending(kurs => kurs.Data)
-				.Select(kurs => (DateTime?)kurs.Data)
-				.FirstOrDefault()?.AddDays(1).Date ?? DateTime.Today.AddDays(-365);
-			var doDnia = DateTime.Today.AddDays(-1);
-			if (od > doDnia) continue;
 			await PobierzZakresWalutyAsync(baza, waluta, od, doDnia, cancellationToken);
 		}
-	}
-
-	public static Task BackfillWalutyAsync(Baza baza, Waluta waluta, CancellationToken cancellationToken = default)
-	{
-		if (waluta.CzyDomyslna || String.IsNullOrWhiteSpace(waluta.Skrot)) return Task.CompletedTask;
-		return PobierzZakresWalutyAsync(baza, waluta, DateTime.Today.AddDays(-365), DateTime.Today.AddDays(-1), cancellationToken);
 	}
 
 	private static async Task PobierzZakresWalutyAsync(Baza baza, Waluta waluta, DateTime od, DateTime doDnia, CancellationToken cancellationToken)

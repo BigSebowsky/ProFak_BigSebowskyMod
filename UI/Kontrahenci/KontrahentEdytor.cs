@@ -9,6 +9,8 @@ partial class KontrahentEdytor : KontrahentEdytorBase
 {
 	private readonly SpisZAkcjami<Faktura, FakturaSprzedazySpis> fakturySprzedazy;
 	private readonly SpisZAkcjami<Faktura, FakturaZakupuSpis> fakturyZakupu;
+	private readonly SpisZAkcjami<RachunekBankowy, RachunekBankowySpis> rachunkiBankowe;
+	private readonly TabPage tabPageRachunki;
 
 	public KontrahentEdytor()
 	{
@@ -50,9 +52,24 @@ partial class KontrahentEdytor : KontrahentEdytorBase
 
 		fakturySprzedazy = new SpisZAkcjami<Faktura, FakturaSprzedazySpis>(new FakturaSprzedazyBezNabywcySpis(), new AkcjaNaSpisie<Faktura>[] { new EdytujRekordAkcja<Faktura, FakturaEdytor>(), new WydrukFakturyAkcja(), new PrzeladujAkcja<Faktura>() });
 		fakturyZakupu = new SpisZAkcjami<Faktura, FakturaZakupuSpis>(new FakturaZakupuBezSprzedawcySpis(), new AkcjaNaSpisie<Faktura>[] { new EdytujRekordAkcja<Faktura, FakturaEdytor>(), new PrzeladujAkcja<Faktura>() });
+		var rachunekBankowySpis = new RachunekBankowySpis();
+		rachunkiBankowe = new SpisZAkcjami<RachunekBankowy, RachunekBankowySpis>(rachunekBankowySpis, new AkcjaNaSpisie<RachunekBankowy>[]
+		{
+			new DodajRekordAkcja<RachunekBankowy, RachunekBankowyEdytor>(rachunekBankowy =>
+			{
+				rachunekBankowy.KontrahentRef = rachunekBankowySpis.KontrahentRef;
+				if (!rachunekBankowySpis.Rekordy.Any()) rachunekBankowy.CzyDomyslny = true;
+			}),
+			new EdytujRekordAkcja<RachunekBankowy, RachunekBankowyEdytor>(),
+			new UsunRekordAkcja<RachunekBankowy>(),
+			new PrzeladujAkcja<RachunekBankowy>()
+		});
+		tabPageRachunki = new TabPage("Rachunki bankowe") { Padding = new Padding(3) };
 
 		tabPageFakturySprzedazy.Controls.Add(fakturySprzedazy);
 		tabPageFakturyZakupu.Controls.Add(fakturyZakupu);
+		tabPageRachunki.Controls.Add(rachunkiBankowe);
+		tabControl.TabPages.Insert(2, tabPageRachunki);
 
 		dateTimePickerOsobaFizycznaDataUrodzenia.CustomFormat = Format.Data;
 		dateTimePickerOsobaFizycznaDataUrodzenia.Format = DateTimePickerFormat.Custom;
@@ -158,10 +175,12 @@ partial class KontrahentEdytor : KontrahentEdytorBase
 		checkBoxImportKSeF.Visible = !Rekord.CzyPodmiot;
 		labelSposobPlatnosci.Visible = comboBoxSposobPlatnosci.Visible = buttonSposobPlatnosci.Visible = !Rekord.CzyPodmiot;
 
-		fakturySprzedazy.Spis.KontrahentRef = Rekord;
-		fakturySprzedazy.Spis.Kontekst = Kontekst;
-		fakturyZakupu.Spis.KontrahentRef = Rekord;
-		fakturyZakupu.Spis.Kontekst = Kontekst;
+		rachunkiBankowe.Spis.KontrahentRef = Rekord.Ref;
+		rachunkiBankowe.Kontekst = Kontekst;
+		fakturySprzedazy.Spis.KontrahentRef = Rekord.Ref;
+		fakturySprzedazy.Kontekst = Kontekst;
+		fakturyZakupu.Spis.KontrahentRef = Rekord.Ref;
+		fakturyZakupu.Kontekst = Kontekst;
 
 		if (Rekord.CzyPodmiot)
 		{

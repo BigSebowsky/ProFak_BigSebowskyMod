@@ -27,6 +27,7 @@ public class RachunekBankowy : Rekord<RachunekBankowy>
 	}
 
 	public string WalutaSkrot => Waluta?.Skrot ?? "";
+	public string CzyDomyslnyFmt => CzyDomyslny ? "Tak" : "";
 
 	public override bool CzyPasuje(string fraza)
 		=> base.CzyPasuje(fraza)
@@ -35,5 +36,6 @@ public class RachunekBankowy : Rekord<RachunekBankowy>
 		|| CzyPasuje(NazwaBanku, fraza)
 		|| CzyPasuje(Swift, fraza)
 		|| CzyPasuje(WalutaSkrot, fraza)
+		|| CzyPasuje(CzyDomyslnyFmt, fraza)
 		|| CzyPasuje(CzyDomyslny ? "Domyślny" : "", fraza);
 }

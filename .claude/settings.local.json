@@ -14,7 +14,9 @@
       "Bash(.cs$ \")",
       "Bash(ls -1 *.rdlc)",
       "Bash(python3 -c \":*)",
-      "Bash(python -c \":*)"
+      "Bash(python -c \":*)",
+      "Bash(grep -rn \"ColSpan\" \"D:/GIT/Pro_Faktura/Wydruki/FakturaEN\"*.rdlc)",
+      "Bash(grep -rn \"ColSpan\" \"D:/GIT/Pro_Faktura/Wydruki/\"*.rdlc)"
     ]
   }
 }

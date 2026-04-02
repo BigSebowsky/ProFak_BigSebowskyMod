@@ -571,8 +571,22 @@ abstract class Spis<T> : Spis
 	{
 		if (Kontekst == null) return;
 		var spis = GetType().Name;
-		var kolumny = Kontekst.Baza.KolumnySpisow.Where(e => e.Spis == spis).OrderBy(e => e.Kolejnosc);
-		var maksymalnaKolejnosc = Columns.Count - 1;
+		var zapisaneKolumny = Kontekst.Baza.KolumnySpisow.Where(e => e.Spis == spis).ToList();
+		var czyBrakowaloKolumn = false;
+		foreach (DataGridViewColumn kolumna in Columns)
+		{
+			if (zapisaneKolumny.Any(e => e.Kolumna == kolumna.Name)) continue;
+			zapisaneKolumny.Add(new KolumnaSpisu
+			{
+				Spis = spis,
+				Kolumna = kolumna.Name,
+				Kolejnosc = kolumna.DisplayIndex,
+				Szerokosc = kolumna.Visible ? kolumna.AutoSizeMode == DataGridViewAutoSizeColumnMode.Fill ? -1 : kolumna.Width : 0
+			});
+			czyBrakowaloKolumn = true;
+		}
+
+		var kolumny = zapisaneKolumny.OrderBy(e => e.Kolejnosc).ThenBy(e => Columns[e.Kolumna]?.Index ?? Int32.MaxValue).ToList();
 		kolumnyKolejnosci.Clear();
 
 		foreach (var kolumna in kolumny.Where(e => e.PoziomSortowania != 0).OrderBy(e => Math.Abs(e.PoziomSortowania)))
@@ -601,10 +615,18 @@ abstract class Spis<T> : Spis
 			}
 			if (kolumna.Szerokosc == -1) kolumnaSpisu.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 			kolumnaSpisu.Visible = kolumna.Szerokosc != 0;
-			if (maksymalnaKolejnosc >= 0) kolumnaSpisu.DisplayIndex = Math.Clamp(kolumna.Kolejnosc, 0, maksymalnaKolejnosc);
 			kolumnaSpisu.HeaderCell.SortGlyphDirection = kolumna.PoziomSortowania < 0 ? SortOrder.Descending : kolumna.PoziomSortowania > 0 ? SortOrder.Ascending : SortOrder.None;
 		}
+		var kolejnosc = 0;
+		foreach (var kolumna in kolumny)
+		{
+			if (kolumna.Kolumna == WYSOKOSC_WIERSZA) continue;
+			var kolumnaSpisu = Columns[kolumna.Kolumna];
+			if (kolumnaSpisu == null) continue;
+			kolumnaSpisu.DisplayIndex = kolejnosc++;
+		}
 		kolumnyZmienione = false;
+		if (czyBrakowaloKolumn) ZapiszKonfiguracje();
 	}
 
 	private void ZapiszKonfiguracje()

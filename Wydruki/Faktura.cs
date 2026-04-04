@@ -163,6 +163,7 @@ public class Faktura : Wydruk
 				pozycjaDTO.OpisPozycji = pozycja.Opis;
 				pozycjaDTO.CenaNetto = pozycja.Cena;
 				pozycjaDTO.Ilosc = Math.Abs(pozycja.Ilosc / 1.000000000000m) + " " + jm?.Skrot;
+				pozycjaDTO.JM = jm?.Skrot;
 				pozycjaDTO.WartoscNetto = pozycja.WartoscNetto;
 				pozycjaDTO.WartoscVat = (pozycja.WartoscVat * faktura.KursWaluty).Zaokragl();
 				pozycjaDTO.WartoscBrutto = pozycja.WartoscBrutto;

@@ -193,137 +193,17 @@
             <TablixBody>
               <TablixColumns>
                 <TablixColumn>
-                  <Width>17.94354cm</Width>
+                  <Width>17.95756cm</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
                 <TablixRow>
-                  <Height>17.07673cm</Height>
+                  <Height>21.35695cm</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
                         <Rectangle Name="Rectangle1">
                           <ReportItems>
-                            <Textbox Name="TytulFaktury">
-                              <CanGrow>true</CanGrow>
-                              <KeepTogether>true</KeepTogether>
-                              <Paragraphs>
-                                <Paragraph>
-                                  <TextRuns>
-                                    <TextRun>
-                                      <Value>=Fields!Rodzaj.Value &amp; " nr (Invoice no) " &amp; Fields!Numer.Value</Value>
-                                      <Style>
-                                        <FontFamily>Calibri</FontFamily>
-                                        <FontSize>16pt</FontSize>
-                                        <FontWeight>Bold</FontWeight>
-                                      </Style>
-                                    </TextRun>
-                                  </TextRuns>
-                                  <Style>
-                                    <TextAlign>Center</TextAlign>
-                                  </Style>
-                                </Paragraph>
-                              </Paragraphs>
-                              <rd:DefaultName>TytulFaktury</rd:DefaultName>
-                              <Top>0.9cm</Top>
-                              <Height>1.1cm</Height>
-                              <Width>17.94354cm</Width>
-                              <ZIndex>10</ZIndex>
-                              <Style>
-                                <Border>
-                                  <Style>None</Style>
-                                </Border>
-                              </Style>
-                            </Textbox>
-                            <Textbox Name="KorektaInfo">
-                              <CanGrow>true</CanGrow>
-                              <KeepTogether>true</KeepTogether>
-                              <Paragraphs>
-                                <Paragraph>
-                                  <TextRuns>
-                                    <TextRun>
-                                      <Value>=Fields!Korekta.Value</Value>
-                                      <MarkupType>HTML</MarkupType>
-                                      <Style>
-                                        <FontFamily>Calibri</FontFamily>
-                                        <FontStyle>Italic</FontStyle>
-                                      </Style>
-                                    </TextRun>
-                                  </TextRuns>
-                                  <Style>
-                                    <TextAlign>Center</TextAlign>
-                                  </Style>
-                                </Paragraph>
-                              </Paragraphs>
-                              <rd:DefaultName>KorektaInfo</rd:DefaultName>
-                              <Top>2.1cm</Top>
-                              <Height>0.5cm</Height>
-                              <Width>17.94354cm</Width>
-                              <ZIndex>11</ZIndex>
-                              <Visibility>
-                                <Hidden>=Fields!Korekta.Value = ""</Hidden>
-                              </Visibility>
-                              <Style>
-                                <Border>
-                                  <Style>None</Style>
-                                </Border>
-                              </Style>
-                            </Textbox>
-                            <Textbox Name="DateHeader">
-                              <CanGrow>true</CanGrow>
-                              <KeepTogether>true</KeepTogether>
-                              <Paragraphs>
-                                <Paragraph>
-                                  <TextRuns>
-                                    <TextRun>
-                                      <Value>Data wystawienia (Date of issue): </Value>
-                                      <Style>
-                                        <FontFamily>Calibri</FontFamily>
-                                        <FontSize>8pt</FontSize>
-                                        <FontWeight>Bold</FontWeight>
-                                      </Style>
-                                    </TextRun>
-                                    <TextRun>
-                                      <Value>=Fields!DataWystawienia.Value</Value>
-                                      <Style>
-                                        <FontFamily>Calibri</FontFamily>
-                                        <FontSize>8pt</FontSize>
-                                      </Style>
-                                    </TextRun>
-                                    <TextRun>
-                                      <Value xml:space="preserve">   Data sprzedaży (Sale date): </Value>
-                                      <Style>
-                                        <FontFamily>Calibri</FontFamily>
-                                        <FontSize>8pt</FontSize>
-                                        <FontWeight>Bold</FontWeight>
-                                      </Style>
-                                    </TextRun>
-                                    <TextRun>
-                                      <Value>=Fields!DataSprzedazy.Value</Value>
-                                      <Style>
-                                        <FontFamily>Calibri</FontFamily>
-                                        <FontSize>8pt</FontSize>
-                                      </Style>
-                                    </TextRun>
-                                  </TextRuns>
-                                  <Style>
-                                    <TextAlign>Right</TextAlign>
-                                  </Style>
-                                </Paragraph>
-                              </Paragraphs>
-                              <rd:DefaultName>DateHeader</rd:DefaultName>
-                              <Left>6cm</Left>
-                              <Height>0.7cm</Height>
-                              <Width>11.94354cm</Width>
-                              <ZIndex>12</ZIndex>
-                              <Style>
-                                <Border>
-                                  <Style>None</Style>
-                                </Border>
-                                <PaddingRight>2pt</PaddingRight>
-                                <PaddingTop>2pt</PaddingTop>
-                              </Style>
-                            </Textbox>
                             <Textbox Name="BoxSprzedawcy">
                               <CanGrow>true</CanGrow>
                               <KeepTogether>true</KeepTogether>
@@ -387,10 +267,10 @@
                                 </Paragraph>
                               </Paragraphs>
                               <rd:DefaultName>BoxSprzedawcy</rd:DefaultName>
-                              <Top>2.7cm</Top>
-                              <Height>3.5cm</Height>
-                              <Width>8.77cm</Width>
-                              <ZIndex>2</ZIndex>
+                              <Top>3.6525cm</Top>
+                              <Left>0.31753cm</Left>
+                              <Height>2.84691cm</Height>
+                              <Width>7.54982cm</Width>
                               <Style>
                                 <Border>
                                   <Style>Solid</Style>
@@ -486,11 +366,11 @@
                                 </Paragraph>
                               </Paragraphs>
                               <rd:DefaultName>BoxNabywcy</rd:DefaultName>
-                              <Left>9.17354cm</Left>
-                              <Top>2.7cm</Top>
-                              <Height>3.5cm</Height>
-                              <Width>8.77cm</Width>
-                              <ZIndex>3</ZIndex>
+                              <Top>3.62306cm</Top>
+                              <Left>9.9219cm</Left>
+                              <Height>2.84691cm</Height>
+                              <Width>7.54982cm</Width>
+                              <ZIndex>1</ZIndex>
                               <Style>
                                 <Border>
                                   <Style>Solid</Style>
@@ -509,11 +389,11 @@
                                   <Value>=Fields!Numer.Value</Value>
                                 </Parameter>
                               </Parameters>
-                              <Top>6.3cm</Top>
-                              <Left>0.00003cm</Left>
+                              <Top>7.2525cm</Top>
+                              <Left>0.01405cm</Left>
                               <Height>0.56208cm</Height>
                               <Width>17.8cm</Width>
-                              <ZIndex>4</ZIndex>
+                              <ZIndex>2</ZIndex>
                               <Visibility>
                                 <Hidden>=Not(Fields!JestVAT.Value And Fields!JestRabat.Value)</Hidden>
                               </Visibility>
@@ -530,11 +410,11 @@
                                   <Value>=Fields!Numer.Value</Value>
                                 </Parameter>
                               </Parameters>
-                              <Top>6.86208cm</Top>
-                              <Left>0.00003cm</Left>
+                              <Top>7.81458cm</Top>
+                              <Left>0.01405cm</Left>
                               <Height>0.56208cm</Height>
                               <Width>17.8cm</Width>
-                              <ZIndex>5</ZIndex>
+                              <ZIndex>3</ZIndex>
                               <Visibility>
                                 <Hidden>=Not(Fields!JestVAT.Value And Not Fields!JestRabat.Value)</Hidden>
                               </Visibility>
@@ -551,11 +431,11 @@
                                   <Value>=Fields!Numer.Value</Value>
                                 </Parameter>
                               </Parameters>
-                              <Top>7.42416cm</Top>
-                              <Left>0.00003cm</Left>
+                              <Top>8.37666cm</Top>
+                              <Left>0.01405cm</Left>
                               <Height>0.56208cm</Height>
                               <Width>17.8cm</Width>
-                              <ZIndex>6</ZIndex>
+                              <ZIndex>4</ZIndex>
                               <Visibility>
                                 <Hidden>=Not(Not Fields!JestVAT.Value And Fields!JestRabat.Value)</Hidden>
                               </Visibility>
@@ -572,10 +452,11 @@
                                   <Value>=Fields!Numer.Value</Value>
                                 </Parameter>
                               </Parameters>
-                              <Top>7.98624cm</Top>
+                              <Top>8.93874cm</Top>
+                              <Left>0.01402cm</Left>
                               <Height>0.56208cm</Height>
                               <Width>17.8cm</Width>
-                              <ZIndex>7</ZIndex>
+                              <ZIndex>5</ZIndex>
                               <Visibility>
                                 <Hidden>=Not(Not Fields!JestVAT.Value And Not Fields!JestRabat.Value)</Hidden>
                               </Visibility>
@@ -1131,9 +1012,9 @@
                                                       <TextRun>
                                                         <Value>(Signature of the person authorized to receive the invoice)</Value>
                                                         <Style>
+                                                          <FontStyle>Italic</FontStyle>
                                                           <FontFamily>Calibri</FontFamily>
                                                           <FontSize>6pt</FontSize>
-                                                          <FontStyle>Italic</FontStyle>
                                                         </Style>
                                                       </TextRun>
                                                     </TextRuns>
@@ -1144,7 +1025,6 @@
                                                 </Paragraphs>
                                                 <rd:DefaultName>TxtPodpisOdbiorcy</rd:DefaultName>
                                                 <Top>3.8cm</Top>
-                                                <Left>0cm</Left>
                                                 <Height>1cm</Height>
                                                 <Width>5cm</Width>
                                                 <ZIndex>2</ZIndex>
@@ -1180,9 +1060,9 @@
                                                       <TextRun>
                                                         <Value>(date of receipt)</Value>
                                                         <Style>
+                                                          <FontStyle>Italic</FontStyle>
                                                           <FontFamily>Calibri</FontFamily>
                                                           <FontSize>6pt</FontSize>
-                                                          <FontStyle>Italic</FontStyle>
                                                         </Style>
                                                       </TextRun>
                                                     </TextRuns>
@@ -1229,9 +1109,9 @@
                                                       <TextRun>
                                                         <Value>(Signature and stamp of the person authorized to issue the invoice)</Value>
                                                         <Style>
+                                                          <FontStyle>Italic</FontStyle>
                                                           <FontFamily>Calibri</FontFamily>
                                                           <FontSize>6pt</FontSize>
-                                                          <FontStyle>Italic</FontStyle>
                                                         </Style>
                                                       </TextRun>
                                                     </TextRuns>
@@ -1334,17 +1214,144 @@
                                   </TablixMember>
                                 </TablixMembers>
                               </TablixRowHierarchy>
-                              <Top>8.6cm</Top>
-                              <Left>0.00003cm</Left>
+                              <Top>10.51528cm</Top>
+                              <Left>0.01402cm</Left>
                               <Height>10.20667cm</Height>
                               <Width>17.94354cm</Width>
-                              <ZIndex>8</ZIndex>
+                              <ZIndex>6</ZIndex>
                               <Style>
                                 <Border>
                                   <Style>None</Style>
                                 </Border>
                               </Style>
                             </Tablix>
+                            <Textbox Name="TytulFaktury">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Fields!Rodzaj.Value &amp; " nr (Invoice no) " &amp; Fields!Numer.Value</Value>
+                                      <Style>
+                                        <FontFamily>Calibri</FontFamily>
+                                        <FontSize>18pt</FontSize>
+                                        <FontWeight>Bold</FontWeight>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style>
+                                    <TextAlign>Center</TextAlign>
+                                  </Style>
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>TytulFaktury</rd:DefaultName>
+                              <Top>1.535cm</Top>
+                              <Height>1.62361cm</Height>
+                              <Width>17.94354cm</Width>
+                              <ZIndex>7</ZIndex>
+                              <Style>
+                                <Border>
+                                  <Style>None</Style>
+                                </Border>
+                              </Style>
+                            </Textbox>
+                            <Textbox Name="KorektaInfo">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Fields!Korekta.Value</Value>
+                                      <MarkupType>HTML</MarkupType>
+                                      <Style>
+                                        <FontStyle>Italic</FontStyle>
+                                        <FontFamily>Calibri</FontFamily>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style>
+                                    <TextAlign>Center</TextAlign>
+                                  </Style>
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>KorektaInfo</rd:DefaultName>
+                              <Top>2.735cm</Top>
+                              <Height>0.5cm</Height>
+                              <Width>17.94354cm</Width>
+                              <ZIndex>8</ZIndex>
+                              <Visibility>
+                                <Hidden>=Fields!Korekta.Value = ""</Hidden>
+                              </Visibility>
+                              <Style>
+                                <Border>
+                                  <Style>None</Style>
+                                </Border>
+                              </Style>
+                            </Textbox>
+                            <Textbox Name="DateHeader">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>Data wystawienia (Date of issue): </Value>
+                                      <Style>
+                                        <FontFamily>Calibri</FontFamily>
+                                        <FontSize>8pt</FontSize>
+                                        <FontWeight>Bold</FontWeight>
+                                      </Style>
+                                    </TextRun>
+                                    <TextRun>
+                                      <Value>=Fields!DataWystawienia.Value</Value>
+                                      <Style>
+                                        <FontFamily>Calibri</FontFamily>
+                                        <FontSize>8pt</FontSize>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style>
+                                    <TextAlign>Right</TextAlign>
+                                  </Style>
+                                </Paragraph>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>Data sprzedaży (Sale date): </Value>
+                                      <Style>
+                                        <FontFamily>Calibri</FontFamily>
+                                        <FontSize>8pt</FontSize>
+                                        <FontWeight>Bold</FontWeight>
+                                      </Style>
+                                    </TextRun>
+                                    <TextRun>
+                                      <Value>=Fields!DataSprzedazy.Value</Value>
+                                      <Style>
+                                        <FontFamily>Calibri</FontFamily>
+                                        <FontSize>8pt</FontSize>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style>
+                                    <TextAlign>Right</TextAlign>
+                                  </Style>
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>DateHeader</rd:DefaultName>
+                              <Left>6cm</Left>
+                              <Height>1.2cm</Height>
+                              <Width>11.94354cm</Width>
+                              <ZIndex>9</ZIndex>
+                              <Style>
+                                <Border>
+                                  <Style>None</Style>
+                                </Border>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                              </Style>
+                            </Textbox>
                           </ReportItems>
                           <KeepTogether>true</KeepTogether>
                           <Style>
@@ -1353,6 +1360,7 @@
                             </Border>
                           </Style>
                         </Rectangle>
+                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                   </TablixCells>
@@ -1379,8 +1387,8 @@
               </TablixMembers>
             </TablixRowHierarchy>
             <DataSetName>DSFaktury</DataSetName>
-            <Height>17.07673cm</Height>
-            <Width>17.94354cm</Width>
+            <Height>21.35695cm</Height>
+            <Width>17.95756cm</Width>
             <Style>
               <Border>
                 <Style>None</Style>
@@ -1388,10 +1396,10 @@
             </Style>
           </Tablix>
         </ReportItems>
-        <Height>6.72312in</Height>
+        <Height>8.40825in</Height>
         <Style />
       </Body>
-      <Width>17.94354cm</Width>
+      <Width>17.95756cm</Width>
       <Page>
         <PageHeight>29.7cm</PageHeight>
         <PageWidth>21cm</PageWidth>
@@ -1412,5 +1420,5 @@
   </ReportParametersLayout>
   <Language>pl-PL</Language>
   <rd:ReportUnitType>Cm</rd:ReportUnitType>
-  <rd:ReportID>e2929dcc-6308-5g97-b132-136564g889gh</rd:ReportID>
+  <rd:ReportID>e2929dcc-6308-4c97-b132-136564c889ab</rd:ReportID>
 </Report>

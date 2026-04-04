@@ -34,6 +34,7 @@ public class FakturaDTO
 	public string? OpisPozycji { get; set; }
 	public decimal CenaNetto { get; set; }
 	public string? Ilosc { get; set; }
+	public string? JM { get; set; }
 	public decimal WartoscNetto { get; set; }
 	public string? StawkaVAT { get; set; }
 	public decimal WartoscVat { get; set; }

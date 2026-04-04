@@ -16,7 +16,14 @@
       "Bash(python3 -c \":*)",
       "Bash(python -c \":*)",
       "Bash(grep -rn \"ColSpan\" \"D:/GIT/Pro_Faktura/Wydruki/FakturaEN\"*.rdlc)",
-      "Bash(grep -rn \"ColSpan\" \"D:/GIT/Pro_Faktura/Wydruki/\"*.rdlc)"
+      "Bash(grep -rn \"ColSpan\" \"D:/GIT/Pro_Faktura/Wydruki/\"*.rdlc)",
+      "Bash(ls \"D:/GIT/Pro_Faktura/Wydruki/\"*.rdlc)",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Read(//d/GIT/Pro_Faktura/Wydruki/**)",
+      "Bash(done)",
+      "Bash(do sed:*)",
+      "Bash(echo \"Done: $f\")"
     ]
   }
 }

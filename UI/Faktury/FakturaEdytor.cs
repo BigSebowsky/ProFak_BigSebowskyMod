@@ -86,10 +86,10 @@ partial class FakturaEdytor : FakturaEdytorBase
 		tabPageDodatkowePodmioty.Controls.Add(dodatkowePodmioty = Spisy.DodatkowePodmioty());
 		pozycjeFaktury.Spis.RekordyZmienione += pozycjeFakturySpis_RekordyZmienione;
 
-		dateTimePickerDataSprzedazy.CustomFormat = Format.Data;
-		dateTimePickerDataWprowadzenia.CustomFormat = Format.Data;
-		dateTimePickerDataWystawienia.CustomFormat = Format.Data;
-		dateTimePickerTerminPlatnosci.CustomFormat = Format.Data;
+		dateTimePickerDataSprzedazy.CustomFormat = Wyglad.FormatDaty;
+		dateTimePickerDataWprowadzenia.CustomFormat = Wyglad.FormatDaty;
+		dateTimePickerDataWystawienia.CustomFormat = Wyglad.FormatDaty;
+		dateTimePickerTerminPlatnosci.CustomFormat = Wyglad.FormatDaty;
 
 		dateTimePickerDataSprzedazy.Format = DateTimePickerFormat.Custom;
 		dateTimePickerDataWprowadzenia.Format = DateTimePickerFormat.Custom;
@@ -372,9 +372,9 @@ partial class FakturaEdytor : FakturaEdytorBase
 		if (Kontekst == null || Rekord == null) return;
 
 		var kurs = numericUpDownKurs.Value;
-		textBoxNettoPLN.Text = (numericUpDownNetto.Value * kurs).ToString(Format.Kwota);
-		textBoxVatPLN.Text = (numericUpDownVat.Value * kurs).ToString(Format.Kwota);
-		textBoxBruttoPLN.Text = (numericUpDownBrutto.Value * kurs).ToString(Format.Kwota);
+		textBoxNettoPLN.Text = (numericUpDownNetto.Value * kurs).ToString(Wyglad.FormatKwoty);
+		textBoxVatPLN.Text = (numericUpDownVat.Value * kurs).ToString(Wyglad.FormatKwoty);
+		textBoxBruttoPLN.Text = (numericUpDownBrutto.Value * kurs).ToString(Wyglad.FormatKwoty);
 
 		var waluta = Kontekst.Baza.ZnajdzLubNull(Rekord.WalutaRef);
 		if (waluta == null || waluta.CzyDomyslna)
@@ -384,7 +384,7 @@ partial class FakturaEdytor : FakturaEdytorBase
 		}
 
 		var kursNBP = NBPService.ZnajdzKursZData(Kontekst.Baza, waluta.Skrot, dateTimePickerDataWystawienia.Value.Date);
-		textBoxDataKursu.Text = kursNBP?.Data.ToString(Format.Data) ?? "";
+		textBoxDataKursu.Text = kursNBP?.Data.ToString(Wyglad.FormatDaty) ?? "";
 	}
 
 	protected override void PrzygotujRekord(Faktura rekord)
@@ -436,7 +436,7 @@ partial class FakturaEdytor : FakturaEdytorBase
 		else if (Rekord.Rodzaj == RodzajFaktury.KorektaRachunku) labelRodzaj.Text = "Korekta rachunku";
 		else labelRodzaj.Text = Rekord.Rodzaj.ToString();
 
-		textBoxDataKSeF.Text = Rekord.DataKSeF == null ? "" : Rekord.DataKSeF.Value.ToString(Format.DataCzas);
+		textBoxDataKSeF.Text = Rekord.DataKSeF == null ? "" : Rekord.DataKSeF.Value.ToString(Wyglad.FormatCzasu);
 
 		if (String.IsNullOrWhiteSpace(Rekord.Numer) && Rekord.Numerator.HasValue)
 		{

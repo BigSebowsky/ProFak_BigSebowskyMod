@@ -20,6 +20,10 @@ class Wyglad
 	public static int? RozmiarCzcionki { get; set; }
 	public static string? NazwaCzcionki { get; set; }
 	public static string SzablonFaktury { get; set; } = "Faktura";
+	public static int WysokoscWiersza { get; set; }
+	public static string FormatDaty { get; set; } = default!;
+	public static string FormatCzasu { get; set; } = default!;
+	public static string FormatKwoty { get; set; } = default!;
 
 	public static string NazwaAkcji(AdapterAkcji adapter)
 	{
@@ -116,7 +120,13 @@ class Wyglad
 		SzerokoscMenu = konfiguracja.SzerokoscMenu;
 		RozmiarCzcionki = konfiguracja.RozmiarCzcionki == 0 ? null : konfiguracja.RozmiarCzcionki;
 		NazwaCzcionki = konfiguracja.NazwaCzcionki;
+		if (konfiguracja.Wersja < 2) return;
 		SzablonFaktury = konfiguracja.SzablonFaktury;
 		UstawCzcionke();
+		if (konfiguracja.Wersja < 3) return;
+		WysokoscWiersza = konfiguracja.WysokoscWiersza;
+		FormatDaty = konfiguracja.FormatDaty;
+		FormatCzasu = konfiguracja.FormatCzasu;
+		FormatKwoty = konfiguracja.FormatKwoty;
 	}
 }

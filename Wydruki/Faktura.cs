@@ -65,18 +65,18 @@ public class Faktura : Wydruk
 			{
 				var fakturaBazowa = baza.Znajdz(faktura.FakturaPierwotnaRef);
 				if (fakturaBazowa.Rodzaj == RodzajFaktury.Proforma) fakturaDTO.Korekta = Tekst("do faktury pro forma <b>", "do faktury pro forma / related to pro forma invoice <b>", "<b>related to pro forma invoice</b> ") + fakturaBazowa.Numer + "</b>";
-				else if (fakturaBazowa.Rodzaj == RodzajFaktury.VatMarża) fakturaDTO.Korekta = Tekst("<b>do faktury VAT marża</b> ", "<b>do faktury VAT marża / related to margin VAT invoice</b> ", "<b>related to margin VAT invoice</b> ") + fakturaBazowa.Numer + "<br/>" + Tekst("<b>z dnia</b> ", "<b>z dnia / issued on</b> ", "<b>issued on</b> ") + fakturaBazowa.DataWystawienia.ToString(UI.Format.Data) + "<br/>";
-				else fakturaDTO.Korekta = Tekst(jestvat ? "<b>do faktury VAT</b> " : "<b>do faktury</b> ", jestvat ? "<b>do faktury VAT / related to VAT invoice</b> " : "<b>do faktury / related to invoice</b> ", jestvat ? "<b>related to VAT invoice</b> " : "<b>related to invoice</b> ") + fakturaBazowa.Numer + "<br/>" + Tekst("<b>z dnia</b> ", "<b>z dnia / issued on</b> ", "<b>issued on</b> ") + fakturaBazowa.DataWystawienia.ToString(UI.Format.Data) + "<br/>";
+				else if (fakturaBazowa.Rodzaj == RodzajFaktury.VatMarża) fakturaDTO.Korekta = Tekst("<b>do faktury VAT marża</b> ", "<b>do faktury VAT marża / related to margin VAT invoice</b> ", "<b>related to margin VAT invoice</b> ") + fakturaBazowa.Numer + "<br/>" + Tekst("<b>z dnia</b> ", "<b>z dnia / issued on</b> ", "<b>issued on</b> ") + fakturaBazowa.DataWystawienia.ToString(UI.Wyglad.FormatDaty) + "<br/>";
+				else fakturaDTO.Korekta = Tekst(jestvat ? "<b>do faktury VAT</b> " : "<b>do faktury</b> ", jestvat ? "<b>do faktury VAT / related to VAT invoice</b> " : "<b>do faktury / related to invoice</b> ", jestvat ? "<b>related to VAT invoice</b> " : "<b>related to invoice</b> ") + fakturaBazowa.Numer + "<br/>" + Tekst("<b>z dnia</b> ", "<b>z dnia / issued on</b> ", "<b>issued on</b> ") + fakturaBazowa.DataWystawienia.ToString(UI.Wyglad.FormatDaty) + "<br/>";
 			}
 
 			if (duplikat)
 			{
 				if (!String.IsNullOrEmpty(fakturaDTO.Korekta)) fakturaDTO.Korekta += "<br/>";
-				fakturaDTO.Korekta += Tekst("<b>Duplikat z dnia</b> ", "<b>Duplikat z dnia / Duplicate issued on</b> ", "<b>Duplicate issued on</b> ") + DateTime.Now.ToString(UI.Format.Data);
+				fakturaDTO.Korekta += Tekst("<b>Duplikat z dnia</b> ", "<b>Duplikat z dnia / Duplicate issued on</b> ", "<b>Duplicate issued on</b> ") + DateTime.Now.ToString(UI.Wyglad.FormatDaty);
 			}
 
-			fakturaDTO.DataWystawienia = faktura.DataWystawienia.ToString(UI.Format.Data);
-			fakturaDTO.DataSprzedazy = faktura.DataSprzedazy.ToString(UI.Format.Data);
+			fakturaDTO.DataWystawienia = faktura.DataWystawienia.ToString(UI.Wyglad.FormatDaty);
+			fakturaDTO.DataSprzedazy = faktura.DataSprzedazy.ToString(UI.Wyglad.FormatDaty);
 
 			fakturaDTO.NazwaNabywcy = faktura.NazwaNabywcy;
 			fakturaDTO.AdresNabywcy = faktura.DaneNabywcy;
@@ -99,18 +99,18 @@ public class Faktura : Wydruk
 				fakturaDTO.Slownie = tylkoEn ? SlownieEN.Slownie(-dozaplaty, walutaSkrot) : dwujezyczny ? $"{SlowniePL.Slownie(-dozaplaty, walutaSkrot)} / {SlownieEN.Slownie(-dozaplaty, walutaSkrot)}" : SlowniePL.Slownie(-dozaplaty, walutaSkrot);
 				fakturaDTO.TerminPlatnosci = "";
 				fakturaDTO.FormaPlatnosci = "";
-				fakturaDTO.DoZwrotu = (-dozaplaty).ToString(UI.Format.Kwota) + " " + walutaSkrot;
+				fakturaDTO.DoZwrotu = (-dozaplaty).ToString(UI.Wyglad.FormatKwoty) + " " + walutaSkrot;
 				fakturaDTO.DoZaplaty = "";
 				fakturaDTO.NumerRachunku = "";
 				fakturaDTO.NazwaBanku = "";
 			}
 			else
 			{
-				fakturaDTO.TerminPlatnosci = faktura.TerminPlatnosci.ToString(UI.Format.Data);
+				fakturaDTO.TerminPlatnosci = faktura.TerminPlatnosci.ToString(UI.Wyglad.FormatDaty);
 				fakturaDTO.FormaPlatnosci = faktura.OpisSposobuPlatnosci;
 				fakturaDTO.Slownie = tylkoEn ? SlownieEN.Slownie(dozaplaty, walutaSkrot) : dwujezyczny ? $"{SlowniePL.Slownie(dozaplaty, walutaSkrot)} / {SlownieEN.Slownie(dozaplaty, walutaSkrot)}" : SlowniePL.Slownie(dozaplaty, walutaSkrot);
 				fakturaDTO.DoZwrotu = "";
-				fakturaDTO.DoZaplaty = dozaplaty.ToString(UI.Format.Kwota) + " " + walutaSkrot;
+				fakturaDTO.DoZaplaty = dozaplaty.ToString(UI.Wyglad.FormatKwoty) + " " + walutaSkrot;
 				fakturaDTO.NumerRachunku = faktura.RachunekBankowy;
 				fakturaDTO.NazwaBanku = faktura.NazwaBanku;
 			}
@@ -119,8 +119,8 @@ public class Faktura : Wydruk
 			foreach (var wplata in wplaty.OrderBy(e => e.Data).ThenBy(e => e.Id))
 			{
 				if (!String.IsNullOrEmpty(fakturaDTO.Rozliczenia)) fakturaDTO.Rozliczenia += "<br/>";
-				if (wplata.CzyRozliczenie) fakturaDTO.Rozliczenia += "<b>" + wplata.Uwagi + ":</b> " + wplata.Kwota.ToString(UI.Format.Kwota) + " " + walutaSkrot;
-				else fakturaDTO.Rozliczenia += Tekst("<b>Zapłacono " + wplata.Data.ToString(UI.Format.Data) + ":</b> ", "<b>Zapłacono " + wplata.Data.ToString(UI.Format.Data) + " / Paid on " + wplata.Data.ToString(UI.Format.Data) + ":</b> ", "<b>Paid on " + wplata.Data.ToString(UI.Format.Data) + ":</b> ") + wplata.Kwota.ToString(UI.Format.Kwota) + " " + walutaSkrot;
+				if (wplata.CzyRozliczenie) fakturaDTO.Rozliczenia += "<b>" + wplata.Uwagi + ":</b> " + wplata.Kwota.ToString(UI.Wyglad.FormatKwoty) + " " + walutaSkrot;
+				else fakturaDTO.Rozliczenia += Tekst("<b>Zapłacono " + wplata.Data.ToString(UI.Wyglad.FormatDaty) + ":</b> ", "<b>Zapłacono " + wplata.Data.ToString(UI.Wyglad.FormatDaty) + " / Paid on " + wplata.Data.ToString(UI.Wyglad.FormatDaty) + ":</b> ", "<b>Paid on " + wplata.Data.ToString(UI.Wyglad.FormatDaty) + ":</b> ") + wplata.Kwota.ToString(UI.Wyglad.FormatKwoty) + " " + walutaSkrot;
 			}
 
 			fakturaDTO.NumerKSeF = faktura.NumerKSeF;

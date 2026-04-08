@@ -63,13 +63,27 @@ partial class KonfiguracjaEdytor
 		label1 = new Label();
 		label6 = new Label();
 		buttonWybierzCzcionke = new ButtonDPI();
-		textBoxRozmiarCzcionki = new TextBox();
-		label10 = new Label();
-		label11 = new Label();
-		comboBoxSzablonFaktury = new ComboBox();
-		tableLayoutPanel2 = new TableLayoutPanel();
 		checkBoxPrzywrocUstawieniaSpisow = new CheckBox();
 		checkBoxPrzywrocUstawieniaMenu = new CheckBox();
+		label11 = new Label();
+		label15 = new Label();
+		numericUpDownWysokoscWierszy = new NumericUpDownDPI();
+		label10 = new Label();
+		label12 = new Label();
+		label13 = new Label();
+		label14 = new Label();
+		comboBoxSzablonFaktury = new ComboBox();
+		comboBoxFormatDaty = new ComboBoxFix();
+		comboBoxFormatCzasu = new ComboBoxFix();
+		comboBoxFormatKwoty = new ComboBoxFix();
+		textBoxPrzykladDaty = new TextBox();
+		textBoxPrzykladCzasu = new TextBox();
+		textBoxPrzykladKwoty = new TextBox();
+		linkLabelFormatDaty = new LinkLabel();
+		linkLabelFormatCzasu = new LinkLabel();
+		linkLabelFormatKwoty = new LinkLabel();
+		textBoxRozmiarCzcionki = new TextBox();
+		tableLayoutPanel2 = new TableLayoutPanel();
 		((System.ComponentModel.ISupportInitialize)errorProvider).BeginInit();
 		tabControl.SuspendLayout();
 		tabPageEMail.SuspendLayout();
@@ -79,6 +93,7 @@ partial class KonfiguracjaEdytor
 		tabPageWyglad.SuspendLayout();
 		tableLayoutPanel3.SuspendLayout();
 		((System.ComponentModel.ISupportInitialize)numericUpDownSzerokoscMenu).BeginInit();
+		((System.ComponentModel.ISupportInitialize)numericUpDownWysokoscWierszy).BeginInit();
 		tableLayoutPanel2.SuspendLayout();
 		SuspendLayout();
 		// 
@@ -91,7 +106,7 @@ partial class KonfiguracjaEdytor
 		tabControl.Location = new Point(3, 3);
 		tabControl.Name = "tabControl";
 		tabControl.SelectedIndex = 0;
-		tabControl.Size = new Size(794, 419);
+		tabControl.Size = new Size(794, 497);
 		tabControl.TabIndex = 2;
 		// 
 		// tabPageEMail
@@ -100,7 +115,7 @@ partial class KonfiguracjaEdytor
 		tabPageEMail.Location = new Point(4, 24);
 		tabPageEMail.Name = "tabPageEMail";
 		tabPageEMail.Padding = new Padding(3);
-		tabPageEMail.Size = new Size(786, 391);
+		tabPageEMail.Size = new Size(786, 469);
 		tabPageEMail.TabIndex = 0;
 		tabPageEMail.Text = "Konfiguracja e-mail";
 		tabPageEMail.UseVisualStyleBackColor = true;
@@ -139,7 +154,7 @@ partial class KonfiguracjaEdytor
 		tableLayoutPanel1.RowStyles.Add(new RowStyle());
 		tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
 		tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-		tableLayoutPanel1.Size = new Size(780, 385);
+		tableLayoutPanel1.Size = new Size(780, 463);
 		tableLayoutPanel1.TabIndex = 0;
 		// 
 		// label2
@@ -304,16 +319,17 @@ partial class KonfiguracjaEdytor
 		tabPageWyglad.Location = new Point(4, 24);
 		tabPageWyglad.Name = "tabPageWyglad";
 		tabPageWyglad.Padding = new Padding(3);
-		tabPageWyglad.Size = new Size(786, 391);
+		tabPageWyglad.Size = new Size(786, 469);
 		tabPageWyglad.TabIndex = 1;
 		tabPageWyglad.Text = "Wygląd";
 		tabPageWyglad.UseVisualStyleBackColor = true;
 		// 
 		// tableLayoutPanel3
 		// 
-		tableLayoutPanel3.ColumnCount = 4;
+		tableLayoutPanel3.ColumnCount = 5;
 		tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle());
 		tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle());
+		tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
 		tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle());
 		tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
 		tableLayoutPanel3.Controls.Add(checkBoxSkrotyKlawiaturoweAkcji, 0, 0);
@@ -328,17 +344,31 @@ partial class KonfiguracjaEdytor
 		tableLayoutPanel3.Controls.Add(textBoxNazwaCzcionki, 1, 11);
 		tableLayoutPanel3.Controls.Add(label1, 0, 10);
 		tableLayoutPanel3.Controls.Add(label6, 0, 11);
-		tableLayoutPanel3.Controls.Add(buttonWybierzCzcionke, 3, 11);
-		tableLayoutPanel3.Controls.Add(textBoxRozmiarCzcionki, 2, 11);
-		tableLayoutPanel3.Controls.Add(label10, 0, 12);
-		tableLayoutPanel3.Controls.Add(label11, 0, 13);
-		tableLayoutPanel3.Controls.Add(comboBoxSzablonFaktury, 1, 13);
+		tableLayoutPanel3.Controls.Add(buttonWybierzCzcionke, 4, 11);
 		tableLayoutPanel3.Controls.Add(checkBoxPrzywrocUstawieniaSpisow, 0, 8);
 		tableLayoutPanel3.Controls.Add(checkBoxPrzywrocUstawieniaMenu, 0, 9);
+		tableLayoutPanel3.Controls.Add(label11, 0, 12);
+		tableLayoutPanel3.Controls.Add(numericUpDownWysokoscWierszy, 1, 12);
+		tableLayoutPanel3.Controls.Add(label12, 0, 13);
+		tableLayoutPanel3.Controls.Add(comboBoxFormatDaty, 1, 13);
+		tableLayoutPanel3.Controls.Add(linkLabelFormatDaty, 2, 13);
+		tableLayoutPanel3.Controls.Add(textBoxPrzykladDaty, 3, 13);
+		tableLayoutPanel3.Controls.Add(label13, 0, 14);
+		tableLayoutPanel3.Controls.Add(comboBoxFormatCzasu, 1, 14);
+		tableLayoutPanel3.Controls.Add(linkLabelFormatCzasu, 2, 14);
+		tableLayoutPanel3.Controls.Add(textBoxPrzykladCzasu, 3, 14);
+		tableLayoutPanel3.Controls.Add(label14, 0, 15);
+		tableLayoutPanel3.Controls.Add(comboBoxFormatKwoty, 1, 15);
+		tableLayoutPanel3.Controls.Add(linkLabelFormatKwoty, 2, 15);
+		tableLayoutPanel3.Controls.Add(textBoxPrzykladKwoty, 3, 15);
+		tableLayoutPanel3.Controls.Add(label15, 0, 16);
+		tableLayoutPanel3.Controls.Add(comboBoxSzablonFaktury, 1, 16);
+		tableLayoutPanel3.Controls.Add(textBoxRozmiarCzcionki, 3, 11);
+		tableLayoutPanel3.Controls.Add(label10, 0, 17);
 		tableLayoutPanel3.Dock = DockStyle.Fill;
 		tableLayoutPanel3.Location = new Point(3, 3);
 		tableLayoutPanel3.Name = "tableLayoutPanel3";
-		tableLayoutPanel3.RowCount = 15;
+		tableLayoutPanel3.RowCount = 18;
 		tableLayoutPanel3.RowStyles.Add(new RowStyle());
 		tableLayoutPanel3.RowStyles.Add(new RowStyle());
 		tableLayoutPanel3.RowStyles.Add(new RowStyle());
@@ -354,17 +384,17 @@ partial class KonfiguracjaEdytor
 		tableLayoutPanel3.RowStyles.Add(new RowStyle());
 		tableLayoutPanel3.RowStyles.Add(new RowStyle());
 		tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-		tableLayoutPanel3.Size = new Size(780, 385);
+		tableLayoutPanel3.Size = new Size(780, 463);
 		tableLayoutPanel3.TabIndex = 0;
 		// 
 		// checkBoxSkrotyKlawiaturoweAkcji
 		// 
 		checkBoxSkrotyKlawiaturoweAkcji.Anchor = AnchorStyles.Left | AnchorStyles.Right;
 		checkBoxSkrotyKlawiaturoweAkcji.AutoSize = true;
-		tableLayoutPanel3.SetColumnSpan(checkBoxSkrotyKlawiaturoweAkcji, 3);
+		tableLayoutPanel3.SetColumnSpan(checkBoxSkrotyKlawiaturoweAkcji, 4);
 		checkBoxSkrotyKlawiaturoweAkcji.Location = new Point(3, 3);
 		checkBoxSkrotyKlawiaturoweAkcji.Name = "checkBoxSkrotyKlawiaturoweAkcji";
-		checkBoxSkrotyKlawiaturoweAkcji.Size = new Size(309, 19);
+		checkBoxSkrotyKlawiaturoweAkcji.Size = new Size(461, 19);
 		checkBoxSkrotyKlawiaturoweAkcji.TabIndex = 0;
 		checkBoxSkrotyKlawiaturoweAkcji.Text = "Pokaż skróty klawiaturowe akcji na spisie";
 		checkBoxSkrotyKlawiaturoweAkcji.UseVisualStyleBackColor = true;
@@ -373,7 +403,7 @@ partial class KonfiguracjaEdytor
 		// 
 		checkBoxSkrotyKlawiaturoweZakladek.Anchor = AnchorStyles.Left | AnchorStyles.Right;
 		checkBoxSkrotyKlawiaturoweZakladek.AutoSize = true;
-		tableLayoutPanel3.SetColumnSpan(checkBoxSkrotyKlawiaturoweZakladek, 4);
+		tableLayoutPanel3.SetColumnSpan(checkBoxSkrotyKlawiaturoweZakladek, 5);
 		checkBoxSkrotyKlawiaturoweZakladek.Location = new Point(3, 28);
 		checkBoxSkrotyKlawiaturoweZakladek.Name = "checkBoxSkrotyKlawiaturoweZakladek";
 		checkBoxSkrotyKlawiaturoweZakladek.Size = new Size(774, 19);
@@ -385,7 +415,7 @@ partial class KonfiguracjaEdytor
 		// 
 		checkBoxSkrotyKlawiaturowePrzyciskow.Anchor = AnchorStyles.Left | AnchorStyles.Right;
 		checkBoxSkrotyKlawiaturowePrzyciskow.AutoSize = true;
-		tableLayoutPanel3.SetColumnSpan(checkBoxSkrotyKlawiaturowePrzyciskow, 4);
+		tableLayoutPanel3.SetColumnSpan(checkBoxSkrotyKlawiaturowePrzyciskow, 5);
 		checkBoxSkrotyKlawiaturowePrzyciskow.Location = new Point(3, 53);
 		checkBoxSkrotyKlawiaturowePrzyciskow.Name = "checkBoxSkrotyKlawiaturowePrzyciskow";
 		checkBoxSkrotyKlawiaturowePrzyciskow.Size = new Size(774, 19);
@@ -397,7 +427,7 @@ partial class KonfiguracjaEdytor
 		// 
 		checkBoxIkonyAkcji.Anchor = AnchorStyles.Left | AnchorStyles.Right;
 		checkBoxIkonyAkcji.AutoSize = true;
-		tableLayoutPanel3.SetColumnSpan(checkBoxIkonyAkcji, 4);
+		tableLayoutPanel3.SetColumnSpan(checkBoxIkonyAkcji, 5);
 		checkBoxIkonyAkcji.Location = new Point(3, 78);
 		checkBoxIkonyAkcji.Name = "checkBoxIkonyAkcji";
 		checkBoxIkonyAkcji.Size = new Size(774, 19);
@@ -409,7 +439,7 @@ partial class KonfiguracjaEdytor
 		// 
 		checkBoxDomyslnyPodgladStrony.Anchor = AnchorStyles.Left | AnchorStyles.Right;
 		checkBoxDomyslnyPodgladStrony.AutoSize = true;
-		tableLayoutPanel3.SetColumnSpan(checkBoxDomyslnyPodgladStrony, 4);
+		tableLayoutPanel3.SetColumnSpan(checkBoxDomyslnyPodgladStrony, 5);
 		checkBoxDomyslnyPodgladStrony.Location = new Point(3, 103);
 		checkBoxDomyslnyPodgladStrony.Name = "checkBoxDomyslnyPodgladStrony";
 		checkBoxDomyslnyPodgladStrony.Size = new Size(774, 19);
@@ -421,7 +451,7 @@ partial class KonfiguracjaEdytor
 		// 
 		checkBoxPotwierdzanieZamknieciaEdytora.Anchor = AnchorStyles.Left | AnchorStyles.Right;
 		checkBoxPotwierdzanieZamknieciaEdytora.AutoSize = true;
-		tableLayoutPanel3.SetColumnSpan(checkBoxPotwierdzanieZamknieciaEdytora, 4);
+		tableLayoutPanel3.SetColumnSpan(checkBoxPotwierdzanieZamknieciaEdytora, 5);
 		checkBoxPotwierdzanieZamknieciaEdytora.Location = new Point(3, 128);
 		checkBoxPotwierdzanieZamknieciaEdytora.Name = "checkBoxPotwierdzanieZamknieciaEdytora";
 		checkBoxPotwierdzanieZamknieciaEdytora.Size = new Size(774, 19);
@@ -433,7 +463,7 @@ partial class KonfiguracjaEdytor
 		// 
 		checkBoxPotwierdzanieZamknieciaProgramu.Anchor = AnchorStyles.Left | AnchorStyles.Right;
 		checkBoxPotwierdzanieZamknieciaProgramu.AutoSize = true;
-		tableLayoutPanel3.SetColumnSpan(checkBoxPotwierdzanieZamknieciaProgramu, 4);
+		tableLayoutPanel3.SetColumnSpan(checkBoxPotwierdzanieZamknieciaProgramu, 5);
 		checkBoxPotwierdzanieZamknieciaProgramu.Location = new Point(3, 153);
 		checkBoxPotwierdzanieZamknieciaProgramu.Name = "checkBoxPotwierdzanieZamknieciaProgramu";
 		checkBoxPotwierdzanieZamknieciaProgramu.Size = new Size(774, 19);
@@ -445,7 +475,7 @@ partial class KonfiguracjaEdytor
 		// 
 		checkBoxWstepneLadowanieReportingServices.Anchor = AnchorStyles.Left | AnchorStyles.Right;
 		checkBoxWstepneLadowanieReportingServices.AutoSize = true;
-		tableLayoutPanel3.SetColumnSpan(checkBoxWstepneLadowanieReportingServices, 4);
+		tableLayoutPanel3.SetColumnSpan(checkBoxWstepneLadowanieReportingServices, 5);
 		checkBoxWstepneLadowanieReportingServices.Location = new Point(3, 178);
 		checkBoxWstepneLadowanieReportingServices.Name = "checkBoxWstepneLadowanieReportingServices";
 		checkBoxWstepneLadowanieReportingServices.Size = new Size(774, 19);
@@ -455,19 +485,21 @@ partial class KonfiguracjaEdytor
 		// 
 		// numericUpDownSzerokoscMenu
 		// 
-		tableLayoutPanel3.SetColumnSpan(numericUpDownSzerokoscMenu, 3);
+		tableLayoutPanel3.SetColumnSpan(numericUpDownSzerokoscMenu, 4);
 		numericUpDownSzerokoscMenu.Location = new Point(158, 253);
 		numericUpDownSzerokoscMenu.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
 		numericUpDownSzerokoscMenu.Name = "numericUpDownSzerokoscMenu";
-		numericUpDownSzerokoscMenu.Size = new Size(120, 23);
+		numericUpDownSzerokoscMenu.Size = new Size(64, 23);
 		numericUpDownSzerokoscMenu.TabIndex = 10;
 		numericUpDownSzerokoscMenu.TextAlign = HorizontalAlignment.Right;
 		// 
 		// textBoxNazwaCzcionki
 		// 
+		textBoxNazwaCzcionki.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+		tableLayoutPanel3.SetColumnSpan(textBoxNazwaCzcionki, 2);
 		textBoxNazwaCzcionki.Location = new Point(158, 282);
 		textBoxNazwaCzcionki.Name = "textBoxNazwaCzcionki";
-		textBoxNazwaCzcionki.Size = new Size(100, 23);
+		textBoxNazwaCzcionki.Size = new Size(250, 23);
 		textBoxNazwaCzcionki.TabIndex = 11;
 		// 
 		// label1
@@ -493,7 +525,7 @@ partial class KonfiguracjaEdytor
 		// buttonWybierzCzcionke
 		// 
 		buttonWybierzCzcionke.Anchor = AnchorStyles.Left;
-		buttonWybierzCzcionke.Location = new Point(318, 282);
+		buttonWybierzCzcionke.Location = new Point(470, 282);
 		buttonWybierzCzcionke.Name = "buttonWybierzCzcionke";
 		buttonWybierzCzcionke.Size = new Size(23, 23);
 		buttonWybierzCzcionke.TabIndex = 13;
@@ -501,44 +533,206 @@ partial class KonfiguracjaEdytor
 		buttonWybierzCzcionke.UseVisualStyleBackColor = true;
 		buttonWybierzCzcionke.Click += buttonWybierzCzcionke_Click;
 		// 
-		// textBoxRozmiarCzcionki
+		// checkBoxPrzywrocUstawieniaSpisow
 		// 
-		textBoxRozmiarCzcionki.Location = new Point(264, 282);
-		textBoxRozmiarCzcionki.Name = "textBoxRozmiarCzcionki";
-		textBoxRozmiarCzcionki.Size = new Size(48, 23);
-		textBoxRozmiarCzcionki.TabIndex = 12;
+		checkBoxPrzywrocUstawieniaSpisow.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+		checkBoxPrzywrocUstawieniaSpisow.AutoSize = true;
+		tableLayoutPanel3.SetColumnSpan(checkBoxPrzywrocUstawieniaSpisow, 5);
+		checkBoxPrzywrocUstawieniaSpisow.Location = new Point(3, 203);
+		checkBoxPrzywrocUstawieniaSpisow.Name = "checkBoxPrzywrocUstawieniaSpisow";
+		checkBoxPrzywrocUstawieniaSpisow.Size = new Size(774, 19);
+		checkBoxPrzywrocUstawieniaSpisow.TabIndex = 8;
+		checkBoxPrzywrocUstawieniaSpisow.Text = "Przywróć domyślne ustawienia spisów";
+		checkBoxPrzywrocUstawieniaSpisow.UseVisualStyleBackColor = true;
+		// 
+		// checkBoxPrzywrocUstawieniaMenu
+		// 
+		checkBoxPrzywrocUstawieniaMenu.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+		checkBoxPrzywrocUstawieniaMenu.AutoSize = true;
+		tableLayoutPanel3.SetColumnSpan(checkBoxPrzywrocUstawieniaMenu, 5);
+		checkBoxPrzywrocUstawieniaMenu.Location = new Point(3, 228);
+		checkBoxPrzywrocUstawieniaMenu.Name = "checkBoxPrzywrocUstawieniaMenu";
+		checkBoxPrzywrocUstawieniaMenu.Size = new Size(774, 19);
+		checkBoxPrzywrocUstawieniaMenu.TabIndex = 9;
+		checkBoxPrzywrocUstawieniaMenu.Text = "Przywróć domyślne ustawienia menu";
+		checkBoxPrzywrocUstawieniaMenu.UseVisualStyleBackColor = true;
+		// 
+		// label11
+		// 
+		label11.Anchor = AnchorStyles.Right;
+		label11.AutoSize = true;
+		label11.Location = new Point(21, 315);
+		label11.Name = "label11";
+		label11.Size = new Size(131, 15);
+		label11.TabIndex = 3;
+		label11.Text = "Wysokość wierszy spisu";
+		// 
+		// numericUpDownWysokoscWierszy
+		// 
+		numericUpDownWysokoscWierszy.Location = new Point(158, 311);
+		numericUpDownWysokoscWierszy.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+		numericUpDownWysokoscWierszy.Name = "numericUpDownWysokoscWierszy";
+		numericUpDownWysokoscWierszy.Size = new Size(64, 23);
+		numericUpDownWysokoscWierszy.TabIndex = 14;
+		numericUpDownWysokoscWierszy.TextAlign = HorizontalAlignment.Right;
 		// 
 		// label10
 		// 
 		label10.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 		label10.AutoSize = true;
-		tableLayoutPanel3.SetColumnSpan(label10, 4);
-		label10.Location = new Point(3, 308);
+		tableLayoutPanel3.SetColumnSpan(label10, 5);
+		label10.Location = new Point(3, 427);
 		label10.Name = "label10";
 		label10.Size = new Size(774, 15);
 		label10.TabIndex = 4;
 		label10.Text = "Zmiana czcionki i szerokości menu będzie obowiązywać od kolejnego uruchomienia programu.";
-		//
-		// label11
-		//
-		label11.Anchor = AnchorStyles.Right;
-		label11.AutoSize = true;
-		label11.Location = new Point(3, 340);
-		label11.Name = "label11";
-		label11.Size = new Size(149, 15);
-		label11.TabIndex = 14;
-		label11.Text = "Szablon faktury";
-		//
+		// 
+		// label12
+		// 
+		label12.Anchor = AnchorStyles.Right;
+		label12.AutoSize = true;
+		label12.Location = new Point(81, 344);
+		label12.Name = "label12";
+		label12.Size = new Size(71, 15);
+		label12.TabIndex = 3;
+		label12.Text = "Format daty";
+		// 
+		// label13
+		// 
+		label13.Anchor = AnchorStyles.Right;
+		label13.AutoSize = true;
+		label13.Location = new Point(75, 373);
+		label13.Name = "label13";
+		label13.Size = new Size(77, 15);
+		label13.TabIndex = 3;
+		label13.Text = "Format czasu";
+		// 
+		// label14
+		// 
+		label14.Anchor = AnchorStyles.Right;
+		label14.AutoSize = true;
+		label14.Location = new Point(78, 402);
+		label14.Name = "label14";
+		label14.Size = new Size(74, 15);
+		label14.TabIndex = 3;
+		label14.Text = "Format kwot";
+		// 
+		// comboBoxFormatDaty
+		// 
+		comboBoxFormatDaty.FormattingEnabled = true;
+		comboBoxFormatDaty.Items.AddRange(new object[] { "yyyy-MM-dd", "dd.MM.yyyy", "d MMMM yyyy" });
+		comboBoxFormatDaty.Location = new Point(158, 340);
+		comboBoxFormatDaty.Name = "comboBoxFormatDaty";
+		comboBoxFormatDaty.Size = new Size(230, 23);
+		comboBoxFormatDaty.TabIndex = 15;
+		// 
+		// comboBoxFormatCzasu
+		// 
+		comboBoxFormatCzasu.FormattingEnabled = true;
+		comboBoxFormatCzasu.Items.AddRange(new object[] { "yyyy-MM-dd HH:mm:ss", "dd.MM.yyyy HH:mm:ss", "d MMMM yyyy H:mm:ss" });
+		comboBoxFormatCzasu.Location = new Point(158, 369);
+		comboBoxFormatCzasu.Name = "comboBoxFormatCzasu";
+		comboBoxFormatCzasu.Size = new Size(230, 23);
+		comboBoxFormatCzasu.TabIndex = 15;
+		// 
+		// comboBoxFormatKwoty
+		// 
+		comboBoxFormatKwoty.FormattingEnabled = true;
+		comboBoxFormatKwoty.Items.AddRange(new object[] { "#,##0.00", "0.00", "0.##" });
+		comboBoxFormatKwoty.Location = new Point(158, 398);
+		comboBoxFormatKwoty.Name = "comboBoxFormatKwoty";
+		comboBoxFormatKwoty.Size = new Size(230, 23);
+		comboBoxFormatKwoty.TabIndex = 15;
+		// 
+		// textBoxPrzykladDaty
+		// 
+		tableLayoutPanel3.SetColumnSpan(textBoxPrzykladDaty, 2);
+		textBoxPrzykladDaty.Location = new Point(414, 340);
+		textBoxPrzykladDaty.Name = "textBoxPrzykladDaty";
+		textBoxPrzykladDaty.ReadOnly = true;
+		textBoxPrzykladDaty.Size = new Size(198, 23);
+		textBoxPrzykladDaty.TabIndex = 16;
+		// 
+		// textBoxPrzykladCzasu
+		// 
+		tableLayoutPanel3.SetColumnSpan(textBoxPrzykladCzasu, 2);
+		textBoxPrzykladCzasu.Location = new Point(414, 369);
+		textBoxPrzykladCzasu.Name = "textBoxPrzykladCzasu";
+		textBoxPrzykladCzasu.ReadOnly = true;
+		textBoxPrzykladCzasu.Size = new Size(198, 23);
+		textBoxPrzykladCzasu.TabIndex = 16;
+		// 
+		// textBoxPrzykladKwoty
+		// 
+		tableLayoutPanel3.SetColumnSpan(textBoxPrzykladKwoty, 2);
+		textBoxPrzykladKwoty.Location = new Point(414, 398);
+		textBoxPrzykladKwoty.Name = "textBoxPrzykladKwoty";
+		textBoxPrzykladKwoty.ReadOnly = true;
+		textBoxPrzykladKwoty.Size = new Size(198, 23);
+		textBoxPrzykladKwoty.TabIndex = 16;
+		// 
+		// linkLabelFormatDaty
+		// 
+		linkLabelFormatDaty.Anchor = AnchorStyles.Left;
+		linkLabelFormatDaty.AutoSize = true;
+		linkLabelFormatDaty.Location = new Point(394, 344);
+		linkLabelFormatDaty.Name = "linkLabelFormatDaty";
+		linkLabelFormatDaty.Size = new Size(12, 15);
+		linkLabelFormatDaty.TabIndex = 17;
+		linkLabelFormatDaty.TabStop = true;
+		linkLabelFormatDaty.Text = "?";
+		linkLabelFormatDaty.LinkClicked += linkLabelFormatDaty_LinkClicked;
+		// 
+		// linkLabelFormatCzasu
+		// 
+		linkLabelFormatCzasu.Anchor = AnchorStyles.Left;
+		linkLabelFormatCzasu.AutoSize = true;
+		linkLabelFormatCzasu.Location = new Point(394, 373);
+		linkLabelFormatCzasu.Name = "linkLabelFormatCzasu";
+		linkLabelFormatCzasu.Size = new Size(12, 15);
+		linkLabelFormatCzasu.TabIndex = 17;
+		linkLabelFormatCzasu.TabStop = true;
+		linkLabelFormatCzasu.Text = "?";
+		linkLabelFormatCzasu.LinkClicked += linkLabelFormatCzasu_LinkClicked;
+		// 
+		// linkLabelFormatKwoty
+		// 
+		linkLabelFormatKwoty.Anchor = AnchorStyles.Left;
+		linkLabelFormatKwoty.AutoSize = true;
+		linkLabelFormatKwoty.Location = new Point(394, 402);
+		linkLabelFormatKwoty.Name = "linkLabelFormatKwoty";
+		linkLabelFormatKwoty.Size = new Size(12, 15);
+		linkLabelFormatKwoty.TabIndex = 17;
+		linkLabelFormatKwoty.TabStop = true;
+		linkLabelFormatKwoty.Text = "?";
+		linkLabelFormatKwoty.LinkClicked += linkLabelFormatKwoty_LinkClicked;
+		// 
+		// textBoxRozmiarCzcionki
+		// 
+		textBoxRozmiarCzcionki.Location = new Point(414, 282);
+		textBoxRozmiarCzcionki.Name = "textBoxRozmiarCzcionki";
+		textBoxRozmiarCzcionki.Size = new Size(50, 23);
+		textBoxRozmiarCzcionki.TabIndex = 12;
+		// 
+		// label15
+		// 
+		label15.Anchor = AnchorStyles.Right;
+		label15.AutoSize = true;
+		label15.Location = new Point(59, 431);
+		label15.Name = "label15";
+		label15.Size = new Size(93, 15);
+		label15.TabIndex = 18;
+		label15.Text = "Szablon faktury";
+		// 
 		// comboBoxSzablonFaktury
-		//
+		// 
 		tableLayoutPanel3.SetColumnSpan(comboBoxSzablonFaktury, 3);
 		comboBoxSzablonFaktury.Anchor = AnchorStyles.Left | AnchorStyles.Right;
 		comboBoxSzablonFaktury.DropDownStyle = ComboBoxStyle.DropDownList;
-		comboBoxSzablonFaktury.Location = new Point(158, 337);
+		comboBoxSzablonFaktury.Location = new Point(158, 427);
 		comboBoxSzablonFaktury.Name = "comboBoxSzablonFaktury";
-		comboBoxSzablonFaktury.Size = new Size(120, 23);
-		comboBoxSzablonFaktury.TabIndex = 15;
-		//
+		comboBoxSzablonFaktury.Size = new Size(250, 23);
+		comboBoxSzablonFaktury.TabIndex = 18;
 		// tableLayoutPanel2
 		// 
 		tableLayoutPanel2.ColumnCount = 2;
@@ -551,32 +745,8 @@ partial class KonfiguracjaEdytor
 		tableLayoutPanel2.RowCount = 1;
 		tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
 		tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-		tableLayoutPanel2.Size = new Size(800, 425);
+		tableLayoutPanel2.Size = new Size(800, 503);
 		tableLayoutPanel2.TabIndex = 3;
-		// 
-		// checkBoxPrzywrocUstawieniaSpisow
-		// 
-		checkBoxPrzywrocUstawieniaSpisow.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-		checkBoxPrzywrocUstawieniaSpisow.AutoSize = true;
-		tableLayoutPanel3.SetColumnSpan(checkBoxPrzywrocUstawieniaSpisow, 4);
-		checkBoxPrzywrocUstawieniaSpisow.Location = new Point(3, 203);
-		checkBoxPrzywrocUstawieniaSpisow.Name = "checkBoxPrzywrocUstawieniaSpisow";
-		checkBoxPrzywrocUstawieniaSpisow.Size = new Size(774, 19);
-		checkBoxPrzywrocUstawieniaSpisow.TabIndex = 8;
-		checkBoxPrzywrocUstawieniaSpisow.Text = "Przywróć domyślne ustawienia spisów";
-		checkBoxPrzywrocUstawieniaSpisow.UseVisualStyleBackColor = true;
-		// 
-		// checkBoxPrzywrocUstawieniaMenu
-		// 
-		checkBoxPrzywrocUstawieniaMenu.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-		checkBoxPrzywrocUstawieniaMenu.AutoSize = true;
-		tableLayoutPanel3.SetColumnSpan(checkBoxPrzywrocUstawieniaMenu, 4);
-		checkBoxPrzywrocUstawieniaMenu.Location = new Point(3, 228);
-		checkBoxPrzywrocUstawieniaMenu.Name = "checkBoxPrzywrocUstawieniaMenu";
-		checkBoxPrzywrocUstawieniaMenu.Size = new Size(774, 19);
-		checkBoxPrzywrocUstawieniaMenu.TabIndex = 9;
-		checkBoxPrzywrocUstawieniaMenu.Text = "Przywróć domyślne ustawienia menu";
-		checkBoxPrzywrocUstawieniaMenu.UseVisualStyleBackColor = true;
 		// 
 		// KonfiguracjaEdytor
 		// 
@@ -585,7 +755,7 @@ partial class KonfiguracjaEdytor
 		Controls.Add(tableLayoutPanel2);
 		MinimumSize = new Size(800, 425);
 		Name = "KonfiguracjaEdytor";
-		Size = new Size(800, 425);
+		Size = new Size(800, 503);
 		((System.ComponentModel.ISupportInitialize)errorProvider).EndInit();
 		tabControl.ResumeLayout(false);
 		tabPageEMail.ResumeLayout(false);
@@ -598,6 +768,7 @@ partial class KonfiguracjaEdytor
 		tableLayoutPanel3.ResumeLayout(false);
 		tableLayoutPanel3.PerformLayout();
 		((System.ComponentModel.ISupportInitialize)numericUpDownSzerokoscMenu).EndInit();
+		((System.ComponentModel.ISupportInitialize)numericUpDownWysokoscWierszy).EndInit();
 		tableLayoutPanel2.ResumeLayout(false);
 		ResumeLayout(false);
 	}
@@ -644,4 +815,18 @@ partial class KonfiguracjaEdytor
 	private CheckBox checkBoxPrzywrocUstawieniaMenu;
 	private Label label11;
 	private ComboBox comboBoxSzablonFaktury;
+	private Label label15;
+	private NumericUpDownDPI numericUpDownWysokoscWierszy;
+	private Label label12;
+	private Label label13;
+	private Label label14;
+	private ComboBox comboBoxFormatDaty;
+	private ComboBox comboBoxFormatCzasu;
+	private ComboBox comboBoxFormatKwoty;
+	private TextBox textBoxPrzykladCzasu;
+	private TextBox textBoxPrzykladKwoty;
+	private TextBox textBoxPrzykladDaty;
+	private LinkLabel linkLabelFormatDaty;
+	private LinkLabel linkLabelFormatCzasu;
+	private LinkLabel linkLabelFormatKwoty;
 }

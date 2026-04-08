@@ -30,6 +30,12 @@ public class Konfiguracja : Rekord<Konfiguracja>
 	// Wersja 2
 	public string SzablonFaktury { get; set; } = "Faktura";
 
+	// Wersja 3
+	public int WysokoscWiersza { get; set; }
+	public string FormatDaty { get; set; } = "";
+	public string FormatCzasu { get; set; } = "";
+	public string FormatKwoty { get; set; } = "";
+
 	public bool CzyDomyslna => SMTPSerwer == Domyslna.SMTPSerwer || String.IsNullOrEmpty(SMTPSerwer);
 
 	public override bool CzyPasuje(string fraza) => false;
@@ -66,6 +72,14 @@ public class Konfiguracja : Rekord<Konfiguracja>
 		{
 			SzablonFaktury = "Faktura";
 			Wersja = 2;
+		}
+		if (Wersja < 3)
+		{
+			WysokoscWiersza = 23; // DataGridView.DefaultColumnHeadersHeight
+			FormatDaty = "yyyy-MM-dd";
+			FormatCzasu = "yyyy-MM-dd HH:mm:ss";
+			FormatKwoty = "#,##0.00";
+			Wersja = 3;
 		}
 	}
 

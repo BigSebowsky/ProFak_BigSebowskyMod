@@ -66,7 +66,7 @@ class KursyWalutEkran : UserControl, IKontrolkaZKontekstem
 		labelOdDnia.Margin = new Padding(0, 8, 6, 0);
 		labelOdDnia.Text = "Od dnia";
 
-		dateTimePickerOdDnia.CustomFormat = Format.Data;
+		dateTimePickerOdDnia.CustomFormat = Wyglad.FormatDaty;
 		dateTimePickerOdDnia.Format = DateTimePickerFormat.Custom;
 		dateTimePickerOdDnia.Value = DateTime.Today.AddDays(-365);
 		dateTimePickerOdDnia.Width = 110;
@@ -301,14 +301,14 @@ class KursyWalutEkran : UserControl, IKontrolkaZKontekstem
 
 		kursy.RaiseListChangedEvents = true;
 		kursy.ResetBindings();
-		labelStatus.Text = $"Dzien: {data.ToString(Format.Data)}, liczba walut: {rekordy.Count}";
+		labelStatus.Text = $"Dzien: {data.ToString(Wyglad.FormatDaty)}, liczba walut: {rekordy.Count}";
 	}
 
 	private sealed class DzienKursowWiersz
 	{
 		public DateTime Data { get; set; }
 		public int LiczbaWalut { get; set; }
-		public string DataFmt => Data.ToString(Format.Data);
+		public string DataFmt => Data.ToString(Wyglad.FormatDaty);
 	}
 
 	private sealed class KursWalutyWiersz

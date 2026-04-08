@@ -33,5 +33,10 @@ class KonfiguracjaBuilder
 		builder.Property(e => e.RozmiarCzcionki);
 		builder.Property(e => e.NazwaCzcionki).HasDefaultValue("").IsRequired();
 		builder.Property(e => e.SzablonFaktury).HasDefaultValue("Faktura").IsRequired();
+
+		builder.Property(e => e.WysokoscWiersza);
+		builder.Property(e => e.FormatDaty).HasDefaultValue("").IsRequired();
+		builder.Property(e => e.FormatCzasu).HasDefaultValue("").IsRequired();
+		builder.Property(e => e.FormatKwoty).HasDefaultValue("").IsRequired();
 	}
 }

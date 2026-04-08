@@ -71,7 +71,7 @@ partial class KontrahentEdytor : KontrahentEdytorBase
 		tabPageRachunki.Controls.Add(rachunkiBankowe);
 		tabControl.TabPages.Insert(2, tabPageRachunki);
 
-		dateTimePickerOsobaFizycznaDataUrodzenia.CustomFormat = Format.Data;
+		dateTimePickerOsobaFizycznaDataUrodzenia.CustomFormat = Wyglad.FormatDaty;
 		dateTimePickerOsobaFizycznaDataUrodzenia.Format = DateTimePickerFormat.Custom;
 	}
 

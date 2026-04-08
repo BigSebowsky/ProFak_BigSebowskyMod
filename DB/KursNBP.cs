@@ -14,7 +14,7 @@ public class KursNBP : Rekord<KursNBP>
 	public override bool CzyPasuje(string fraza)
 		=> base.CzyPasuje(fraza)
 		|| CzyPasuje(Waluta?.Skrot, fraza)
-		|| CzyPasuje(Data.ToString(UI.Format.Data), fraza)
+		|| CzyPasuje(Data.ToString(UI.Wyglad.FormatDaty), fraza)
 		|| CzyPasuje(KursSredni, fraza)
 		|| CzyPasuje(NumerTabeli, fraza);
 }

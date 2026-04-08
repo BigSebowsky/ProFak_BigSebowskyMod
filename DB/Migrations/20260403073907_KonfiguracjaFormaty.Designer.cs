@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProFak.DB;
 
@@ -10,9 +11,11 @@ using ProFak.DB;
 namespace ProFak.DB.Migrations
 {
     [DbContext(typeof(Baza))]
-    partial class ProFakContextModelSnapshot : ModelSnapshot
+    [Migration("20260403073907_KonfiguracjaFormaty")]
+    partial class KonfiguracjaFormaty
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.2");
@@ -567,12 +570,6 @@ namespace ProFak.DB.Migrations
                     b.Property<bool>("SkrotyKlawiaturoweZakladek")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("SzablonFaktury")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
-                        .HasDefaultValue("Faktura");
-
                     b.Property<int>("SzerokoscMenu")
                         .HasColumnType("INTEGER");
 
@@ -730,37 +727,6 @@ namespace ProFak.DB.Migrations
                     b.HasIndex("SposobPlatnosciId");
 
                     b.ToTable("Kontrahent", (string)null);
-                });
-
-            modelBuilder.Entity("ProFak.DB.KursNBP", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("Data")
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("KursSredni")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
-                        .HasDefaultValue(0m);
-
-                    b.Property<string>("NumerTabeli")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
-                        .HasDefaultValue("");
-
-                    b.Property<int>("WalutaId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("WalutaId", "Data")
-                        .IsUnique();
-
-                    b.ToTable("KursNBP", (string)null);
                 });
 
             modelBuilder.Entity("ProFak.DB.Numerator", b =>
@@ -934,56 +900,6 @@ namespace ProFak.DB.Migrations
                     b.HasIndex("TowarId");
 
                     b.ToTable("PozycjaFaktury", (string)null);
-                });
-
-            modelBuilder.Entity("ProFak.DB.RachunekBankowy", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("CzyDomyslny")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(false);
-
-                    b.Property<int>("KontrahentId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Nazwa")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
-                        .HasDefaultValue("");
-
-                    b.Property<string>("NazwaBanku")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
-                        .HasDefaultValue("");
-
-                    b.Property<string>("NumerRachunku")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
-                        .HasDefaultValue("");
-
-                    b.Property<string>("Swift")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
-                        .HasDefaultValue("");
-
-                    b.Property<int?>("WalutaId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("KontrahentId");
-
-                    b.HasIndex("WalutaId");
-
-                    b.ToTable("RachunekBankowy", (string)null);
                 });
 
             modelBuilder.Entity("ProFak.DB.SkladkaZus", b =>
@@ -1472,17 +1388,6 @@ namespace ProFak.DB.Migrations
                     b.Navigation("SposobPlatnosci");
                 });
 
-            modelBuilder.Entity("ProFak.DB.KursNBP", b =>
-                {
-                    b.HasOne("ProFak.DB.Waluta", "Waluta")
-                        .WithMany()
-                        .HasForeignKey("WalutaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Waluta");
-                });
-
             modelBuilder.Entity("ProFak.DB.Plik", b =>
                 {
                     b.HasOne("ProFak.DB.Faktura", "Faktura")
@@ -1524,24 +1429,6 @@ namespace ProFak.DB.Migrations
                     b.Navigation("StawkaVat");
 
                     b.Navigation("Towar");
-                });
-
-            modelBuilder.Entity("ProFak.DB.RachunekBankowy", b =>
-                {
-                    b.HasOne("ProFak.DB.Kontrahent", "Kontrahent")
-                        .WithMany("RachunkiBankowe")
-                        .HasForeignKey("KontrahentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ProFak.DB.Waluta", "Waluta")
-                        .WithMany()
-                        .HasForeignKey("WalutaId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Kontrahent");
-
-                    b.Navigation("Waluta");
                 });
 
             modelBuilder.Entity("ProFak.DB.StanNumeratora", b =>
@@ -1607,11 +1494,6 @@ namespace ProFak.DB.Migrations
                     b.Navigation("Pozycje");
 
                     b.Navigation("Wplaty");
-                });
-
-            modelBuilder.Entity("ProFak.DB.Kontrahent", b =>
-                {
-                    b.Navigation("RachunkiBankowe");
                 });
 
             modelBuilder.Entity("ProFak.DB.Numerator", b =>

@@ -29,6 +29,8 @@ public class Baza : DbContext
 	public IQueryable<DodatkowyPodmiot> DodatkowePodmioty => Set<DodatkowyPodmiot>();
 	public IQueryable<Faktura> Faktury => Set<Faktura>();
 	public IQueryable<JednostkaMiary> JednostkiMiar => Set<JednostkaMiary>();
+	public IQueryable<KSeFZakupInbox> KSeFZakupyInbox => Set<KSeFZakupInbox>();
+	public IQueryable<KSeFZakupInboxStan> KSeFZakupyInboxStan => Set<KSeFZakupInboxStan>();
 	public IQueryable<KolumnaSpisu> KolumnySpisow => Set<KolumnaSpisu>();
 	public IQueryable<Konfiguracja> Konfiguracja => Set<Konfiguracja>();
 	public IQueryable<Kontrahent> Kontrahenci => Set<Kontrahent>();

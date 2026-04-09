@@ -259,35 +259,55 @@ partial class FakturaEdytor : FakturaEdytorBase
 
 		slownikNabywcaNIP = new Slownik<Kontrahent>(
 			Kontekst, comboBoxNIPNabywcy, buttonNabywca,
-			Kontekst.Baza.Kontrahenci.Where(kontrahent => !kontrahent.CzyArchiwalny && !kontrahent.CzyImportKSeF && kontrahent.CzyPodmiot == !CzySprzedaz).OrderBy(kontrahent => kontrahent.NIP).ToList,
-			kontrahent => kontrahent.NIP,
+			() => PobierzKontrahentowDoSlownika(czyNabywca: true).OrderBy(kontrahent => kontrahent.NIP).ToList(),
+			kontrahent => FormatujKontrahentaDoSlownika(kontrahent, kontrahent.NIP),
 			kontrahent => { if (UstawNabywce(Rekord, kontrahent)) kontroler.AktualizujKontrolki(); },
 			Spisy.Kontrahenci);
 		slownikNabywcaNIP.Zainstaluj();
 
 		slownikNabywcaNazwa = new Slownik<Kontrahent>(
 			Kontekst, comboBoxNazwaNabywcy, null,
-			Kontekst.Baza.Kontrahenci.Where(kontrahent => !kontrahent.CzyArchiwalny && !kontrahent.CzyImportKSeF && kontrahent.CzyPodmiot == !CzySprzedaz).OrderBy(kontrahent => kontrahent.Nazwa).ToList,
-			kontrahent => kontrahent.PelnaNazwaLubNazwa,
+			() => PobierzKontrahentowDoSlownika(czyNabywca: true).OrderBy(kontrahent => kontrahent.Nazwa).ToList(),
+			kontrahent => FormatujKontrahentaDoSlownika(kontrahent, kontrahent.PelnaNazwaLubNazwa),
 			kontrahent => { if (UstawNabywce(Rekord, kontrahent)) kontroler.AktualizujKontrolki(); },
 			Spisy.Kontrahenci);
 		slownikNabywcaNazwa.Zainstaluj();
 
 		slownikSprzedawcaNazwa = new Slownik<Kontrahent>(
 			Kontekst, comboBoxNIPSprzedawcy, buttonSprzedawca,
-			Kontekst.Baza.Kontrahenci.Where(kontrahent => !kontrahent.CzyArchiwalny && !kontrahent.CzyImportKSeF && kontrahent.CzyPodmiot == CzySprzedaz).OrderBy(kontrahent => kontrahent.NIP).ToList,
-			kontrahent => kontrahent.NIP,
+			() => PobierzKontrahentowDoSlownika(czyNabywca: false).OrderBy(kontrahent => kontrahent.NIP).ToList(),
+			kontrahent => FormatujKontrahentaDoSlownika(kontrahent, kontrahent.NIP),
 			kontrahent => { if (UstawSprzedawce(Rekord, kontrahent)) kontroler.AktualizujKontrolki(); },
 			Spisy.Kontrahenci);
 		slownikSprzedawcaNazwa.Zainstaluj();
 
 		slownikSprzedawcaNIP = new Slownik<Kontrahent>(
 			Kontekst, comboBoxNazwaSprzedawcy, null,
-			Kontekst.Baza.Kontrahenci.Where(kontrahent => !kontrahent.CzyArchiwalny && !kontrahent.CzyImportKSeF && kontrahent.CzyPodmiot == CzySprzedaz).OrderBy(kontrahent => kontrahent.Nazwa).ToList,
-			kontrahent => kontrahent.PelnaNazwaLubNazwa,
+			() => PobierzKontrahentowDoSlownika(czyNabywca: false).OrderBy(kontrahent => kontrahent.Nazwa).ToList(),
+			kontrahent => FormatujKontrahentaDoSlownika(kontrahent, kontrahent.PelnaNazwaLubNazwa),
 			kontrahent => { if (UstawSprzedawce(Rekord, kontrahent)) kontroler.AktualizujKontrolki(); },
 			Spisy.Kontrahenci);
 		slownikSprzedawcaNIP.Zainstaluj();
+	}
+
+	private IEnumerable<Kontrahent> PobierzKontrahentowDoSlownika(bool czyNabywca)
+	{
+		var czyPodmiot = czyNabywca == !CzySprzedaz;
+		var aktualnyRef = Rekord == null
+			? default(Ref<Kontrahent>)
+			: czyNabywca ? Rekord.NabywcaRef : Rekord.SprzedawcaRef;
+		return Kontekst.Baza.Kontrahenci
+			.Where(kontrahent => !kontrahent.CzyArchiwalny && kontrahent.CzyPodmiot == czyPodmiot)
+			.Where(kontrahent =>
+				!kontrahent.CzyImportKSeF
+				|| (!CzySprzedaz && !czyNabywca)
+				|| (aktualnyRef.IsNotNull && kontrahent.Ref == aktualnyRef));
+	}
+
+	private static string FormatujKontrahentaDoSlownika(Kontrahent kontrahent, string opis)
+	{
+		if (String.IsNullOrWhiteSpace(opis)) return opis;
+		return kontrahent.CzyImportKSeF ? $"{opis} [KSeF]" : opis;
 	}
 
 	private bool UstawNabywce(Faktura rekord, Kontrahent? kontrahent)
@@ -429,7 +449,8 @@ partial class FakturaEdytor : FakturaEdytorBase
 		base.PrzygotujRekord(rekord);
 		czyAutomatycznyKursAktywny = false;
 		if (rekord.WalutaRef.IsNull) rekord.WalutaRef = Kontekst.Baza.Waluty.FirstOrDefault(waluta => waluta.CzyDomyslna);
-		if (rekord.SposobPlatnosciRef.IsNull) UstawSposobPlatnosci(rekord, Kontekst.Baza.SposobyPlatnosci.FirstOrDefault(sposobPlatnosci => sposobPlatnosci.CzyDomyslny));
+		if (rekord.SposobPlatnosciRef.IsNull && String.IsNullOrWhiteSpace(rekord.OpisSposobuPlatnosci))
+			UstawSposobPlatnosci(rekord, Kontekst.Baza.SposobyPlatnosci.FirstOrDefault(sposobPlatnosci => sposobPlatnosci.CzyDomyslny));
 		if (rekord.SprzedawcaRef.IsNull && rekord.CzySprzedaz) UstawSprzedawce(rekord, Kontekst.Baza.Kontrahenci.FirstOrDefault(kontrahent => kontrahent.CzyPodmiot && !kontrahent.CzyArchiwalny));
 		if (rekord.NabywcaRef.IsNull && rekord.CzyZakup) UstawNabywce(rekord, Kontekst.Baza.Kontrahenci.FirstOrDefault(kontrahent => kontrahent.CzyPodmiot && !kontrahent.CzyArchiwalny));
 		if (rekord.CzyZakup)

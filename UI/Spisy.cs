@@ -125,13 +125,18 @@ class Spisy
 		);
 	}
 
-	public static SpisZAkcjami<Faktura, KSeFSpis> KSeFZakup(string[]? parametry)
+	public static SpisZAkcjami<KSeFZakupInbox, KSeFZakupInboxSpis> KSeFZakup(string[]? parametry)
 	{
-		return Utworz(new KSeFSpis(false, parametry),
-			new DodajJakoZakupAkcja(),
-			new ZapiszJakoPDFZKSeFAkcja(spisKSeF: true),
-			new ZapiszJakoXMLAkcja(),
-			new PrzeladujAkcja<Faktura>()
+		var spis = new KSeFZakupInboxSpis();
+		return Utworz(spis,
+			new SynchronizujKSeFZakupInboxAkcja(),
+			new UstawieniaKSeFZakupInboxAkcja(spis),
+			new ZweryfikujKSeFZakupInboxAkcja(spis),
+			new PominKSeFZakupInboxAkcja(spis),
+			new DodajJakoZakupZInboxAkcja(spis),
+			new OtworzZakupZInboxAkcja(spis),
+			new ZapiszJakoPDFKSeFZakupInboxAkcja(),
+			new ZapiszJakoXMLKSeFZakupInboxAkcja()
 		);
 	}
 

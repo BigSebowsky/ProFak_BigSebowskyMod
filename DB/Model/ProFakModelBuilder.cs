@@ -10,6 +10,8 @@ static class ProFakModelBuilder
 		modelBuilder.Entity<DodatkowyPodmiot>(DodatkowyPodmiotBuilder.Configure);
 		modelBuilder.Entity<Faktura>(FakturaBuilder.Configure);
 		modelBuilder.Entity<JednostkaMiary>(JednostkaMiaryBuilder.Configure);
+		modelBuilder.Entity<KSeFZakupInbox>(KSeFZakupInboxBuilder.Configure);
+		modelBuilder.Entity<KSeFZakupInboxStan>(KSeFZakupInboxStanBuilder.Configure);
 		modelBuilder.Entity<KolumnaSpisu>(KolumnaSpisuBuilder.Configure);
 		modelBuilder.Entity<Konfiguracja>(KonfiguracjaBuilder.Configure);
 		modelBuilder.Entity<Kontrahent>(KontrahentBuilder.Configure);

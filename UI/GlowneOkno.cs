@@ -83,14 +83,7 @@ public partial class GlowneOkno : Form
 		var fakturyZakupuWszystkie = Wezel("Wszystkie", "Wszystkie");
 		var fakturyZakupuDoZaplaty = Wezel("Do zapłaty", "DoZaplaty");
 		var fakturyZakupuZaplacone = Wezel("Zapłacone", "Zaplacone");
-		var fakturyZakupuKSeFPrzyrostowo = Wezel("Przyrostowo", "Przyrostowo");
-		var fakturyZakupuKSeFDzis = Wezel("Dzisiejsze", "Dzis");
-		var fakturyZakupuKSeFWczoraj = Wezel("Od wczoraj", "Wczoraj");
-		var fakturyZakupuKSeFMiesiac = Wezel("Z tego miesiąca", "Miesiac");
-		var fakturyZakupuKSeFPoprzedni = Wezel("Z tego i poprzedniego miesiąca", "Poprzedni");
-		var fakturyZakupuKSeFRok = Wezel("Z tego roku", "Rok");
-		var fakturyZakupuKSeFWszystkie = Wezel("Wszystkie");
-		var fakturyZakupuKSeF = Wezel("KSeF", "KSeFZakup", [fakturyZakupuKSeFPrzyrostowo, fakturyZakupuKSeFDzis, fakturyZakupuKSeFWczoraj, fakturyZakupuKSeFMiesiac, fakturyZakupuKSeFPoprzedni, fakturyZakupuKSeFRok, fakturyZakupuKSeFWszystkie]);
+		var fakturyZakupuKSeF = Wezel("Inbox KSeF", "KSeFZakup");
 		var fakturyZakupuWedlugDaty = Wezel("Według daty", "WedlugDaty", [Ladowanie()]);
 		var fakturyZakupuWedlugSprzedawcy = Wezel("Według sprzedawcy", "WedlugKontrahenta", [Ladowanie()]);
 		var fakturyZakupuWedlugTowaru = Wezel("Według towaru", "WedlugTowaru", [Ladowanie()]);

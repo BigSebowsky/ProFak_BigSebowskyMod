@@ -778,6 +778,86 @@ public class Generator
 		return kontrahent;
 	}
 
+	private static string NormalizujOpisPlatnosci(string? opis)
+	{
+		if (String.IsNullOrWhiteSpace(opis)) return "";
+		var wynik = opis.Trim().ToLowerInvariant();
+		wynik = wynik.Replace("mechanizm podzielonej płatności", "mpp");
+		wynik = wynik.Replace("mechanizm podzielonej platnosci", "mpp");
+		wynik = wynik.Replace("split payment", "mpp");
+		wynik = wynik.Replace("płatność", "platnosc");
+		wynik = wynik.Replace("płatnosc", "platnosc");
+		wynik = wynik.Replace("gotówka", "gotowka");
+		wynik = wynik.Replace("przelew bankowy", "przelew");
+		wynik = wynik.Replace("wire transfer", "przelew");
+		wynik = wynik.Replace("bank transfer", "przelew");
+		wynik = wynik.Replace("card", "karta");
+		wynik = wynik.Replace("cash", "gotowka");
+		wynik = wynik.Replace("check", "czek");
+		wynik = wynik.Replace("mobile", "mobilna");
+		wynik = wynik.Replace("blik", "mobilna");
+		wynik = wynik.Replace(",", " ");
+		wynik = wynik.Replace(";", " ");
+		while (wynik.Contains("  ")) wynik = wynik.Replace("  ", " ");
+		return wynik;
+	}
+
+	private static string? RozpoznajTypPlatnosci(string opis)
+	{
+		if (String.IsNullOrWhiteSpace(opis)) return null;
+		if (opis.Contains("gotow")) return "gotowka";
+		if (opis.Contains("kart")) return "karta";
+		if (opis.Contains("bon")) return "bon";
+		if (opis.Contains("czek")) return "czek";
+		if (opis.Contains("kredyt")) return "kredyt";
+		if (opis.Contains("mobil")) return "mobilna";
+		if (opis.Contains("przelew")) return "przelew";
+		return null;
+	}
+
+	private static int PoliczDopasowanieSposobuPlatnosci(SposobPlatnosci sposobPlatnosci, string opisPlatnosci)
+	{
+		if (String.IsNullOrWhiteSpace(opisPlatnosci)) return 0;
+		var nazwa = NormalizujOpisPlatnosci(sposobPlatnosci.Nazwa);
+		if (String.IsNullOrWhiteSpace(nazwa)) return 0;
+		if (nazwa == opisPlatnosci) return 100;
+
+		var wynik = 0;
+		if (nazwa.Contains(opisPlatnosci, StringComparison.CurrentCultureIgnoreCase)
+			|| opisPlatnosci.Contains(nazwa, StringComparison.CurrentCultureIgnoreCase)) wynik += 80;
+
+		var typDokumentu = RozpoznajTypPlatnosci(opisPlatnosci);
+		var typSlownika = RozpoznajTypPlatnosci(nazwa);
+		if (typDokumentu != null && typDokumentu == typSlownika) wynik += 40;
+
+		if (opisPlatnosci.Contains("mpp") && nazwa.Contains("mpp")) wynik += 20;
+		if (opisPlatnosci.Contains("zaplacono") && nazwa.Contains("gotow")) wynik += 10;
+
+		return wynik;
+	}
+
+	private static SposobPlatnosci? DopasujSposobPlatnosci(Baza baza, DBFaktura faktura)
+	{
+		var sposobyPlatnosci = baza.SposobyPlatnosci.ToList();
+		var opisPlatnosci = NormalizujOpisPlatnosci(faktura.OpisSposobuPlatnosci);
+		if (String.IsNullOrWhiteSpace(opisPlatnosci)) return sposobyPlatnosci.FirstOrDefault(sposob => sposob.CzyDomyslny);
+
+		var liczbaDni = Math.Abs((faktura.TerminPlatnosci - faktura.DataWystawienia).TotalDays);
+		return sposobyPlatnosci
+			.Select(sposob => new
+			{
+				Sposob = sposob,
+				Wynik = PoliczDopasowanieSposobuPlatnosci(sposob, opisPlatnosci),
+				RoznicaDni = Math.Abs(sposob.LiczbaDni - liczbaDni),
+			})
+			.Where(pozycja => pozycja.Wynik > 0)
+			.OrderByDescending(pozycja => pozycja.Wynik)
+			.ThenBy(pozycja => pozycja.RoznicaDni)
+			.ThenBy(pozycja => pozycja.Sposob.CzyDomyslny ? 0 : 1)
+			.Select(pozycja => pozycja.Sposob)
+			.FirstOrDefault();
+	}
+
 	private static void PoprawPowiazaniaPoImporcie(Baza baza, DBFaktura faktura)
 	{
 		// Zawsze ustawione przez Zbuduj:
@@ -811,12 +891,7 @@ public class Generator
 			faktura.FakturaKorygowana = null;
 		}
 
-		var sposobyPlatnosci = baza.SposobyPlatnosci.ToList();
-		faktura.SposobPlatnosciRef = sposobyPlatnosci
-			.OrderBy(sposob => sposob.Nazwa.Contains(faktura.OpisSposobuPlatnosci, StringComparison.CurrentCultureIgnoreCase))
-			.ThenBy(sposob => Math.Abs(sposob.LiczbaDni - (faktura.TerminPlatnosci - faktura.DataWystawienia).TotalDays))
-			.ThenBy(sposob => sposob.CzyDomyslny ? 0 : 1)
-			.FirstOrDefault();
+		faktura.SposobPlatnosciRef = DopasujSposobPlatnosci(baza, faktura);
 
 		var waluta = baza.Waluty.FirstOrDefault(waluta => waluta.Skrot.ToLower() == faktura.Waluta.Skrot.ToLower());
 		if (waluta == null) baza.Zapisz(waluta = faktura.Waluta);

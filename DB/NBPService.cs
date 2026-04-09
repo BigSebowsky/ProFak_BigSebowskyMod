@@ -32,6 +32,22 @@ static class NBPService
 		return null;
 	}
 
+	public static KursNBP? ZnajdzKursDlaWartosci(Baza baza, string walutaSkrot, DateTime data, decimal kursWaluty)
+	{
+		if (String.IsNullOrWhiteSpace(walutaSkrot)) return null;
+		var waluta = baza.Waluty.FirstOrDefault(w => w.Skrot == walutaSkrot);
+		if (waluta == null || waluta.CzyDomyslna) return null;
+
+		var oczekiwanyKurs = kursWaluty.Zaokragl(4);
+		var szukana = data.Date.AddDays(-1);
+		for (int i = 0; i < MaxDniWstecz; i++, szukana = szukana.AddDays(-1))
+		{
+			var kurs = baza.KursyNBP.FirstOrDefault(k => k.WalutaId == waluta.Id && k.Data == szukana);
+			if (kurs != null && kurs.KursSredni.Zaokragl(4) == oczekiwanyKurs) return kurs;
+		}
+		return null;
+	}
+
 	public static Task UzupelnijKursyAsync(Baza baza, DateTime odDnia, CancellationToken cancellationToken = default)
 	{
 		var od = odDnia.Date;

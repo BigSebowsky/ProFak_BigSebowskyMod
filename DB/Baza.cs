@@ -80,6 +80,28 @@ public class Baza : DbContext
 		NaprawHistorieMigracjiSqlite();
 #endif
 		Database.Migrate();
+		UzupelnijDateKursuFaktur();
+	}
+
+	private void UzupelnijDateKursuFaktur()
+	{
+		var fakturyDoUzupelnienia = Faktury
+			.Include(faktura => faktura.Waluta)
+			.Where(faktura => faktura.DataKursu == null && faktura.WalutaId != null && faktura.KursWaluty != 1)
+			.ToList();
+		if (fakturyDoUzupelnienia.Count == 0) return;
+
+		var zmienione = new List<Faktura>();
+		foreach (var faktura in fakturyDoUzupelnienia)
+		{
+			if (faktura.Waluta == null || faktura.Waluta.CzyDomyslna) continue;
+			var kurs = NBPService.ZnajdzKursDlaWartosci(this, faktura.Waluta.Skrot, faktura.DataWystawienia, faktura.KursWaluty);
+			if (kurs == null) continue;
+			faktura.DataKursu = kurs.Data;
+			zmienione.Add(faktura);
+		}
+
+		if (zmienione.Count > 0) Zapisz(zmienione);
 	}
 
 	private static void WykonajAutomatycznaKopieBazy()

@@ -59,6 +59,7 @@ public class Faktura : Wydruk
 			fakturaDTO.Waluta = walutaSkrot;
 			fakturaDTO.WalutaVAT = walutaVATSkrot;
 			fakturaDTO.KursWaluty = faktura.KursWaluty;
+			fakturaDTO.DataKursu = faktura.DataKursu?.ToString(UI.Wyglad.FormatDaty) ?? "";
 			if (faktura.ProceduraMarzy != ProceduraMarży.NieDotyczy) fakturaDTO.ProceduraMarzy = Rekord.Format(faktura.ProceduraMarzy);
 
 			if (faktura.FakturaPierwotnaRef.IsNotNull)

@@ -27,6 +27,7 @@ public class Faktura : Rekord<Faktura>
 	public decimal RazemVat { get; set; }
 	public decimal RazemBrutto { get; set; }
 	public decimal KursWaluty { get; set; }
+	public DateTime? DataKursu { get; set; }
 	public string OpisSposobuPlatnosci { get; set; } = "";
 	public RodzajFaktury Rodzaj { get; set; } = RodzajFaktury.Sprzedaż;
 	public bool CzyWartosciReczne { get; set; }
@@ -228,6 +229,7 @@ public class Faktura : Rekord<Faktura>
 		|| CzyPasuje(RazemVat, fraza)
 		|| CzyPasuje(RazemBrutto, fraza)
 		|| CzyPasuje(KursWaluty, fraza)
+		|| CzyPasuje(DataKursu, fraza)
 		|| CzyPasuje(OpisSposobuPlatnosci, fraza)
 		|| CzyPasuje(Rodzaj, fraza)
 		|| CzyPasuje(CzyWartosciReczne ? "Ręczne" : "", fraza)
@@ -264,6 +266,7 @@ public class Faktura : Rekord<Faktura>
 		korekta.RachunekBankowy = bazowa.RachunekBankowy;
 		korekta.UwagiPubliczne = bazowa.UwagiPubliczne;
 		korekta.KursWaluty = bazowa.KursWaluty;
+		korekta.DataKursu = bazowa.DataKursu;
 		korekta.OpisSposobuPlatnosci = bazowa.OpisSposobuPlatnosci;
 		korekta.SprzedawcaRef = bazowa.SprzedawcaRef;
 		korekta.NabywcaRef = bazowa.NabywcaRef;
@@ -378,6 +381,7 @@ public class Faktura : Rekord<Faktura>
 		nowaFaktura.UwagiPubliczne = UwagiPubliczne;
 		nowaFaktura.UwagiWewnetrzne = UwagiWewnetrzne;
 		nowaFaktura.KursWaluty = KursWaluty;
+		nowaFaktura.DataKursu = DataKursu;
 		nowaFaktura.OpisSposobuPlatnosci = OpisSposobuPlatnosci;
 		nowaFaktura.WalutaRef = WalutaRef;
 		nowaFaktura.SposobPlatnosciRef = SposobPlatnosciRef;

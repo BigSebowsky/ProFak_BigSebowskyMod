@@ -821,6 +821,11 @@ public class Generator
 		var waluta = baza.Waluty.FirstOrDefault(waluta => waluta.Skrot.ToLower() == faktura.Waluta.Skrot.ToLower());
 		if (waluta == null) baza.Zapisz(waluta = faktura.Waluta);
 		faktura.WalutaRef = waluta;
+		if (!waluta.CzyDomyslna && faktura.KursWaluty != 0 && faktura.KursWaluty != 1)
+		{
+			var kurs = NBPService.ZnajdzKursDlaWartosci(baza, waluta.Skrot, faktura.DataWystawienia, faktura.KursWaluty);
+			faktura.DataKursu = kurs?.Data;
+		}
 		faktura.Waluta = null;
 
 		foreach (var pozycja in faktura.Pozycje)

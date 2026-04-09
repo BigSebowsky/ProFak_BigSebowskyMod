@@ -16,6 +16,7 @@ partial class FakturaEdytor : FakturaEdytorBase
 	private Slownik<Kontrahent> slownikSprzedawcaNazwa = default!;
 	private Slownik<Kontrahent> slownikSprzedawcaNIP = default!;
 	private bool czyAutomatycznyKursAktywny;
+	private bool czyProgramowaZmianaKursu;
 	private readonly TextBox textBoxNettoPLN = new() { ReadOnly = true, TabStop = false, TextAlign = HorizontalAlignment.Right, Anchor = AnchorStyles.Left | AnchorStyles.Right };
 	private readonly TextBox textBoxVatPLN = new() { ReadOnly = true, TabStop = false, TextAlign = HorizontalAlignment.Right, Anchor = AnchorStyles.Left | AnchorStyles.Right };
 	private readonly TextBox textBoxBruttoPLN = new() { ReadOnly = true, TabStop = false, TextAlign = HorizontalAlignment.Right, Anchor = AnchorStyles.Left | AnchorStyles.Right };
@@ -99,7 +100,7 @@ partial class FakturaEdytor : FakturaEdytorBase
 		numericUpDownNetto.ValueChanged += (_, _) => AktualizujPodgladPLN();
 		numericUpDownVat.ValueChanged += (_, _) => AktualizujPodgladPLN();
 		numericUpDownBrutto.ValueChanged += (_, _) => AktualizujPodgladPLN();
-		numericUpDownKurs.ValueChanged += (_, _) => AktualizujPodgladPLN();
+		numericUpDownKurs.ValueChanged += numericUpDownKurs_ValueChanged;
 
 		Wyglad.UsunSkrotyZakladek(tabControl1);
 	}
@@ -323,7 +324,7 @@ partial class FakturaEdytor : FakturaEdytorBase
 		numericUpDownKurs.Enabled = !waluta.CzyDomyslna;
 		if (waluta.CzyDomyslna)
 		{
-			if (Rekord.KursWaluty != 1m) numericUpDownKurs.Value = 1m;
+			UstawKursWaluty(1m, null);
 			AktualizujPodgladPLN();
 			return;
 		}
@@ -338,13 +339,13 @@ partial class FakturaEdytor : FakturaEdytorBase
 		if (waluta == null) return;
 		if (waluta.CzyDomyslna)
 		{
-			if (numericUpDownKurs.Value != 1m) numericUpDownKurs.Value = 1m;
+			UstawKursWaluty(1m, null);
 			return;
 		}
 
-		var kurs = NBPService.ZnajdzKurs(Kontekst.Baza, waluta.Skrot, Rekord.DataWystawienia);
-		if (!kurs.HasValue) return;
-		if (numericUpDownKurs.Value != kurs.Value) numericUpDownKurs.Value = kurs.Value;
+		var kurs = NBPService.ZnajdzKursZData(Kontekst.Baza, waluta.Skrot, Rekord.DataWystawienia);
+		if (kurs == null) return;
+		UstawKursWaluty(kurs.KursSredni, kurs.Data);
 	}
 
 	private bool UstawSposobPlatnosci(Faktura rekord, SposobPlatnosci? sposobPlatnosci)
@@ -383,8 +384,44 @@ partial class FakturaEdytor : FakturaEdytorBase
 			return;
 		}
 
-		var kursNBP = NBPService.ZnajdzKursZData(Kontekst.Baza, waluta.Skrot, dateTimePickerDataWystawienia.Value.Date);
-		textBoxDataKursu.Text = kursNBP?.Data.ToString(Wyglad.FormatDaty) ?? "";
+		textBoxDataKursu.Text = Rekord.DataKursu?.ToString(Wyglad.FormatDaty) ?? "";
+	}
+
+	private void numericUpDownKurs_ValueChanged(object? sender, EventArgs e)
+	{
+		if (Kontekst == null || Rekord == null) return;
+		if (czyProgramowaZmianaKursu)
+		{
+			AktualizujPodgladPLN();
+			return;
+		}
+
+		var waluta = Kontekst.Baza.ZnajdzLubNull(Rekord.WalutaRef);
+		if (waluta == null || waluta.CzyDomyslna)
+		{
+			Rekord.DataKursu = null;
+			AktualizujPodgladPLN();
+			return;
+		}
+
+		var kursNBP = NBPService.ZnajdzKursDlaWartosci(Kontekst.Baza, waluta.Skrot, Rekord.DataWystawienia, numericUpDownKurs.Value);
+		Rekord.DataKursu = kursNBP?.Data;
+		AktualizujPodgladPLN();
+	}
+
+	private void UstawKursWaluty(decimal kursWaluty, DateTime? dataKursu)
+	{
+		Rekord.DataKursu = dataKursu?.Date;
+		czyProgramowaZmianaKursu = true;
+		try
+		{
+			if (numericUpDownKurs.Value != kursWaluty) numericUpDownKurs.Value = kursWaluty;
+			else AktualizujPodgladPLN();
+		}
+		finally
+		{
+			czyProgramowaZmianaKursu = false;
+		}
 	}
 
 	protected override void PrzygotujRekord(Faktura rekord)
@@ -407,7 +444,15 @@ partial class FakturaEdytor : FakturaEdytorBase
 		base.RekordGotowy();
 		czyAutomatycznyKursAktywny = true;
 		var waluta = Kontekst.Baza.ZnajdzLubNull(Rekord.WalutaRef);
-		if (waluta != null && !waluta.CzyDomyslna && Rekord.KursWaluty == 1m) AktualizujKursWaluty(waluta);
+		if (waluta != null && !waluta.CzyDomyslna)
+		{
+			if (Rekord.KursWaluty == 1m) AktualizujKursWaluty(waluta);
+			else if (!Rekord.DataKursu.HasValue)
+			{
+				var kursNBP = NBPService.ZnajdzKursDlaWartosci(Kontekst.Baza, waluta.Skrot, Rekord.DataWystawienia, Rekord.KursWaluty);
+				Rekord.DataKursu = kursNBP?.Data;
+			}
+		}
 		UstawRazem();
 		AktualizujPodgladPLN();
 		wplaty.Spis.FakturaRef = Rekord;

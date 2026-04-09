@@ -44,6 +44,7 @@ public class FakturaDTO
 	public string? Waluta { get; set; }
 	public string? WalutaVAT { get; set; }
 	public decimal KursWaluty { get; set; }
+	public string? DataKursu { get; set; }
 	public bool JestVAT { get; set; }
 	public bool JestRabat { get; set; }
 

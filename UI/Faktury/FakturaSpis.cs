@@ -78,6 +78,7 @@ class FakturaSpis : Spis<Faktura>
 		DodajKolumneKwota(nameof(Faktura.RazemVat), "VAT");
 		DodajKolumneKwota(nameof(Faktura.RazemBrutto), "Brutto");
 		DodajKolumne(nameof(Faktura.WalutaFmt), "Waluta", szerokosc: 70);
+		DodajKolumneData(nameof(Faktura.DataKursu), "Data kursu");
 		if (CzyWidoczneKwotyPLN)
 		{
 			DodajKolumneKwota(nameof(Faktura.RazemNettoPLN), "Netto (PLN)");

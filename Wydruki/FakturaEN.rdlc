@@ -161,6 +161,10 @@
           <DataField>KursWaluty</DataField>
           <rd:TypeName>System.Decimal</rd:TypeName>
         </Field>
+        <Field Name="DataKursu">
+          <DataField>DataKursu</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
         <Field Name="JestVAT">
           <DataField>JestVAT</DataField>
           <rd:TypeName>System.Boolean</rd:TypeName>
@@ -681,6 +685,12 @@
                                                   </TextRun>
                                                   <TextRun>
                                                     <Value>=Fields!WalutaVAT.Value</Value>
+                                                    <Style>
+                                                      <FontFamily>Calibri</FontFamily>
+                                                    </Style>
+                                                  </TextRun>
+                                                  <TextRun>
+                                                    <Value>=IIF(Fields!DataKursu.Value = "", "", " / as of " &amp; Fields!DataKursu.Value)</Value>
                                                     <Style>
                                                       <FontFamily>Calibri</FontFamily>
                                                     </Style>

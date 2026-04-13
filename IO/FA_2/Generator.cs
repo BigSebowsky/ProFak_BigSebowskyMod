@@ -54,7 +54,7 @@ public class Generator
 		ksefFaktura.Naglowek.KodFormularza = new TNaglowekKodFormularza();
 		ksefFaktura.Naglowek.WariantFormularza = TNaglowekWariantFormularza.Item2;
 		ksefFaktura.Naglowek.DataWytworzeniaFa = DateTime.Now;
-		ksefFaktura.Naglowek.SystemInfo = "ProFak (https://github.com/lkosson/profak)";
+		ksefFaktura.Naglowek.SystemInfo = ProFakInfo.UserAgent;
 		ksefFaktura.Podmiot1 = new FakturaPodmiot1();
 		ksefFaktura.Podmiot1.DaneIdentyfikacyjne = new TPodmiot1();
 		ksefFaktura.Podmiot1.DaneIdentyfikacyjne.NIP = dbFaktura.NIPSprzedawcy;

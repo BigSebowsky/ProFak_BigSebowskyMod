@@ -105,10 +105,10 @@ partial class OknoBledu
 		this.linkLabelURL.AutoSize = true;
 		this.linkLabelURL.Location = new System.Drawing.Point(84, 7);
 		this.linkLabelURL.Name = "linkLabelURL";
-		this.linkLabelURL.Size = new System.Drawing.Size(229, 15);
+		this.linkLabelURL.Size = new System.Drawing.Size(350, 15);
 		this.linkLabelURL.TabIndex = 1;
 		this.linkLabelURL.TabStop = true;
-		this.linkLabelURL.Text = "https://github.com/lkosson/profak/issues";
+		this.linkLabelURL.Text = "https://github.com/BigSebowsky/ProFak_BigSebowskyMod/issues";
 		this.linkLabelURL.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelURL_LinkClicked);
 		// 
 		// OknoBledu
@@ -119,7 +119,7 @@ partial class OknoBledu
 		this.ClientSize = new System.Drawing.Size(800, 450);
 		this.Controls.Add(this.tableLayoutPanel1);
 		this.Name = "OknoBledu";
-		this.Text = "ProFak - Bład";
+		this.Text = "ProFak BigSebowskyMod - Błąd";
 		this.tableLayoutPanel1.ResumeLayout(false);
 		this.tableLayoutPanel1.PerformLayout();
 		this.flowLayoutPanel1.ResumeLayout(false);

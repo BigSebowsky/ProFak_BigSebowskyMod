@@ -34,7 +34,7 @@ public class Generator
 		jpk.Naglowek.KodFormularza.wersjaSchemy = "1-0E";
 		jpk.Naglowek.WariantFormularza = TNaglowekWariantFormularza.Item3;
 		jpk.Naglowek.DataWytworzeniaJPK = DateTime.Now;
-		jpk.Naglowek.NazwaSystemu = "ProFak (https://github.com/lkosson/profak)";
+		jpk.Naglowek.NazwaSystemu = ProFakInfo.UserAgent;
 		jpk.Naglowek.CelZlozenia = new TNaglowekCelZlozenia();
 		jpk.Naglowek.CelZlozenia.Value = TCelZlozenia.Item1;
 		jpk.Naglowek.KodUrzedu = Enum.Parse<TKodUS>("Item" + Wymagane(podmiot.KodUrzedu, "Nie uzupełniono kodu urzędu w danych urzędowych firmy."));

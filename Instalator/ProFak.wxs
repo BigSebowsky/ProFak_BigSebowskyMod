@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="*" Name="ProFak" Language="1045" Codepage="1250" Version="1.17.2.0" Manufacturer="Łukasz Kosson" UpgradeCode="a5ae434f-8f80-4ac6-ac2c-582d66836a84">
+	<Product Id="*" Name="ProFak BigSebowskyMod" Language="1045" Codepage="1250" Version="1.17.2.1" Manufacturer="Sebastian Wisniewski" UpgradeCode="1a1832fd-ae5a-4332-ad2a-89fcf3205b5f">
 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Platform="x64" />
 
 		<MediaTemplate EmbedCab="yes" />
 
-		<Feature Id="ProductFeature" Title="ProFak" Level="1">
+		<Feature Id="ProductFeature" Title="ProFak BigSebowskyMod" Level="1">
 			<ComponentGroupRef Id="Pliki" />
 			<ComponentRef Id="SkrotPulpit" />
 			<ComponentRef Id="SkrotStart" />
@@ -13,7 +13,7 @@
 		</Feature>
 
 		<Property Id="KATALOGPROGRAMU">
-			<RegistrySearch Id="DetermineInstallLocation" Type="raw" Root="HKLM" Key="Software\ProFak" Name="InstallLocation" />
+			<RegistrySearch Id="DetermineInstallLocation" Type="raw" Root="HKLM" Key="Software\ProFakBigSebowskyMod" Name="InstallLocation" />
 		</Property>
 
 		<Property Id="WIXUI_INSTALLDIR" Value="KATALOGPROGRAMU" />
@@ -25,11 +25,11 @@
 	<Fragment>
 		<Directory Id="TARGETDIR" Name="SourceDir">
 			<Directory Id="ProgramFiles64Folder">
-				<Directory Id="KATALOGPROGRAMU" Name="ProFak">
+				<Directory Id="KATALOGPROGRAMU" Name="ProFak BigSebowskyMod">
 				</Directory>
 			</Directory>
 			<Directory Id="ProgramMenuFolder">
-				<Directory Id="KatalogStart" Name="ProFak" />
+				<Directory Id="KatalogStart" Name="ProFak BigSebowskyMod" />
 			</Directory>
 			<Directory Id="DesktopFolder" Name="Desktop">
 			</Directory>
@@ -39,9 +39,9 @@
 	<Fragment>
 		<DirectoryRef Id="DesktopFolder">
 			<Component Id="SkrotPulpit" Guid="97D4EF04-2D78-426C-B67F-843B98E1B436">
-				<Shortcut Id="AppDesktopShortcut" Name="ProFak" Target="[KATALOGPROGRAMU]ProFak.exe" WorkingDirectory="KATALOGPROGRAMU"/>
+				<Shortcut Id="AppDesktopShortcut" Name="ProFak BigSebowskyMod" Target="[KATALOGPROGRAMU]ProFak.exe" WorkingDirectory="KATALOGPROGRAMU"/>
 				<RemoveFolder Id="DesktopFolder" On="uninstall"/>
-				<RegistryValue Root="HKCU" Key="Software\ProFak" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+				<RegistryValue Root="HKCU" Key="Software\ProFakBigSebowskyMod" Name="installed" Type="integer" Value="1" KeyPath="yes" />
 			</Component>
 		</DirectoryRef>
 	</Fragment>
@@ -49,9 +49,9 @@
 	<Fragment>
 		<DirectoryRef Id="KatalogStart">
 			<Component Id="SkrotStart" Guid="FDAEB85F-7CFA-4912-865F-0E3993B23EB6">
-				<Shortcut Id="ApplicationStartMenuShortcut" Name="ProFak" Target="[KATALOGPROGRAMU]ProFak.exe" WorkingDirectory="KATALOGPROGRAMU" />
+				<Shortcut Id="ApplicationStartMenuShortcut" Name="ProFak BigSebowskyMod" Target="[KATALOGPROGRAMU]ProFak.exe" WorkingDirectory="KATALOGPROGRAMU" />
 				<RemoveFolder Id="KatalogStart" On="uninstall" />
-				<RegistryValue Root="HKCU" Key="Software\ProFak" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+				<RegistryValue Root="HKCU" Key="Software\ProFakBigSebowskyMod" Name="installed" Type="integer" Value="1" KeyPath="yes" />
 			</Component>
 		</DirectoryRef>
 	</Fragment>
@@ -59,7 +59,7 @@
 	<Fragment>
 		<DirectoryRef Id="TARGETDIR">
 			<Component Id="Rejestr" Guid="8dfd2338-c11b-492a-bbf2-c7e9ebd2ed81">
-				<RegistryKey Root="HKLM" Key="Software\ProFak">
+				<RegistryKey Root="HKLM" Key="Software\ProFakBigSebowskyMod">
 					<RegistryValue Name="InstallLocation" Value="[KATALOGPROGRAMU]" Type="string" KeyPath="yes" />
 				</RegistryKey>
 			</Component>
@@ -85,7 +85,7 @@
 			<DialogRef Id="ProgressDlg" />
 			<DialogRef Id="ResumeDlg" />
 			<DialogRef Id="UserExit" />
-			
+
 			<Publish Dialog="BrowseDlg" Control="OK" Event="DoAction" Value="WixUIValidatePath" Order="3">1</Publish>
 			<Publish Dialog="BrowseDlg" Control="OK" Event="SpawnDialog" Value="InvalidDirDlg" Order="4"><![CDATA[NOT WIXUI_DONTVALIDATEPATH AND WIXUI_INSTALLDIR_VALID<>"1"]]></Publish>
 
@@ -101,7 +101,7 @@
 			<Publish Dialog="InstallDirDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" Order="4">WIXUI_DONTVALIDATEPATH OR WIXUI_INSTALLDIR_VALID="1"</Publish>
 			<Publish Dialog="InstallDirDlg" Control="ChangeFolder" Property="_BrowseProperty" Value="[WIXUI_INSTALLDIR]" Order="1">1</Publish>
 			<Publish Dialog="InstallDirDlg" Control="ChangeFolder" Event="SpawnDialog" Value="BrowseDlg" Order="2">1</Publish>
-			
+
 			<Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="InstallDirDlg" Order="1">NOT Installed</Publish>
 			<Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg" Order="2">Installed AND NOT PATCH</Publish>
 			<Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="2">Installed AND PATCH</Publish>

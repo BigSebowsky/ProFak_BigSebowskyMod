@@ -261,7 +261,7 @@ class DaneDemo
 					if (faktura.DataWystawienia >= new DateTime(2026, 2, 1))
 					{
 						faktura.NumerKSeF = $"{faktura.NIPSprzedawcy.Replace("-", "")}-{faktura.DataWystawienia:yyyyMMdd}-{String.Join("", Enumerable.Range(0, 6).Select(_ => rnd.Next(256).ToString("X2")))}-XX";
-						faktura.URLKSeF = "https://github.com/lkosson/profak";
+						faktura.URLKSeF = ProFakInfo.RepositoryUrl;
 					}
 					if (faktura.Rodzaj == RodzajFaktury.VatMarża || faktura.Rodzaj == RodzajFaktury.KorektaVatMarży) faktura.ProceduraMarzy = (ProceduraMarży)rnd.Next(1, 1 + (int)ProceduraMarży.PrzedmiotyKolekcjonerskie);
 					if (faktura.Rodzaj == RodzajFaktury.Zakup && rnd.Next(100) < 10) faktura.DataWprowadzenia = faktura.DataWprowadzenia.AddDays(rnd.Next(10));

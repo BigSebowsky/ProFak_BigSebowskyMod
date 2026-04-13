@@ -75,9 +75,9 @@ partial class OProgramie
 		label1.Location = new System.Drawing.Point(208, 10);
 		label1.Margin = new System.Windows.Forms.Padding(10);
 		label1.Name = "label1";
-		label1.Size = new System.Drawing.Size(78, 30);
+		label1.Size = new System.Drawing.Size(233, 30);
 		label1.TabIndex = 0;
-		label1.Text = "ProFak";
+		label1.Text = "ProFak BigSebowskyMod";
 		// 
 		// labelWersja
 		// 
@@ -119,10 +119,10 @@ partial class OProgramie
 		linkLabelStrona.Location = new System.Drawing.Point(150, 165);
 		linkLabelStrona.Margin = new System.Windows.Forms.Padding(10);
 		linkLabelStrona.Name = "linkLabelStrona";
-		linkLabelStrona.Size = new System.Drawing.Size(193, 15);
+		linkLabelStrona.Size = new System.Drawing.Size(314, 15);
 		linkLabelStrona.TabIndex = 1;
 		linkLabelStrona.TabStop = true;
-		linkLabelStrona.Text = "https://github.com/lkosson/profak";
+		linkLabelStrona.Text = "https://github.com/BigSebowsky/ProFak_BigSebowskyMod";
 		linkLabelStrona.LinkClicked += linkLabelStrona_LinkClicked;
 		// 
 		// label2

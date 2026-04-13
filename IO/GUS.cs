@@ -16,7 +16,7 @@ public class GUS
 		var nip = kontrahent.NIP?.Trim()?.Replace("-", "");
 		if (String.IsNullOrEmpty(nip)) throw new ApplicationException("Należy podać NIP.");
 		using var client = new HttpClient();
-		client.DefaultRequestHeaders.UserAgent.ParseAdd("ProFak (https://github.com/lkosson/profak)");
+		client.DefaultRequestHeaders.UserAgent.ParseAdd(ProFakInfo.UserAgent);
 
 		var html = await client.GetStringAsync("https://wyszukiwarkaregon.stat.gov.pl/appBIR/index.aspx", cancellationToken);
 		var liczbyKlucza = Regex.Match(html, @"'String\.fromCharCode\(((?<znak>\d+)[,\)])+");

@@ -61,7 +61,7 @@ Poza możliwościami bazowego ProFak, ten fork zawiera m.in.:
 
 ## Instalacja
 
-Aby zainstalować tę wersję programu, pobierz plik `ProFak.msi` albo paczkę `ProFak.zip` z wydań tego repozytorium:
+Aby zainstalować tę wersję programu, pobierz plik `ProFak_BigSebowskyMod.msi` albo paczkę ZIP z wydań tego repozytorium:
 
 - [Pobierz najnowsze wydanie BigSebowskyMod](https://github.com/BigSebowsky/ProFak_BigSebowskyMod/releases/latest/)
 

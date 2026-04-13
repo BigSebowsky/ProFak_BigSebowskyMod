@@ -58,6 +58,6 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="label2.Text" xml:space="preserve">
-    <value>Twórcą i właścicielem praw autorskich do programu jest Łukasz Kosson. Program jest dostępny bezpłatnie i bezterminowo. Masz prawo korzystać z programu na dowolnej liczbie stanowisk, ale ponosisz pełną i wyłączną odpowiedzialność za wszelkie skutki korzystania z programu.</value>
+    <value>Bazowy projekt ProFak został stworzony przez Łukasza Kossona. Ta wersja jest rozwijanym forkiem ProFak BigSebowskyMod utrzymywanym przez Sebastiana Wiśniewskiego. Program jest dostępny bezpłatnie i bezterminowo. Korzystasz z niego na własną odpowiedzialność.</value>
   </data>
 </root>

@@ -25,7 +25,7 @@ if errorlevel 1 goto :blad
 candle.exe ProFak.wxs ProFak-pliki.wxs -arch x64 -dZrodlo=..\bin\Publish\
 if errorlevel 1 goto :blad
 
-light.exe ProFak.wixobj ProFak-pliki.wixobj -ext WixUIExtension -cultures:pl-PL -out ..\bin\Install\ProFak.msi
+light.exe ProFak.wixobj ProFak-pliki.wixobj -ext WixUIExtension -cultures:pl-PL -out ..\bin\Install\ProFak_BigSebowskyMod.msi
 if errorlevel 1 goto :blad
 
 goto :koniec

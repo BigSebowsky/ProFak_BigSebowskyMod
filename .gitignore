@@ -1,7 +1,12 @@
 /bin
 /obj
 /.vs
+**/.vs/
 *.user
 /Instalator/*.wixobj
 /Instalator/ProFak-pliki.wxs
 XmlSchemaClassGenerator
+/.dotnet-home/
+/.vscode/
+/.claude/settings.local.json
+/UpgradeLog.htm

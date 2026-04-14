@@ -112,6 +112,7 @@ partial class FakturaEdytor
 		dateTimePickerTerminPlatnosci = new DateTimePickerFix();
 		comboBoxSposobPlatnosci = new ComboBoxFix();
 		buttonSposobPlatnosci = new ButtonDPI();
+		buttonRachunekBankowy = new ButtonDPI();
 		textBoxNazwaBanku = new TextBox();
 		groupBox1 = new GroupBox();
 		tableLayoutPanel4 = new TableLayoutPanel();
@@ -1064,6 +1065,7 @@ partial class FakturaEdytor
 		tableLayoutPanel9.Controls.Add(comboBoxSposobPlatnosci, 1, 0);
 		tableLayoutPanel9.Controls.Add(buttonSposobPlatnosci, 3, 0);
 		tableLayoutPanel9.Controls.Add(textBoxNazwaBanku, 2, 2);
+		tableLayoutPanel9.Controls.Add(buttonRachunekBankowy, 3, 2);
 		tableLayoutPanel9.Dock = DockStyle.Fill;
 		tableLayoutPanel9.Location = new Point(3, 19);
 		tableLayoutPanel9.Name = "tableLayoutPanel9";
@@ -1146,10 +1148,20 @@ partial class FakturaEdytor
 		toolTip.SetToolTip(buttonSposobPlatnosci, "Wyświetl pełną listę");
 		buttonSposobPlatnosci.UseVisualStyleBackColor = true;
 		// 
+		// buttonRachunekBankowy
+		//
+		buttonRachunekBankowy.Anchor = AnchorStyles.Left;
+		buttonRachunekBankowy.AutoSize = true;
+		buttonRachunekBankowy.Name = "buttonRachunekBankowy";
+		buttonRachunekBankowy.Size = new Size(26, 25);
+		buttonRachunekBankowy.TabIndex = 5;
+		buttonRachunekBankowy.Text = "...";
+		toolTip.SetToolTip(buttonRachunekBankowy, "Wybierz rachunek bankowy");
+		buttonRachunekBankowy.UseVisualStyleBackColor = true;
+		//
 		// textBoxNazwaBanku
-		// 
+		//
 		textBoxNazwaBanku.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-		tableLayoutPanel9.SetColumnSpan(textBoxNazwaBanku, 2);
 		textBoxNazwaBanku.Location = new Point(313, 63);
 		textBoxNazwaBanku.Name = "textBoxNazwaBanku";
 		textBoxNazwaBanku.PlaceholderText = "Nazwa banku";
@@ -1442,6 +1454,7 @@ partial class FakturaEdytor
 	private ButtonDPI buttonSprzedawca;
 	private ButtonDPI buttonNabywca;
 	private ButtonDPI buttonSposobPlatnosci;
+	private ButtonDPI buttonRachunekBankowy;
 	private System.Windows.Forms.ComboBoxFix comboBoxNIPSprzedawcy;
 	private System.Windows.Forms.ComboBoxFix comboBoxNIPNabywcy;
 	private System.Windows.Forms.ComboBoxFix comboBoxNazwaSprzedawcy;

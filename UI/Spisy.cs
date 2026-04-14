@@ -266,6 +266,12 @@ class Spisy
 		);
 	}
 
+	public static SpisZAkcjami<RachunekBankowy, RachunekBankowySpis> RachunkiBankowe(Ref<Kontrahent> kontrahentRef = default)
+	{
+		var spis = new RachunekBankowySpis { KontrahentRef = kontrahentRef };
+		return Utworz(spis, new PrzeladujAkcja<RachunekBankowy>());
+	}
+
 	public static SpisZAkcjami<Wplata, WplataSpis> Wplaty()
 	{
 		var spis = new WplataSpis();

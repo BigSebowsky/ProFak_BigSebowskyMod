@@ -1,4 +1,5 @@
-﻿using ProFak.DB;
+﻿using Microsoft.EntityFrameworkCore;
+using ProFak.DB;
 using System.Data;
 using System.Diagnostics;
 
@@ -101,6 +102,7 @@ partial class FakturaEdytor : FakturaEdytorBase
 		numericUpDownVat.ValueChanged += (_, _) => AktualizujPodgladPLN();
 		numericUpDownBrutto.ValueChanged += (_, _) => AktualizujPodgladPLN();
 		numericUpDownKurs.ValueChanged += numericUpDownKurs_ValueChanged;
+		buttonRachunekBankowy.Click += buttonRachunekBankowy_Click;
 
 		Wyglad.UsunSkrotyZakladek(tabControl1);
 	}
@@ -346,11 +348,58 @@ partial class FakturaEdytor : FakturaEdytorBase
 		{
 			UstawKursWaluty(1m, null);
 			AktualizujPodgladPLN();
+			if (czyAutomatycznyKursAktywny) UstawRachunekBankowyDlaWaluty(null);
 			return;
 		}
 
-		if (czyAutomatycznyKursAktywny) AktualizujKursWaluty(waluta);
+		if (czyAutomatycznyKursAktywny)
+		{
+			AktualizujKursWaluty(waluta);
+			UstawRachunekBankowyDlaWaluty(waluta);
+		}
 		AktualizujPodgladPLN();
+	}
+
+	private void UstawRachunekBankowyDlaWaluty(Waluta? waluta)
+	{
+		var sprzedawcaRef = Rekord?.SprzedawcaRef ?? default;
+		if (sprzedawcaRef.IsNull) return;
+
+		var rachunki = Kontekst.Baza.RachunkiBankowe
+			.Include(r => r.Waluta)
+			.Where(r => r.KontrahentId == sprzedawcaRef.Id)
+			.OrderByDescending(r => r.CzyDomyslny)
+			.ThenBy(r => r.Id)
+			.ToList();
+		if (rachunki.Count == 0) return;
+
+		var rachunek = waluta == null || waluta.CzyDomyslna
+			? rachunki.FirstOrDefault(r => r.WalutaId == null) ?? rachunki.First()
+			: rachunki.FirstOrDefault(r => r.WalutaId == waluta.Id)
+			  ?? rachunki.FirstOrDefault(r => r.WalutaId == null)
+			  ?? rachunki.First();
+
+		UstawRachunekBankowy(rachunek);
+		kontroler.AktualizujKontrolki();
+	}
+
+	private void UstawRachunekBankowy(RachunekBankowy rachunek)
+	{
+		Rekord.RachunekBankowy = rachunek.NumerRachunku;
+		Rekord.NazwaBanku = rachunek.NazwaBanku;
+	}
+
+	private void buttonRachunekBankowy_Click(object? sender, EventArgs e)
+	{
+		var sprzedawcaRef = Rekord?.SprzedawcaRef ?? default;
+		if (sprzedawcaRef.IsNull) return;
+
+		using var spis = Spisy.RachunkiBankowe(sprzedawcaRef);
+		var rachunek = Spisy.Wybierz(Kontekst, spis, "Wybierz rachunek bankowy", default);
+		if (rachunek == null) return;
+
+		UstawRachunekBankowy(rachunek);
+		kontroler.AktualizujKontrolki();
 	}
 
 	private void AktualizujKursWaluty(Waluta? waluta = null)

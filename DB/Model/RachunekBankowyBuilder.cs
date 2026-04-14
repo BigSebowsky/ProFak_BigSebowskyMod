@@ -18,15 +18,19 @@ class RachunekBankowyBuilder
 		builder.Property(e => e.NazwaBanku).HasDefaultValue("").IsRequired();
 		builder.Property(e => e.Swift).HasDefaultValue("").IsRequired();
 		builder.Property(e => e.WalutaId);
+		builder.Property(e => e.KrajId);
 		builder.Property(e => e.CzyDomyslny).HasDefaultValue(false).IsRequired();
 
 		builder.Ignore(e => e.KontrahentRef);
 		builder.Ignore(e => e.WalutaRef);
+		builder.Ignore(e => e.KrajRef);
 		builder.Ignore(e => e.NazwaFmt);
 		builder.Ignore(e => e.WalutaSkrot);
+		builder.Ignore(e => e.KrajKodISO2);
 		builder.Ignore(e => e.CzyDomyslnyFmt);
 
 		builder.HasOne(e => e.Kontrahent).WithMany(e => e.RachunkiBankowe).HasForeignKey(e => e.KontrahentId).OnDelete(DeleteBehavior.Cascade);
 		builder.HasOne(e => e.Waluta).WithMany().HasForeignKey(e => e.WalutaId).OnDelete(DeleteBehavior.SetNull);
+		builder.HasOne(e => e.Kraj).WithMany().HasForeignKey(e => e.KrajId).OnDelete(DeleteBehavior.SetNull);
 	}
 }

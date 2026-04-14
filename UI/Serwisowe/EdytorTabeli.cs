@@ -26,6 +26,7 @@ partial class EdytorTabeli : UserControl, IKontrolkaZKontekstem
 			new PozycjaListy<Func<IEnumerable<object>>> { Opis = "Dodatkowe podmioty", Wartosc = GeneratorDanych(Kontekst.Baza.DodatkowePodmioty) },
 			new PozycjaListy<Func<IEnumerable<object>>> { Opis = "Faktury", Wartosc = GeneratorDanych(Kontekst.Baza.Faktury) },
 			new PozycjaListy<Func<IEnumerable<object>>> { Opis = "Jednostki miar", Wartosc = GeneratorDanych(Kontekst.Baza.JednostkiMiar) },
+			new PozycjaListy<Func<IEnumerable<object>>> { Opis = "Kraje", Wartosc = GeneratorDanych(Kontekst.Baza.Kraje) },
 			new PozycjaListy<Func<IEnumerable<object>>> { Opis = "Kolumny spisów", Wartosc = GeneratorDanych(Kontekst.Baza.KolumnySpisow) },
 			new PozycjaListy<Func<IEnumerable<object>>> { Opis = "Konfiguracja", Wartosc = GeneratorDanych(Kontekst.Baza.Konfiguracja) },
 			new PozycjaListy<Func<IEnumerable<object>>> { Opis = "Kontrahenci", Wartosc = GeneratorDanych(Kontekst.Baza.Kontrahenci) },

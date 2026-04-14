@@ -55,6 +55,32 @@ class DaneStartowe
 			baza.Zapisz(new Waluta { CzyDomyslna = true, Skrot = "PLN", Nazwa = "Polski złoty" });
 		}
 
+		if (!baza.Kraje.Any())
+		{
+			baza.Zapisz([
+				new Kraj { KodISO2 = "PL", Nazwa = "Polska", CzyUE = true },
+				new Kraj { KodISO2 = "DE", Nazwa = "Niemcy", CzyUE = true },
+				new Kraj { KodISO2 = "CZ", Nazwa = "Czechy", CzyUE = true },
+				new Kraj { KodISO2 = "SK", Nazwa = "Słowacja", CzyUE = true },
+				new Kraj { KodISO2 = "LT", Nazwa = "Litwa", CzyUE = true },
+				new Kraj { KodISO2 = "LV", Nazwa = "Łotwa", CzyUE = true },
+				new Kraj { KodISO2 = "EE", Nazwa = "Estonia", CzyUE = true },
+				new Kraj { KodISO2 = "NL", Nazwa = "Holandia", CzyUE = true },
+				new Kraj { KodISO2 = "BE", Nazwa = "Belgia", CzyUE = true },
+				new Kraj { KodISO2 = "FR", Nazwa = "Francja", CzyUE = true },
+				new Kraj { KodISO2 = "ES", Nazwa = "Hiszpania", CzyUE = true },
+				new Kraj { KodISO2 = "IT", Nazwa = "Włochy", CzyUE = true },
+				new Kraj { KodISO2 = "IE", Nazwa = "Irlandia", CzyUE = true },
+				new Kraj { KodISO2 = "AT", Nazwa = "Austria", CzyUE = true },
+				new Kraj { KodISO2 = "SE", Nazwa = "Szwecja", CzyUE = true },
+				new Kraj { KodISO2 = "DK", Nazwa = "Dania", CzyUE = true },
+				new Kraj { KodISO2 = "NO", Nazwa = "Norwegia", CzyUE = false },
+				new Kraj { KodISO2 = "CH", Nazwa = "Szwajcaria", CzyUE = false },
+				new Kraj { KodISO2 = "GB", Nazwa = "Wielka Brytania", CzyUE = false },
+				new Kraj { KodISO2 = "US", Nazwa = "Stany Zjednoczone", CzyUE = false }
+			]);
+		}
+
 		if (!baza.UrzedySkarbowe.Any())
 		{
 			baza.Zapisz(new UrzadSkarbowy { Kod = "0202", Nazwa = "URZĄD SKARBOWY W BOLESŁAWCU" });

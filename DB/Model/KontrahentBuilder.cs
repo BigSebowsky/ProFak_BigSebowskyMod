@@ -28,6 +28,7 @@ class KontrahentBuilder
 		builder.Property(e => e.CzyTP).HasDefaultValue(false).IsRequired();
 		builder.Property(e => e.CzyImportKSeF).HasDefaultValue(false).IsRequired();
 		builder.Property(e => e.KodUrzedu).HasDefaultValue("").IsRequired();
+		builder.Property(e => e.KrajId);
 		builder.Property(e => e.OsobaFizycznaImie).HasDefaultValue("").IsRequired();
 		builder.Property(e => e.OsobaFizycznaNazwisko).HasDefaultValue("").IsRequired();
 		builder.Property(e => e.OsobaFizycznaDataUrodzenia);
@@ -40,8 +41,11 @@ class KontrahentBuilder
 
 		builder.Ignore(e => e.SposobPlatnosciRef);
 		builder.Ignore(e => e.DomyslnaWalutaRef);
+		builder.Ignore(e => e.KrajRef);
+		builder.Ignore(e => e.KrajKodISO2);
 
 		builder.HasOne(e => e.SposobPlatnosci).WithMany().HasForeignKey(e => e.SposobPlatnosciId).OnDelete(DeleteBehavior.SetNull);
 		builder.HasOne(e => e.DomyslnaWaluta).WithMany().HasForeignKey(e => e.DomyslnaWalutaId).OnDelete(DeleteBehavior.SetNull);
+		builder.HasOne(e => e.Kraj).WithMany().HasForeignKey(e => e.KrajId).OnDelete(DeleteBehavior.SetNull);
 	}
 }

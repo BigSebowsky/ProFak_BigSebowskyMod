@@ -4,6 +4,8 @@ namespace ProFak.UI;
 
 class RachunekBankowyEdytor : EdytorDwieKolumny<RachunekBankowy>
 {
+	private readonly ComboBox comboBoxKraj;
+	private readonly ButtonDPI buttonKraj;
 	private readonly ComboBox comboBoxWaluta;
 	private readonly ButtonDPI buttonWaluta;
 
@@ -13,6 +15,32 @@ class RachunekBankowyEdytor : EdytorDwieKolumny<RachunekBankowy>
 		DodajTextBox(rachunekBankowy => rachunekBankowy.NumerRachunku, "Numer rachunku", wymagane: true);
 		DodajTextBox(rachunekBankowy => rachunekBankowy.NazwaBanku, "Nazwa banku");
 		DodajTextBox(rachunekBankowy => rachunekBankowy.Swift, "SWIFT");
+
+		comboBoxKraj = new ComboBox
+		{
+			Anchor = AnchorStyles.Left | AnchorStyles.Right,
+			DropDownStyle = ComboBoxStyle.DropDownList,
+			Width = 200
+		};
+		buttonKraj = new ButtonDPI
+		{
+			AutoSize = true,
+			Text = "..."
+		};
+		var panelKraj = new TableLayoutPanel
+		{
+			AutoSize = true,
+			AutoSizeMode = AutoSizeMode.GrowAndShrink,
+			ColumnCount = 2,
+			Dock = DockStyle.Fill,
+			Margin = new Padding(0)
+		};
+		panelKraj.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+		panelKraj.ColumnStyles.Add(new ColumnStyle());
+		panelKraj.Controls.Add(comboBoxKraj, 0, 0);
+		panelKraj.Controls.Add(buttonKraj, 1, 0);
+		DodajWiersz(panelKraj, "Kraj rachunku");
+		kontroler.Powiazanie(comboBoxKraj, rachunekBankowy => rachunekBankowy.KrajRef);
 
 		comboBoxWaluta = new ComboBox
 		{
@@ -54,6 +82,15 @@ class RachunekBankowyEdytor : EdytorDwieKolumny<RachunekBankowy>
 			waluta => waluta.Nazwa,
 			waluta => { },
 			Spisy.Waluty,
+			dopuscPustaWartosc: true)
+			.Zainstaluj();
+
+		new Slownik<Kraj>(
+			Kontekst, comboBoxKraj, buttonKraj,
+			Kontekst.Baza.Kraje.OrderBy(kraj => kraj.KodISO2).ToList,
+			kraj => kraj.NazwaFmt,
+			kraj => { },
+			Spisy.Kraje,
 			dopuscPustaWartosc: true)
 			.Zainstaluj();
 	}

@@ -1,4 +1,5 @@
-﻿using ProFak.DB;
+using Microsoft.EntityFrameworkCore;
+using ProFak.DB;
 
 namespace ProFak.UI;
 
@@ -9,6 +10,7 @@ class KontrahentSpis : Spis<Kontrahent>
 		DodajKolumne(nameof(Kontrahent.Nazwa), "Nazwa", szerokosc: 200);
 		DodajKolumne(nameof(Kontrahent.PelnaNazwa), "Pełna nazwa", rozciagnij: true);
 		DodajKolumne(nameof(Kontrahent.NIP), "NIP");
+		DodajKolumne(nameof(Kontrahent.KrajKodISO2), "Kraj", szerokosc: 60);
 		DodajKolumne(nameof(Kontrahent.AdresRejestrowyFmt), "Adres", szerokosc: 300);
 		DodajKolumneBool(nameof(Kontrahent.CzyArchiwalny), "Arch.", szerokosc: 50);
 		DodajKolumneBool(nameof(Kontrahent.CzyImportKSeF), "KSeF", szerokosc: 50);
@@ -17,7 +19,7 @@ class KontrahentSpis : Spis<Kontrahent>
 
 	protected override void Przeladuj()
 	{
-		Rekordy = Kontekst.Baza.Kontrahenci.AsEnumerable().Where(kontrahent => !kontrahent.CzyPodmiot).OrderBy(kontrahent => kontrahent.Nazwa);
+		Rekordy = Kontekst.Baza.Kontrahenci.Include(kontrahent => kontrahent.Kraj).AsEnumerable().Where(kontrahent => !kontrahent.CzyPodmiot).OrderBy(kontrahent => kontrahent.Nazwa);
 	}
 
 	protected override void UstawStylWiersza(Kontrahent rekord, string kolumna, DataGridViewCellStyle styl)

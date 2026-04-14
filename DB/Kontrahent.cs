@@ -19,6 +19,7 @@ public class Kontrahent : Rekord<Kontrahent>
 	public bool CzyImportKSeF { get; set; }
 	public int? SposobPlatnosciId { get; set; }
 	public int? DomyslnaWalutaId { get; set; }
+	public int? KrajId { get; set; }
 
 	public string KodUrzedu { get; set; } = "";
 	public string OsobaFizycznaImie { get; set; } = "";
@@ -30,13 +31,16 @@ public class Kontrahent : Rekord<Kontrahent>
 
 	public Ref<SposobPlatnosci> SposobPlatnosciRef { get => SposobPlatnosciId; set => SposobPlatnosciId = value; }
 	public Ref<Waluta> DomyslnaWalutaRef { get => DomyslnaWalutaId; set => DomyslnaWalutaId = value; }
+	public Ref<Kraj> KrajRef { get => KrajId; set => KrajId = value; }
 
 	public SposobPlatnosci? SposobPlatnosci { get; set; }
 	public Waluta? DomyslnaWaluta { get; set; }
+	public Kraj? Kraj { get; set; }
 	public List<RachunekBankowy> RachunkiBankowe { get; set; } = default!;
 
 	public string AdresRejestrowyFmt => AdresRejestrowy.JakoJednaLinia();
 	public string PelnaNazwaLubNazwa => String.IsNullOrEmpty(PelnaNazwa) ? Nazwa : PelnaNazwa;
+	public string KrajKodISO2 => Kraj?.KodISO2 ?? "";
 
 	public override bool CzyPasuje(string fraza)
 		=> base.CzyPasuje(fraza)
@@ -49,6 +53,7 @@ public class Kontrahent : Rekord<Kontrahent>
 		|| CzyPasuje(Telefon, fraza)
 		|| CzyPasuje(EMail, fraza)
 		|| CzyPasuje(UwagiWewnetrzne, fraza)
+		|| CzyPasuje(KrajKodISO2, fraza)
 		|| CzyPasuje(CzyArchiwalny ? "Archiwalny" : "", fraza)
 		|| CzyPasuje(CzyImportKSeF ? "KSeF" : "", fraza)
 		|| CzyPasuje(CzyPodmiot ? "Podmiot" : "", fraza);

@@ -99,9 +99,10 @@ public partial class GlowneOkno : Form
 		var sposobyPlatnosci = Wezel("Sposoby płatności", "SposobyPlatnosci");
 		var stawkiVat = Wezel("Stawki VAT", "StawkiVat");
 		var urzedySkarbowe = Wezel("Urzędy skarbowe", "UrzedySkarbowe");
+		var kraje = Wezel("Kraje", "Kraje");
 		var waluty = Wezel("Waluty", "Waluty");
 		var kursyWalut = Wezel("Kursy walut", "KursyWalut");
-		var slowniki = Wezel("Słowniki", "Slowniki", [jednostkiMiar, sposobyPlatnosci, stawkiVat, urzedySkarbowe, waluty, kursyWalut]);
+		var slowniki = Wezel("Słowniki", "Slowniki", [jednostkiMiar, sposobyPlatnosci, stawkiVat, urzedySkarbowe, kraje, waluty, kursyWalut]);
 		var numeracja = Wezel("Numeracja", "Numeratory");
 		var konfiguracja = Wezel("Konfiguracja", "Konfiguracja");
 #if !SQLSERVER
@@ -272,6 +273,7 @@ public partial class GlowneOkno : Form
 		}
 
 		if (pozycja.Name == "JednostkiMiar") Wyswietl(Spisy.JednostkiMiar(), pozycja.Name);
+		else if (pozycja.Name == "Kraje") Wyswietl(Spisy.Kraje(), pozycja.Name);
 		else if (pozycja.Name == "Kontrahenci") Wyswietl(Spisy.Kontrahenci(), pozycja.Name);
 		else if (pozycja.Name == "SposobyPlatnosci") Wyswietl(Spisy.SposobyPlatnosci(), pozycja.Name);
 		else if (pozycja.Name == "StawkiVat") Wyswietl(Spisy.StawkiVat(), pozycja.Name);

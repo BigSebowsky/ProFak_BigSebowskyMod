@@ -29,6 +29,7 @@ partial class KontrahentEdytor : KontrahentEdytorBase
 		kontroler.Powiazanie(textBoxEMail, kontrahent => kontrahent.EMail);
 		kontroler.Powiazanie(textBoxRachunekBankowy, kontrahent => kontrahent.RachunekBankowy);
 		kontroler.Powiazanie(textBoxNazwaBanku, kontrahent => kontrahent.NazwaBanku);
+		kontroler.Powiazanie(comboBoxKraj, kontrahent => kontrahent.KrajRef);
 		kontroler.Powiazanie(textBoxUwagiPubliczne, kontrahent => kontrahent.UwagiPubliczne);
 		kontroler.Powiazanie(textBoxUwagiWewnetrzne, kontrahent => kontrahent.UwagiWewnetrzne);
 		kontroler.Powiazanie(comboBoxStan, kontrahent => kontrahent.CzyArchiwalny);
@@ -156,6 +157,15 @@ partial class KontrahentEdytor : KontrahentEdytorBase
 			domyslnaWaluta => domyslnaWaluta.Nazwa,
 			domyslnaWaluta => { },
 			Spisy.Waluty,
+			dopuscPustaWartosc: true)
+			.Zainstaluj();
+
+		new Slownik<Kraj>(
+			Kontekst, comboBoxKraj, buttonKraj,
+			Kontekst.Baza.Kraje.OrderBy(kraj => kraj.KodISO2).ToList,
+			kraj => kraj.NazwaFmt,
+			kraj => { },
+			Spisy.Kraje,
 			dopuscPustaWartosc: true)
 			.Zainstaluj();
 

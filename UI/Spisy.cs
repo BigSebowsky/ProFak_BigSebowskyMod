@@ -150,6 +150,16 @@ class Spisy
 		);
 	}
 
+	public static SpisZAkcjami<Kraj, KrajSpis> Kraje()
+	{
+		return Utworz(new KrajSpis(),
+			new DodajRekordAkcja<Kraj, KrajEdytor>(),
+			new EdytujRekordAkcja<Kraj, KrajEdytor>(),
+			new UsunRekordAkcja<Kraj>(),
+			new PrzeladujAkcja<Kraj>()
+		);
+	}
+
 	public static SpisZAkcjami<Kontrahent, KontrahentSpis> Kontrahenci()
 	{
 		return Utworz(new KontrahentSpis(),

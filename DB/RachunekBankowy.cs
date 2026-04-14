@@ -8,13 +8,16 @@ public class RachunekBankowy : Rekord<RachunekBankowy>
 	public string NazwaBanku { get; set; } = "";
 	public string Swift { get; set; } = "";
 	public int? WalutaId { get; set; }
+	public int? KrajId { get; set; }
 	public bool CzyDomyslny { get; set; }
 
 	public Ref<Kontrahent> KontrahentRef { get => KontrahentId; set => KontrahentId = value; }
 	public Ref<Waluta> WalutaRef { get => WalutaId; set => WalutaId = value; }
+	public Ref<Kraj> KrajRef { get => KrajId; set => KrajId = value; }
 
 	public Kontrahent? Kontrahent { get; set; }
 	public Waluta? Waluta { get; set; }
+	public Kraj? Kraj { get; set; }
 
 	public string NazwaFmt
 	{
@@ -27,6 +30,7 @@ public class RachunekBankowy : Rekord<RachunekBankowy>
 	}
 
 	public string WalutaSkrot => Waluta?.Skrot ?? "";
+	public string KrajKodISO2 => Kraj?.KodISO2 ?? "";
 	public string CzyDomyslnyFmt => CzyDomyslny ? "Tak" : "";
 
 	public override bool CzyPasuje(string fraza)
@@ -36,6 +40,7 @@ public class RachunekBankowy : Rekord<RachunekBankowy>
 		|| CzyPasuje(NazwaBanku, fraza)
 		|| CzyPasuje(Swift, fraza)
 		|| CzyPasuje(WalutaSkrot, fraza)
+		|| CzyPasuje(KrajKodISO2, fraza)
 		|| CzyPasuje(CzyDomyslnyFmt, fraza)
 		|| CzyPasuje(CzyDomyslny ? "Domyślny" : "", fraza);
 }

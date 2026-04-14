@@ -58,6 +58,9 @@ partial class KontrahentEdytor
 		label16 = new Label();
 		buttonWaluta = new ButtonDPI();
 		comboBoxWaluta = new ComboBox();
+		label17 = new Label();
+		comboBoxKraj = new ComboBox();
+		buttonKraj = new ButtonDPI();
 		tabPage2 = new TabPage();
 		tableLayoutPanel4 = new TableLayoutPanel();
 		groupBox1 = new GroupBox();
@@ -163,10 +166,14 @@ partial class KontrahentEdytor
 		tableLayoutPanel1.Controls.Add(buttonWaluta, 2, 12);
 		tableLayoutPanel1.Controls.Add(comboBoxWaluta, 1, 12);
 		tableLayoutPanel1.Controls.Add(checkBoxImportKSeF, 1, 11);
+		tableLayoutPanel1.Controls.Add(label17, 0, 13);
+		tableLayoutPanel1.Controls.Add(comboBoxKraj, 1, 13);
+		tableLayoutPanel1.Controls.Add(buttonKraj, 2, 13);
 		tableLayoutPanel1.Dock = DockStyle.Fill;
 		tableLayoutPanel1.Location = new Point(3, 3);
 		tableLayoutPanel1.Name = "tableLayoutPanel1";
-		tableLayoutPanel1.RowCount = 15;
+		tableLayoutPanel1.RowCount = 16;
+		tableLayoutPanel1.RowStyles.Add(new RowStyle());
 		tableLayoutPanel1.RowStyles.Add(new RowStyle());
 		tableLayoutPanel1.RowStyles.Add(new RowStyle());
 		tableLayoutPanel1.RowStyles.Add(new RowStyle());
@@ -445,6 +452,36 @@ partial class KontrahentEdytor
 		comboBoxWaluta.Name = "comboBoxWaluta";
 		comboBoxWaluta.Size = new Size(263, 23);
 		comboBoxWaluta.TabIndex = 15;
+		// 
+		// label17
+		// 
+		label17.Anchor = AnchorStyles.Right;
+		label17.AutoSize = true;
+		label17.Location = new Point(107, 438);
+		label17.Name = "label17";
+		label17.Size = new Size(33, 15);
+		label17.TabIndex = 17;
+		label17.Text = "Kraj";
+		// 
+		// comboBoxKraj
+		// 
+		comboBoxKraj.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+		comboBoxKraj.DropDownStyle = ComboBoxStyle.DropDownList;
+		comboBoxKraj.FormattingEnabled = true;
+		comboBoxKraj.Location = new Point(146, 434);
+		comboBoxKraj.Name = "comboBoxKraj";
+		comboBoxKraj.Size = new Size(263, 23);
+		comboBoxKraj.TabIndex = 16;
+		// 
+		// buttonKraj
+		// 
+		buttonKraj.AutoSize = true;
+		buttonKraj.Location = new Point(415, 433);
+		buttonKraj.Name = "buttonKraj";
+		buttonKraj.Size = new Size(26, 25);
+		buttonKraj.TabIndex = 18;
+		buttonKraj.Text = "...";
+		buttonKraj.UseVisualStyleBackColor = true;
 		// 
 		// tabPage2
 		// 
@@ -890,7 +927,10 @@ partial class KontrahentEdytor
 	private ButtonDPI buttonCertyfikatKSeF;
 	private System.Windows.Forms.TextBox textBoxNazwaBanku;
 	private Label label16;
+	private Label label17;
 	private ButtonDPI buttonWaluta;
+	private ButtonDPI buttonKraj;
 	private ComboBox comboBoxWaluta;
+	private ComboBox comboBoxKraj;
 	private CheckBox checkBoxImportKSeF;
 }

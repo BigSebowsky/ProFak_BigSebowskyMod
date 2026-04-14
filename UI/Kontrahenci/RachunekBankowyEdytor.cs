@@ -13,6 +13,7 @@ class RachunekBankowyEdytor : EdytorDwieKolumny<RachunekBankowy>
 	{
 		DodajTextBox(rachunekBankowy => rachunekBankowy.Nazwa, "Nazwa");
 		DodajTextBox(rachunekBankowy => rachunekBankowy.NumerRachunku, "Numer rachunku", wymagane: true);
+		DodajTextBox(rachunekBankowy => rachunekBankowy.NumerEksportowy, "Numer eksportowy / KSeF");
 		DodajTextBox(rachunekBankowy => rachunekBankowy.NazwaBanku, "Nazwa banku");
 		DodajTextBox(rachunekBankowy => rachunekBankowy.Swift, "SWIFT");
 

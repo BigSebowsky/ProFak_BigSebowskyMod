@@ -20,8 +20,10 @@ public class Generator
 			.Include(e => e.Wplaty)
 			.Include(e => e.Pozycje).ThenInclude(e => e.JednostkaMiary)
 			.Include(e => e.Pozycje).ThenInclude(e => e.StawkaVat)
-			.Include(e => e.Sprzedawca)
-			.Include(e => e.Nabywca)
+			.Include(e => e.Sprzedawca!).ThenInclude(e => e.Kraj)
+			.Include(e => e.Sprzedawca!).ThenInclude(e => e.RachunkiBankowe).ThenInclude(e => e.Kraj)
+			.Include(e => e.Sprzedawca!).ThenInclude(e => e.RachunkiBankowe).ThenInclude(e => e.Waluta)
+			.Include(e => e.Nabywca!).ThenInclude(e => e.Kraj)
 			.Include(e => e.Waluta)
 			.Include(e => e.FakturaKorygowana)
 			.Include(e => e.FakturaPierwotna)
@@ -55,11 +57,11 @@ public class Generator
 		return dbFaktura;
 	}
 
-	private static T ZbudujAdres<T>(string adres) where T : TAdres, new()
+	private static T ZbudujAdres<T>(string adres, TKodKraju kodKraju) where T : TAdres, new()
 	{
 		var linie = adres.JakoDwieLinie();
 		var ksefAdres = new T();
-		ksefAdres.KodKraju = TKodKraju.PL;
+		ksefAdres.KodKraju = kodKraju;
 		if (!String.IsNullOrWhiteSpace(linie.linia1)) ksefAdres.AdresL1 = linie.linia1;
 		if (!String.IsNullOrWhiteSpace(linie.linia2)) ksefAdres.AdresL2 = linie.linia2;
 		return ksefAdres;
@@ -79,14 +81,16 @@ public class Generator
 		ksefFaktura.Naglowek.SystemInfo = ProFakInfo.UserAgent;
 		ksefFaktura.Podmiot1 = new FakturaPodmiot1();
 		ksefFaktura.Podmiot1.DaneIdentyfikacyjne = new TPodmiot1();
+		var kodKrajuSprzedawcy = PobierzKodKraju(dbFaktura.Sprzedawca, dbFaktura.NIPSprzedawcy, TKodKraju.PL);
+		var kodKrajuNabywcy = PobierzKodKraju(dbFaktura.Nabywca, dbFaktura.NIPNabywcy, TKodKraju.PL);
 		ksefFaktura.Podmiot1.DaneIdentyfikacyjne.NIP = dbFaktura.NIPSprzedawcy.Replace("-", "");
 		ksefFaktura.Podmiot1.DaneIdentyfikacyjne.Nazwa = dbFaktura.NazwaSprzedawcy;
-		ksefFaktura.Podmiot1.Adres = ZbudujAdres<TAdres>(dbFaktura.DaneSprzedawcy);
-		if (!String.IsNullOrEmpty(dbFaktura.Sprzedawca.AdresKorespondencyjny) && dbFaktura.Sprzedawca.AdresKorespondencyjny != dbFaktura.DaneSprzedawcy) ksefFaktura.Podmiot1.AdresKoresp = ZbudujAdres<FakturaPodmiot1AdresKoresp>(dbFaktura.Sprzedawca.AdresKorespondencyjny);
+		ksefFaktura.Podmiot1.Adres = ZbudujAdres<TAdres>(dbFaktura.DaneSprzedawcy, kodKrajuSprzedawcy);
+		if (!String.IsNullOrEmpty(dbFaktura.Sprzedawca.AdresKorespondencyjny) && dbFaktura.Sprzedawca.AdresKorespondencyjny != dbFaktura.DaneSprzedawcy) ksefFaktura.Podmiot1.AdresKoresp = ZbudujAdres<FakturaPodmiot1AdresKoresp>(dbFaktura.Sprzedawca.AdresKorespondencyjny, kodKrajuSprzedawcy);
 		ksefFaktura.Podmiot1.DaneKontaktowe.Add(new FakturaPodmiot1DaneKontaktowe { Email = String.IsNullOrWhiteSpace(dbFaktura.Sprzedawca.EMail) ? null : dbFaktura.Sprzedawca.EMail, Telefon = String.IsNullOrWhiteSpace(dbFaktura.Sprzedawca.Telefon) ? null : dbFaktura.Sprzedawca.Telefon });
 		ksefFaktura.Podmiot2 = new FakturaPodmiot2();
 		ksefFaktura.Podmiot2.DaneIdentyfikacyjne = new TPodmiot2();
-		ksefFaktura.Podmiot2.Adres = ZbudujAdres<TAdres>(dbFaktura.DaneNabywcy);
+		ksefFaktura.Podmiot2.Adres = ZbudujAdres<TAdres>(dbFaktura.DaneNabywcy, kodKrajuNabywcy);
 		var nipNabywcy = (dbFaktura.NIPNabywcy ?? "").Replace("-", "").Trim().ToUpper();
 		if (String.IsNullOrEmpty(nipNabywcy))
 		{
@@ -104,13 +108,13 @@ public class Generator
 		{
 			ksefFaktura.Podmiot2.DaneIdentyfikacyjne.KodUE = kodUE;
 			ksefFaktura.Podmiot2.DaneIdentyfikacyjne.NrVatUE = nipNabywcy.Substring(2);
-			if (Enum.TryParse<TKodKraju>(nipNabywcy[0..2], out var kodKraju)) ksefFaktura.Podmiot2.Adres.KodKraju = kodKraju;
+			if (dbFaktura.Nabywca?.Kraj == null && Enum.TryParse<TKodKraju>(nipNabywcy[0..2], out var kodKraju)) ksefFaktura.Podmiot2.Adres.KodKraju = kodKraju;
 		}
 		else if (Regex.IsMatch(nipNabywcy, @"^\w\w") && Enum.TryParse<TKodKraju>(nipNabywcy[0..2], out var kodKraju))
 		{
 			ksefFaktura.Podmiot2.DaneIdentyfikacyjne.KodKraju = kodKraju;
 			ksefFaktura.Podmiot2.DaneIdentyfikacyjne.NrID = nipNabywcy.Substring(2);
-			ksefFaktura.Podmiot2.Adres.KodKraju = kodKraju;
+			if (dbFaktura.Nabywca?.Kraj == null) ksefFaktura.Podmiot2.Adres.KodKraju = kodKraju;
 		}
 		else
 		{
@@ -173,12 +177,8 @@ public class Generator
 		else if ((dbFaktura.OpisSposobuPlatnosci ?? "").Contains("kredyt", StringComparison.InvariantCultureIgnoreCase)) ksefFaktura.Fa.Platnosc.FormaPlatnosci = TFormaPlatnosci.Item5;
 		else if ((dbFaktura.OpisSposobuPlatnosci ?? "").Contains("mobiln", StringComparison.InvariantCultureIgnoreCase)) ksefFaktura.Fa.Platnosc.FormaPlatnosci = TFormaPlatnosci.Item7;
 		else ksefFaktura.Fa.Platnosc.FormaPlatnosci = TFormaPlatnosci.Item6;
-		if (!String.IsNullOrEmpty(dbFaktura.RachunekBankowy))
-		{
-			var ksefRachunek = new TRachunekBankowy { NrRB = NormalizujNumerRachunkuDlaKSeF(dbFaktura.RachunekBankowy) };
-			if (!String.IsNullOrEmpty(dbFaktura.NazwaBanku)) ksefRachunek.NazwaBanku = dbFaktura.NazwaBanku;
-			ksefFaktura.Fa.Platnosc.RachunekBankowy.Add(ksefRachunek);
-		}
+		var ksefRachunek = ZbudujRachunekBankowyKSeF(dbFaktura);
+		if (ksefRachunek != null) ksefFaktura.Fa.Platnosc.RachunekBankowy.Add(ksefRachunek);
 
 		if (obciazenia.Count != 0)
 		{
@@ -231,7 +231,7 @@ public class Generator
 				ksefFaktura.Fa.Podmiot1K.DaneIdentyfikacyjne = new TPodmiot1();
 				ksefFaktura.Fa.Podmiot1K.DaneIdentyfikacyjne.Nazwa = dbFaktura.FakturaKorygowana.NazwaSprzedawcy;
 				ksefFaktura.Fa.Podmiot1K.DaneIdentyfikacyjne.NIP = dbFaktura.FakturaKorygowana.NIPSprzedawcy.Replace("-", "");
-				ksefFaktura.Fa.Podmiot1K.Adres = ZbudujAdres<TAdres>(dbFaktura.FakturaKorygowana.DaneSprzedawcy);
+				ksefFaktura.Fa.Podmiot1K.Adres = ZbudujAdres<TAdres>(dbFaktura.FakturaKorygowana.DaneSprzedawcy, kodKrajuSprzedawcy);
 			}
 
 			if (dbFaktura.FakturaKorygowana.NazwaNabywcy != dbFaktura.NazwaNabywcy || dbFaktura.FakturaKorygowana.DaneNabywcy != dbFaktura.DaneNabywcy)
@@ -240,7 +240,7 @@ public class Generator
 				podmiot2k.DaneIdentyfikacyjne = new TPodmiot2();
 				podmiot2k.DaneIdentyfikacyjne.Nazwa = dbFaktura.FakturaKorygowana.NazwaNabywcy;
 				podmiot2k.DaneIdentyfikacyjne = ksefFaktura.Podmiot2.DaneIdentyfikacyjne;
-				podmiot2k.Adres = ZbudujAdres<TAdres>(dbFaktura.FakturaKorygowana.DaneNabywcy);
+				podmiot2k.Adres = ZbudujAdres<TAdres>(dbFaktura.FakturaKorygowana.DaneNabywcy, kodKrajuNabywcy);
 				ksefFaktura.Fa.Podmiot2K.Add(podmiot2k);
 			}
 		}
@@ -266,7 +266,7 @@ public class Generator
 			if (!String.IsNullOrEmpty(dbPodmiot3.NIP)) ksefPodmiot3.DaneIdentyfikacyjne.NIP = dbPodmiot3.NIP;
 			if (!String.IsNullOrEmpty(dbPodmiot3.VatUE)) ksefPodmiot3.DaneIdentyfikacyjne.NrVatUE = dbPodmiot3.VatUE;
 			if (!String.IsNullOrEmpty(dbPodmiot3.IDwew)) ksefPodmiot3.DaneIdentyfikacyjne.IDWew = dbPodmiot3.IDwew;
-			if (!String.IsNullOrEmpty(dbPodmiot3.Adres)) ksefPodmiot3.Adres = ZbudujAdres<TAdres>(dbPodmiot3.Adres);
+			if (!String.IsNullOrEmpty(dbPodmiot3.Adres)) ksefPodmiot3.Adres = ZbudujAdres<TAdres>(dbPodmiot3.Adres, TKodKraju.PL);
 			dbPodmiot3.Udzial = ksefPodmiot3.Udzial;
 
 			ksefFaktura.Podmiot3.Add(ksefPodmiot3);
@@ -407,6 +407,7 @@ public class Generator
 				dbFaktura.Sprzedawca.NIP = dbFaktura.NIPSprzedawcy = ksefFaktura.Podmiot1.DaneIdentyfikacyjne.NIP;
 			}
 
+			if (ksefFaktura.Podmiot1.Adres != null) dbFaktura.Sprzedawca.Kraj = new Kraj { KodISO2 = ksefFaktura.Podmiot1.Adres.KodKraju.ToString() };
 			if (ksefFaktura.Podmiot1.Adres != null) dbFaktura.Sprzedawca.AdresRejestrowy = dbFaktura.DaneSprzedawcy = ksefFaktura.Podmiot1.Adres.AdresL1 + "\r\n" + ksefFaktura.Podmiot1.Adres.AdresL2;
 			if (ksefFaktura.Podmiot1.AdresKoresp != null) dbFaktura.Sprzedawca.AdresKorespondencyjny = ksefFaktura.Podmiot1.AdresKoresp.AdresL1 + "\r\n" + ksefFaktura.Podmiot1.AdresKoresp.AdresL2;
 			if (ksefFaktura.Podmiot1.DaneKontaktowe != null && ksefFaktura.Podmiot1.DaneKontaktowe.Count > 0)
@@ -426,6 +427,7 @@ public class Generator
 				else if (!String.IsNullOrEmpty(ksefFaktura.Podmiot2.DaneIdentyfikacyjne.NrID)) dbFaktura.Nabywca.NIP = dbFaktura.NIPNabywcy = ksefFaktura.Podmiot2.DaneIdentyfikacyjne.KodKraju + ksefFaktura.Podmiot2.DaneIdentyfikacyjne.NrID;
 			}
 
+			if (ksefFaktura.Podmiot2.Adres != null) dbFaktura.Nabywca.Kraj = new Kraj { KodISO2 = ksefFaktura.Podmiot2.Adres.KodKraju.ToString() };
 			if (ksefFaktura.Podmiot2.Adres != null) dbFaktura.Nabywca.AdresRejestrowy = dbFaktura.DaneNabywcy = ksefFaktura.Podmiot2.Adres.AdresL1 + "\r\n" + ksefFaktura.Podmiot2.Adres.AdresL2;
 			if (ksefFaktura.Podmiot2.AdresKoresp != null) dbFaktura.Nabywca.AdresKorespondencyjny = ksefFaktura.Podmiot2.AdresKoresp.AdresL1 + "\r\n" + ksefFaktura.Podmiot2.AdresKoresp.AdresL2;
 			if (ksefFaktura.Podmiot2.DaneKontaktowe != null && ksefFaktura.Podmiot2.DaneKontaktowe.Count > 0)
@@ -819,6 +821,31 @@ public class Generator
 		return kontrahent;
 	}
 
+	private static void PowiazKrajKontrahenta(Baza baza, Kontrahent kontrahent, string? kodISO2, string? numerIdentyfikacyjny, bool domyslniePL = false)
+	{
+		kodISO2 = (kodISO2 ?? "").Trim().ToUpperInvariant();
+		if (String.IsNullOrWhiteSpace(kodISO2))
+		{
+			var numer = OczyscNumerIdentyfikacyjny(numerIdentyfikacyjny);
+			if (Regex.IsMatch(numer, @"^\w\w")) kodISO2 = numer[0..2];
+			else if (domyslniePL) kodISO2 = "PL";
+		}
+		if (String.IsNullOrWhiteSpace(kodISO2)) return;
+
+		var kraj = baza.Kraje.FirstOrDefault(e => e.KodISO2 == kodISO2);
+		if (kraj == null) return;
+		if (kontrahent.KrajId == kraj.Id) return;
+		if (kontrahent.Id <= 0)
+		{
+			kontrahent.Kraj = kraj;
+			kontrahent.KrajRef = kraj;
+			return;
+		}
+
+		kontrahent.KrajRef = kraj;
+		baza.Zapisz(kontrahent);
+	}
+
 	private static string NormalizujOpisPlatnosci(string? opis)
 	{
 		if (String.IsNullOrWhiteSpace(opis)) return "";
@@ -908,10 +935,12 @@ public class Generator
 		ArgumentNullException.ThrowIfNull(faktura.Sprzedawca);
 
 		var sprzedawca = ZnajdzLubUtworzKontrahenta(baza, faktura.Sprzedawca);
+		PowiazKrajKontrahenta(baza, sprzedawca, faktura.Sprzedawca.Kraj?.KodISO2, faktura.NIPSprzedawcy, domyslniePL: true);
 		faktura.SprzedawcaRef = sprzedawca;
 		faktura.Sprzedawca = null;
 
 		var nabywca = ZnajdzLubUtworzKontrahenta(baza, faktura.Nabywca);
+		PowiazKrajKontrahenta(baza, nabywca, faktura.Nabywca.Kraj?.KodISO2, faktura.NIPNabywcy);
 		faktura.NabywcaRef = nabywca;
 		faktura.Nabywca = null;
 
@@ -982,9 +1011,87 @@ public class Generator
 		}
 	}
 
+	private static TKodKraju PobierzKodKraju(Kontrahent? kontrahent, string? numerIdentyfikacyjny, TKodKraju domyslny)
+	{
+		var kodISO2 = (kontrahent?.Kraj?.KodISO2 ?? "").Trim().ToUpperInvariant();
+		if (!String.IsNullOrWhiteSpace(kodISO2) && Enum.TryParse<TKodKraju>(kodISO2, out var kodKrajuZModelu))
+		{
+			return kodKrajuZModelu;
+		}
+
+		var numer = OczyscNumerIdentyfikacyjny(numerIdentyfikacyjny);
+		if (Regex.IsMatch(numer, @"^\w\w") && Enum.TryParse<TKodKraju>(numer[0..2], out var kodKrajuZNumeru))
+		{
+			return kodKrajuZNumeru;
+		}
+
+		return domyslny;
+	}
+
+	private static string NormalizujNumerRachunkuDoPorownan(string? numerRachunku)
+	{
+		return Regex.Replace((numerRachunku ?? "").Trim().ToUpperInvariant(), @"[^A-Z0-9]+", "");
+	}
+
 	private static string NormalizujNumerRachunkuDlaKSeF(string numerRachunku)
 	{
 		return Regex.Replace((numerRachunku ?? "").Trim().ToUpperInvariant(), @"[\s-]+", "");
+	}
+
+	private static RachunekBankowy? ZnajdzRachunekDoEksportu(DBFaktura dbFaktura)
+	{
+		var rachunki = dbFaktura.Sprzedawca?.RachunkiBankowe?
+			.Where(rachunek => !String.IsNullOrWhiteSpace(rachunek.NumerRachunku) || !String.IsNullOrWhiteSpace(rachunek.NumerEksportowy))
+			.OrderByDescending(rachunek => rachunek.CzyDomyslny)
+			.ThenBy(rachunek => rachunek.Id)
+			.ToList();
+		if (rachunki == null || rachunki.Count == 0) return null;
+
+		var numerZFaktury = NormalizujNumerRachunkuDoPorownan(dbFaktura.RachunekBankowy);
+		if (!String.IsNullOrWhiteSpace(numerZFaktury))
+		{
+			var dopasowany = rachunki.FirstOrDefault(rachunek =>
+				NormalizujNumerRachunkuDoPorownan(rachunek.NumerDoEksportu) == numerZFaktury
+				|| NormalizujNumerRachunkuDoPorownan(rachunek.NumerRachunku) == numerZFaktury);
+			if (dopasowany != null) return dopasowany;
+		}
+
+		if (dbFaktura.WalutaId.HasValue)
+		{
+			var rachunekDlaWaluty = rachunki.FirstOrDefault(rachunek => rachunek.WalutaId == dbFaktura.WalutaId && rachunek.CzyDomyslny)
+				?? rachunki.FirstOrDefault(rachunek => rachunek.WalutaId == dbFaktura.WalutaId)
+				?? rachunki.FirstOrDefault(rachunek => rachunek.WalutaId == null && rachunek.CzyDomyslny)
+				?? rachunki.FirstOrDefault(rachunek => rachunek.WalutaId == null);
+			if (rachunekDlaWaluty != null) return rachunekDlaWaluty;
+		}
+
+		return rachunki.FirstOrDefault(rachunek => rachunek.CzyDomyslny) ?? rachunki.First();
+	}
+
+	private static TRachunekBankowy? ZbudujRachunekBankowyKSeF(DBFaktura dbFaktura)
+	{
+		var rachunek = ZnajdzRachunekDoEksportu(dbFaktura);
+		var numer = rachunek?.NumerDoEksportu;
+		var nazwaBanku = rachunek?.NazwaBanku;
+		var swift = rachunek?.Swift;
+
+		if (String.IsNullOrWhiteSpace(numer))
+		{
+			numer = dbFaktura.RachunekBankowy;
+			if (String.IsNullOrWhiteSpace(nazwaBanku)) nazwaBanku = dbFaktura.NazwaBanku;
+		}
+
+		if (String.IsNullOrWhiteSpace(numer)) return null;
+
+		var ksefRachunek = new TRachunekBankowy
+		{
+			NrRB = NormalizujNumerRachunkuDlaKSeF(numer)
+		};
+
+		if (!String.IsNullOrWhiteSpace(nazwaBanku)) ksefRachunek.NazwaBanku = nazwaBanku;
+		if (!String.IsNullOrWhiteSpace(swift)) ksefRachunek.SWIFT = swift.Trim().ToUpperInvariant();
+
+		return ksefRachunek;
 	}
 
 	private static List<string> ZweryfikujBiznesowo(DBFaktura faktura)
@@ -1054,6 +1161,14 @@ public class Generator
 		if (!String.IsNullOrWhiteSpace(faktura.RachunekBankowy) && String.IsNullOrWhiteSpace(faktura.OpisSposobuPlatnosci))
 		{
 			bledy.Add("Uzupełnij sposób płatności dla faktury z rachunkiem bankowym.");
+		}
+		var rachunekDoEksportu = ZnajdzRachunekDoEksportu(faktura);
+		if (rachunekDoEksportu != null
+			&& !String.IsNullOrWhiteSpace(rachunekDoEksportu.KrajKodISO2)
+			&& !String.Equals(rachunekDoEksportu.KrajKodISO2, "PL", StringComparison.OrdinalIgnoreCase)
+			&& String.IsNullOrWhiteSpace(rachunekDoEksportu.Swift))
+		{
+			bledy.Add($"Rachunek \"{rachunekDoEksportu.NazwaFmt}\" ma kraj inny niż PL, więc przed wysyłką do KSeF uzupełnij SWIFT.");
 		}
 
 		return bledy;

@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProFak.DB;
 using ProFak.IO.FA_3.DefinicjeTypy;
+using System.Collections;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -26,7 +28,9 @@ public class Generator
 			.Include(e => e.DodatkowePodmioty)
 			.Where(e => e.Id == dbFakturaRef.Id)
 			.FirstOrDefault() ?? throw new ApplicationException($"Nie znaleziono faktury {dbFakturaRef}.");
+		var bledyBiznesowe = ZweryfikujBiznesowo(dbFaktura);
 		var ksefFaktura = Zbuduj(dbFaktura);
+		ZweryfikujKSeF(ksefFaktura, dbFaktura.Numer, bledyBiznesowe);
 		var xo = new XmlAttributeOverrides();
 		var xs = new XmlSerializer(typeof(KSEFFaktura), xo);
 		var xml = new StringBuilder();
@@ -171,7 +175,7 @@ public class Generator
 		else ksefFaktura.Fa.Platnosc.FormaPlatnosci = TFormaPlatnosci.Item6;
 		if (!String.IsNullOrEmpty(dbFaktura.RachunekBankowy))
 		{
-			var ksefRachunek = new TRachunekBankowy { NrRB = dbFaktura.RachunekBankowy.Replace(" ", "") };
+			var ksefRachunek = new TRachunekBankowy { NrRB = NormalizujNumerRachunkuDlaKSeF(dbFaktura.RachunekBankowy) };
 			if (!String.IsNullOrEmpty(dbFaktura.NazwaBanku)) ksefRachunek.NazwaBanku = dbFaktura.NazwaBanku;
 			ksefFaktura.Fa.Platnosc.RachunekBankowy.Add(ksefRachunek);
 		}
@@ -975,5 +979,187 @@ public class Generator
 			fakturaKorygowana.FakturaKorygujacaRef = faktura;
 			baza.Zapisz(fakturaKorygowana);
 		}
+	}
+
+	private static string NormalizujNumerRachunkuDlaKSeF(string numerRachunku)
+	{
+		return Regex.Replace((numerRachunku ?? "").Trim().ToUpperInvariant(), @"[\s-]+", "");
+	}
+
+	private static List<string> ZweryfikujBiznesowo(DBFaktura faktura)
+	{
+		var bledy = new List<string>();
+
+		if (!faktura.CzySprzedaz) bledy.Add("Do KSeF można wysyłać tylko dokumenty sprzedaży.");
+		if (String.IsNullOrWhiteSpace(faktura.Numer)) bledy.Add("Brak numeru faktury.");
+		if (faktura.DataWystawienia == default) bledy.Add("Brak daty wystawienia.");
+		if (faktura.DataSprzedazy == default) bledy.Add("Brak daty sprzedaży.");
+		if (faktura.DataSprzedazy < new DateTime(2006, 1, 1)) bledy.Add("Data sprzedaży jest nieprawidłowa.");
+		if (faktura.DataWystawienia < new DateTime(2006, 1, 1)) bledy.Add("Data wystawienia jest nieprawidłowa.");
+
+		var nipSprzedawcy = OczyscNumerIdentyfikacyjny(faktura.NIPSprzedawcy);
+		if (String.IsNullOrWhiteSpace(nipSprzedawcy))
+		{
+			bledy.Add("Brak NIP sprzedawcy.");
+		}
+		else if (!Regex.IsMatch(nipSprzedawcy, @"^\d{10}$"))
+		{
+			bledy.Add("NIP sprzedawcy musi zawierać dokładnie 10 cyfr, bez prefiksu kraju.");
+		}
+
+		if (String.IsNullOrWhiteSpace(faktura.NazwaSprzedawcy)) bledy.Add("Brak nazwy sprzedawcy.");
+		if (String.IsNullOrWhiteSpace(faktura.DaneSprzedawcy)) bledy.Add("Brak adresu sprzedawcy.");
+		if (String.IsNullOrWhiteSpace(faktura.NazwaNabywcy)) bledy.Add("Brak nazwy nabywcy.");
+		if (String.IsNullOrWhiteSpace(faktura.DaneNabywcy)) bledy.Add("Brak adresu nabywcy.");
+
+		var nipNabywcy = OczyscNumerIdentyfikacyjny(faktura.NIPNabywcy);
+		if (!String.IsNullOrWhiteSpace(nipNabywcy)
+			&& !Regex.IsMatch(nipNabywcy, @"^\d{10}$")
+			&& !Regex.IsMatch(nipNabywcy, @"^PL\d{10}$")
+			&& !Regex.IsMatch(nipNabywcy, @"^[A-Z]{2}[A-Z0-9]{2,32}$")
+			&& !Regex.IsMatch(nipNabywcy, @"^[A-Z0-9]{2,32}$"))
+		{
+			bledy.Add("Identyfikator nabywcy ma nieobsługiwany format. Użyj NIP, VAT UE albo innego numeru bez opisów i zbędnych znaków.");
+		}
+
+		if (faktura.Pozycje == null || faktura.Pozycje.Count == 0)
+		{
+			bledy.Add("Faktura nie ma żadnych pozycji.");
+		}
+		else
+		{
+			foreach (var pozycja in faktura.Pozycje.OrderBy(p => p.LP))
+			{
+				var prefix = $"Pozycja {pozycja.LP}";
+				if (String.IsNullOrWhiteSpace(pozycja.Opis)) bledy.Add($"{prefix}: brak opisu towaru lub usługi.");
+				if (pozycja.Ilosc == 0) bledy.Add($"{prefix}: ilość nie może być równa 0.");
+				if (pozycja.StawkaVat == null && pozycja.StawkaVatRef.IsNull) bledy.Add($"{prefix}: brak stawki VAT.");
+				if (pozycja.JednostkaMiary == null && pozycja.JednostkaMiaryRef.IsNull) bledy.Add($"{prefix}: brak jednostki miary.");
+			}
+		}
+
+		if (faktura.Waluta == null && faktura.WalutaRef.IsNull) bledy.Add("Brak waluty faktury.");
+		else
+		{
+			var skrotWaluty = faktura.Waluta?.Skrot ?? "";
+			if (!String.IsNullOrWhiteSpace(skrotWaluty) && skrotWaluty != "zł" && !String.Equals(skrotWaluty, "PLN", StringComparison.OrdinalIgnoreCase))
+			{
+				if (faktura.KursWaluty <= 0) bledy.Add("Dla waluty obcej kurs waluty musi być większy od zera.");
+				if (!faktura.DataKursu.HasValue) bledy.Add("Dla waluty obcej brakuje daty kursu.");
+			}
+		}
+
+		if (faktura.PozostaloDoZaplaty > 0 && faktura.TerminPlatnosci == default) bledy.Add("Brak terminu płatności.");
+		if (!String.IsNullOrWhiteSpace(faktura.RachunekBankowy) && String.IsNullOrWhiteSpace(faktura.OpisSposobuPlatnosci))
+		{
+			bledy.Add("Uzupełnij sposób płatności dla faktury z rachunkiem bankowym.");
+		}
+
+		return bledy;
+	}
+
+	private static void ZweryfikujKSeF(KSEFFaktura faktura, string numerFaktury, IEnumerable<string>? dodatkoweBledy = null)
+	{
+		var bledy = dodatkoweBledy?.Where(b => !String.IsNullOrWhiteSpace(b)).ToList() ?? new List<string>();
+		WalidujObiekt(faktura, nameof(KSEFFaktura), bledy, new HashSet<object>(ReferenceEqualityComparer.Instance));
+		WalidujRachunkiBankowe(faktura, bledy);
+		if (!bledy.Any()) return;
+
+		var unikalneBledy = bledy
+			.Where(b => !String.IsNullOrWhiteSpace(b))
+			.Distinct()
+			.ToList();
+		if (!unikalneBledy.Any()) return;
+
+		throw new ApplicationException(
+			$"Nie można wysłać faktury {numerFaktury} do KSeF, bo lokalna walidacja wykryła błędy danych:\n"
+			+ String.Join("\n", unikalneBledy.Select(b => $"• {b}"))
+			+ "\n\nPopraw dane faktury i spróbuj ponownie.");
+	}
+
+	private static void WalidujObiekt(object? obiekt, string sciezka, List<string> bledy, HashSet<object> odwiedzone)
+	{
+		if (obiekt == null) return;
+		var typ = obiekt.GetType();
+		if (typ == typeof(string) || typ.IsValueType || typ.IsEnum) return;
+		if (!odwiedzone.Add(obiekt)) return;
+
+		var wyniki = new List<ValidationResult>();
+		Validator.TryValidateObject(obiekt, new ValidationContext(obiekt), wyniki, true);
+		foreach (var wynik in wyniki)
+		{
+			var pola = wynik.MemberNames?.Any() == true
+				? String.Join(", ", wynik.MemberNames.Select(FormatujPole))
+				: sciezka;
+			bledy.Add($"{sciezka}: {pola} - {wynik.ErrorMessage}");
+		}
+
+		foreach (var wlasciwosc in typ.GetProperties())
+		{
+			if (!wlasciwosc.CanRead || wlasciwosc.GetIndexParameters().Length > 0) continue;
+			var wartosc = wlasciwosc.GetValue(obiekt);
+			if (wartosc == null) continue;
+			var typWlasciwosci = wlasciwosc.PropertyType;
+			var sciezkaWlasciwosci = $"{sciezka}.{wlasciwosc.Name}";
+
+			if (typWlasciwosci == typeof(string) || typWlasciwosci.IsValueType || typWlasciwosci.IsEnum) continue;
+
+			if (wartosc is IEnumerable kolekcja)
+			{
+				var index = 0;
+				foreach (var element in kolekcja)
+				{
+					WalidujObiekt(element, $"{sciezkaWlasciwosci}[{index}]", bledy, odwiedzone);
+					index++;
+				}
+				continue;
+			}
+
+			WalidujObiekt(wartosc, sciezkaWlasciwosci, bledy, odwiedzone);
+		}
+	}
+
+	private static void WalidujRachunkiBankowe(KSEFFaktura faktura, List<string> bledy)
+	{
+		var rachunki = faktura.Fa?.Platnosc?.RachunekBankowy;
+		if (rachunki == null || rachunki.Count == 0) return;
+
+		for (var i = 0; i < rachunki.Count; i++)
+		{
+			var rachunek = rachunki[i];
+			var numer = rachunek.NrRB ?? "";
+			var sciezka = $"KSEFFaktura.Fa.Platnosc.RachunekBankowy[{i}].NrRB";
+			if (String.IsNullOrWhiteSpace(numer))
+			{
+				bledy.Add($"{sciezka}: numer rachunku jest pusty.");
+				continue;
+			}
+
+			var numerLower = numer.ToLowerInvariant();
+			if (numerLower.Contains("sort") || numerLower.Contains("account") || numerLower.Contains("number"))
+			{
+				bledy.Add($"{sciezka}: numer rachunku zawiera opis typu \"sort code/account number\" zamiast samego numeru lub IBAN.");
+			}
+
+			if (!Regex.IsMatch(numer, @"^[0-9A-Z]{10,34}$"))
+			{
+				bledy.Add($"{sciezka}: numer rachunku do KSeF może zawierać tylko litery A-Z i cyfry 0-9 oraz mieć długość od 10 do 34 znaków.");
+			}
+		}
+	}
+
+	private static string FormatujPole(string nazwaPola)
+	{
+		return nazwaPola switch
+		{
+			nameof(TRachunekBankowy.NrRB) => "numer rachunku",
+			nameof(TRachunekBankowy.SWIFT) => "SWIFT",
+			_ => nazwaPola,
+		};
+	}
+
+	private static string OczyscNumerIdentyfikacyjny(string? numer)
+	{
+		return Regex.Replace((numer ?? "").Trim().ToUpperInvariant(), @"[\s-]+", "");
 	}
 }

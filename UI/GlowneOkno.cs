@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProFak.DB;
-using System.ComponentModel;
 using System.Data;
 using System.Linq.Expressions;
 
@@ -8,6 +7,7 @@ namespace ProFak.UI;
 
 public partial class GlowneOkno : Form
 {
+	private static Icon? ikona;
 	private TreeNode? ostatnioWybrany;
 	private bool trwaAktualizacjaMenu;
 	private bool menuGotowe;
@@ -15,11 +15,29 @@ public partial class GlowneOkno : Form
 	public GlowneOkno()
 	{
 		InitializeComponent();
+		Icon = Ikona;
 		ZbudujMenu();
 		panelMenu.Width = Wyglad.SzerokoscMenu;
 	}
 
-	public static Icon? Ikona => (Icon?)new ComponentResourceManager(typeof(GlowneOkno)).GetObject("$this.Icon");
+	public static Icon? Ikona => ikona ??= ZaladujIkone();
+
+	private static Icon? ZaladujIkone()
+	{
+		try
+		{
+			if (!string.IsNullOrEmpty(Environment.ProcessPath) && File.Exists(Environment.ProcessPath))
+			{
+				return Icon.ExtractAssociatedIcon(Environment.ProcessPath);
+			}
+		}
+		catch
+		{
+			// ignored
+		}
+
+		return null;
+	}
 
 	protected override void OnLoad(EventArgs e)
 	{

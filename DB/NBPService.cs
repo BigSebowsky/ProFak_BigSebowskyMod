@@ -1,12 +1,13 @@
 using System.Net;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ProFak.DB;
 
 static class NBPService
 {
 	private const int MaxDniWstecz = 30;
-	private const int MaksDniNaZapytanie = 366;
+	private const int MaksDniNaZapytanie = 93;
 	private static readonly HttpClient httpClient = new()
 	{
 		BaseAddress = new Uri("https://api.nbp.pl/api/exchangerates/rates/")
@@ -114,7 +115,12 @@ static class NBPService
 		{
 			var url = $"{tabela}/{waluta.Skrot.ToLowerInvariant()}/{od:yyyy-MM-dd}/{doDnia:yyyy-MM-dd}/?format=json";
 			using var response = await httpClient.GetAsync(url, cancellationToken);
-			if (response.StatusCode == HttpStatusCode.NotFound) continue;
+			if (response.StatusCode == HttpStatusCode.NotFound)
+			{
+				var fallback = await PobierzKursyDzienPoDniuAsync(tabela, waluta, od, doDnia, cancellationToken);
+				if (fallback.Count > 0) return fallback;
+				continue;
+			}
 			response.EnsureSuccessStatusCode();
 
 			await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
@@ -137,15 +143,54 @@ static class NBPService
 		return [];
 	}
 
+	private static async Task<List<KursNBP>> PobierzKursyDzienPoDniuAsync(string tabela, Waluta waluta, DateTime od, DateTime doDnia, CancellationToken cancellationToken)
+	{
+		var wynik = new List<KursNBP>();
+
+		for (var data = od.Date; data <= doDnia.Date; data = data.AddDays(1))
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+
+			var url = $"{tabela}/{waluta.Skrot.ToLowerInvariant()}/{data:yyyy-MM-dd}/?format=json";
+			using var response = await httpClient.GetAsync(url, cancellationToken);
+			if (response.StatusCode == HttpStatusCode.NotFound) continue;
+			response.EnsureSuccessStatusCode();
+
+			await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+			var payload = await JsonSerializer.DeserializeAsync<NBPKursResponse>(stream, cancellationToken: cancellationToken);
+			if (payload?.Rates == null) continue;
+
+			wynik.AddRange(payload.Rates
+				.Where(rate => !String.IsNullOrWhiteSpace(rate.No))
+				.Select(rate => new KursNBP
+				{
+					WalutaRef = waluta.Ref,
+					Data = rate.EffectiveDate.Date,
+					KursSredni = rate.Mid.Zaokragl(4),
+					NumerTabeli = rate.No ?? ""
+				}));
+		}
+
+		return wynik
+			.OrderBy(kurs => kurs.Data)
+			.ToList();
+	}
+
 	private sealed class NBPKursResponse
 	{
+		[JsonPropertyName("rates")]
 		public List<NBPKursRate>? Rates { get; set; }
 	}
 
 	private sealed class NBPKursRate
 	{
+		[JsonPropertyName("no")]
 		public string? No { get; set; }
+
+		[JsonPropertyName("effectiveDate")]
 		public DateTime EffectiveDate { get; set; }
+
+		[JsonPropertyName("mid")]
 		public decimal Mid { get; set; }
 	}
 }

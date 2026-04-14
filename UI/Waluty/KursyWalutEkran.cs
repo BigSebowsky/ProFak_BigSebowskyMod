@@ -108,6 +108,17 @@ class KursyWalutEkran : UserControl, IKontrolkaZKontekstem
 		if (zaladowano || Kontekst == null) return;
 		zaladowano = true;
 		Przeladuj();
+		_ = AutoOdswiezKursyAsync();
+	}
+
+	private async Task AutoOdswiezKursyAsync()
+	{
+		try
+		{
+			await NBPService.UzupelnijBrakujaceKursyAsync(Kontekst.Baza);
+			if (IsHandleCreated) BeginInvoke(Przeladuj);
+		}
+		catch { }
 	}
 
 	protected override void OnResize(EventArgs e)

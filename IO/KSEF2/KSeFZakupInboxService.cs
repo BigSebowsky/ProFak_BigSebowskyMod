@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ProFak.DB;
+using Microsoft.Data.Sqlite;
 
 namespace ProFak.IO.KSEF2;
 
@@ -175,8 +176,7 @@ static class KSeFZakupInboxService
 				}
 			}
 
-			if (nowe.Count > 0) baza.Zapisz(nowe);
-			if (zmienione.Count > 0) baza.Zapisz(zmienione);
+			ZapiszInbox(baza, nowe, zmienione);
 		}
 
 		OdswiezPowiazaniaIStatusy(baza);
@@ -316,8 +316,7 @@ static class KSeFZakupInboxService
 			if (czyZmiana) zmienione.Add(rekord);
 		}
 
-		if (nowe.Count > 0) baza.Zapisz(nowe);
-		if (zmienione.Count > 0) baza.Zapisz(zmienione);
+		ZapiszInbox(baza, nowe, zmienione);
 	}
 
 	private static void AktualizujStan(Baza baza, KSeFZakupInboxStan? stan = null)
@@ -330,4 +329,104 @@ static class KSeFZakupInboxService
 		}
 		baza.Zapisz(stan);
 	}
+
+	private static void ZapiszInbox(Baza baza, List<KSeFZakupInbox> nowe, List<KSeFZakupInbox> zmienione)
+	{
+		var doDodania = nowe
+			.Where(e => !String.IsNullOrWhiteSpace(e.NumerKSeF))
+			.GroupBy(e => e.NumerKSeF)
+			.Select(e => e.Last())
+			.ToList();
+		var doZmiany = zmienione.ToList();
+
+		if (doDodania.Count > 0)
+		{
+			var istniejace = baza.KSeFZakupyInbox
+				.Where(e => doDodania.Select(nowy => nowy.NumerKSeF).Contains(e.NumerKSeF))
+				.ToDictionary(e => e.NumerKSeF);
+
+			var naprawioneDodania = new List<KSeFZakupInbox>();
+			foreach (var rekord in doDodania)
+			{
+				if (!istniejace.TryGetValue(rekord.NumerKSeF, out var istniejacy))
+				{
+					naprawioneDodania.Add(rekord);
+					continue;
+				}
+
+				if (ScalDane(istniejacy, rekord)) doZmiany.Add(istniejacy);
+			}
+			doDodania = naprawioneDodania;
+		}
+
+		doZmiany = doZmiany
+			.Where(e => e.Id > 0)
+			.GroupBy(e => e.Id)
+			.Select(e => e.Last())
+			.ToList();
+
+		if (doDodania.Count > 0)
+		{
+			try
+			{
+				baza.Zapisz(doDodania);
+			}
+			catch (DbUpdateException ex) when (CzyDuplikatNumeruKSeF(ex))
+			{
+				var istniejace = baza.KSeFZakupyInbox
+					.Where(e => doDodania.Select(nowy => nowy.NumerKSeF).Contains(e.NumerKSeF))
+					.ToDictionary(e => e.NumerKSeF);
+
+				foreach (var rekord in doDodania)
+				{
+					if (istniejace.TryGetValue(rekord.NumerKSeF, out var istniejacy) && ScalDane(istniejacy, rekord))
+					{
+						doZmiany.Add(istniejacy);
+					}
+				}
+			}
+		}
+
+		doZmiany = doZmiany
+			.Where(e => e.Id > 0)
+			.GroupBy(e => e.Id)
+			.Select(e => e.Last())
+			.ToList();
+		if (doZmiany.Count > 0) baza.Zapisz(doZmiany);
+	}
+
+	private static bool ScalDane(KSeFZakupInbox docelowy, KSeFZakupInbox zrodlo)
+	{
+		var zmiana = false;
+
+		void Ustaw<T>(T obecnaWartosc, T nowaWartosc, Action<T> setter)
+		{
+			if (EqualityComparer<T>.Default.Equals(obecnaWartosc, nowaWartosc)) return;
+			setter(nowaWartosc);
+			zmiana = true;
+		}
+
+		Ustaw(docelowy.Numer, zrodlo.Numer, wartosc => docelowy.Numer = wartosc);
+		Ustaw(docelowy.DataWystawienia, zrodlo.DataWystawienia, wartosc => docelowy.DataWystawienia = wartosc);
+		Ustaw(docelowy.DataSprzedazy, zrodlo.DataSprzedazy, wartosc => docelowy.DataSprzedazy = wartosc);
+		Ustaw(docelowy.DataKSeF, zrodlo.DataKSeF, wartosc => docelowy.DataKSeF = wartosc);
+		Ustaw(docelowy.NazwaSprzedawcy, zrodlo.NazwaSprzedawcy, wartosc => docelowy.NazwaSprzedawcy = wartosc);
+		Ustaw(docelowy.NIPSprzedawcy, zrodlo.NIPSprzedawcy, wartosc => docelowy.NIPSprzedawcy = wartosc);
+		Ustaw(docelowy.NazwaNabywcy, zrodlo.NazwaNabywcy, wartosc => docelowy.NazwaNabywcy = wartosc);
+		Ustaw(docelowy.NIPNabywcy, zrodlo.NIPNabywcy, wartosc => docelowy.NIPNabywcy = wartosc);
+		Ustaw(docelowy.RazemNetto, zrodlo.RazemNetto, wartosc => docelowy.RazemNetto = wartosc);
+		Ustaw(docelowy.RazemVat, zrodlo.RazemVat, wartosc => docelowy.RazemVat = wartosc);
+		Ustaw(docelowy.RazemBrutto, zrodlo.RazemBrutto, wartosc => docelowy.RazemBrutto = wartosc);
+		Ustaw(docelowy.Waluta, zrodlo.Waluta, wartosc => docelowy.Waluta = wartosc);
+		Ustaw(docelowy.TypDokumentu, zrodlo.TypDokumentu, wartosc => docelowy.TypDokumentu = wartosc);
+		if (!String.IsNullOrEmpty(zrodlo.XMLKSeF)) Ustaw(docelowy.XMLKSeF, zrodlo.XMLKSeF, wartosc => docelowy.XMLKSeF = wartosc);
+		if (!String.IsNullOrEmpty(zrodlo.URLKSeF)) Ustaw(docelowy.URLKSeF, zrodlo.URLKSeF, wartosc => docelowy.URLKSeF = wartosc);
+
+		return zmiana;
+	}
+
+	private static bool CzyDuplikatNumeruKSeF(DbUpdateException ex)
+		=> ex.InnerException is SqliteException se
+			&& se.SqliteErrorCode == 19
+			&& se.Message.Contains("KSeFZakupInbox.NumerKSeF", StringComparison.OrdinalIgnoreCase);
 }

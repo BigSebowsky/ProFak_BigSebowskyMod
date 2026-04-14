@@ -85,7 +85,7 @@ public class Generator
 		ksefFaktura.Podmiot2.Adres.AdresL2 = dbFaktura.DaneNabywcy.JakoDwieLinie().linia2;
 		ksefFaktura.Podmiot2.IDNabywcy = dbFaktura.NabywcaRef.Id.ToString();
 		ksefFaktura.Fa = new FakturaFa();
-		ksefFaktura.Fa.KodWaluty = dbFaktura.Waluta.Skrot == "zł" ? TKodWaluty.PLN : Enum.Parse<TKodWaluty>(dbFaktura.Waluta.Skrot);
+		ksefFaktura.Fa.KodWaluty = Enum.Parse<TKodWaluty>(dbFaktura.Waluta.KodISO);
 		ksefFaktura.Fa.P_1 = dbFaktura.DataWystawienia;
 		ksefFaktura.Fa.P_2 = dbFaktura.Numer;
 		ksefFaktura.Fa.P_6 = dbFaktura.DataSprzedazy;
@@ -379,7 +379,8 @@ public class Generator
 			.ThenBy(sposob => sposob.CzyDomyslny ? 0 : 1)
 			.FirstOrDefault();
 
-		var waluta = baza.Waluty.FirstOrDefault(waluta => waluta.Skrot == faktura.Waluta.Skrot);
+		var kodWaluty = Waluta.NormalizujKodISO(faktura.Waluta.Skrot);
+		var waluta = baza.Waluty.FirstOrDefault(waluta => waluta.KodISO == kodWaluty);
 		if (waluta == null) baza.Zapisz(waluta = faktura.Waluta);
 		faktura.WalutaRef = waluta;
 		faktura.Waluta = null;

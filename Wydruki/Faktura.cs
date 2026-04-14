@@ -37,8 +37,8 @@ public class Faktura : Wydruk
 			var dozaplaty = faktura.RazemBrutto - zaplacono;
 			var waluta = baza.ZnajdzLubNull(faktura.WalutaRef);
 			var walutaVAT = baza.Waluty.FirstOrDefault(waluta => waluta.CzyDomyslna);
-			var walutaSkrot = waluta?.Skrot ?? "zł";
-			var walutaVATSkrot = walutaVAT?.Skrot ?? walutaSkrot;
+			var walutaSkrot = waluta?.KodISO ?? "PLN";
+			var walutaVATSkrot = walutaVAT?.KodISO ?? walutaSkrot;
 			var jestvat = pozycje.Any(e => e.StawkaVat != null && !String.Equals(e.StawkaVat.Skrot, "ZW", StringComparison.CurrentCultureIgnoreCase)) && faktura.ProceduraMarzy == ProceduraMarży.NieDotyczy;
 			var jestrabat = pozycje.Any(e => e.RabatProcent > 0 || e.RabatCena > 0 || e.RabatWartosc > 0);
 

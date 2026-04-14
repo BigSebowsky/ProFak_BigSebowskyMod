@@ -1,4 +1,5 @@
-﻿using System.Text;
+using ProFak.DB;
+using System.Text;
 
 namespace ProFak.Wydruki;
 
@@ -99,7 +100,7 @@ class SlowniePL
 		var zlote = (long)Math.Floor(kwota);
 		var grosze = (long)((kwota - zlote) * 100);
 		var wynik = Slownie(zlote) + " " + waluta;
-		if (grosze > 0) wynik += " i " + Slownie(grosze) + " " + (waluta == "zł" ? "gr" : waluta + "/100");
+		if (grosze > 0) wynik += " i " + Slownie(grosze) + " " + (Waluta.CzyPolskiZloty(waluta) ? "gr" : waluta + "/100");
 		return wynik;
 	}
 }
@@ -177,7 +178,7 @@ class SlownieEN
 		var cale = (long)Math.Floor(kwota);
 		var setne = (int)((kwota - cale) * 100);
 		var wynik = Slownie(cale) + " " + waluta;
-		if (setne > 0) wynik += " and " + Slownie(setne) + " " + (waluta == "zł" ? "grosz" : waluta + "/100");
+		if (setne > 0) wynik += " and " + Slownie(setne) + " " + (Waluta.CzyPolskiZloty(waluta) ? "grosz" : waluta + "/100");
 		return wynik;
 	}
 }

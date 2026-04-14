@@ -23,7 +23,8 @@ static class NBPService
 	public static KursNBP? ZnajdzKursZData(Baza baza, string walutaSkrot, DateTime data)
 	{
 		if (String.IsNullOrWhiteSpace(walutaSkrot)) return null;
-		var waluta = baza.Waluty.FirstOrDefault(w => w.Skrot == walutaSkrot);
+		var kodISO = Waluta.NormalizujKodISO(walutaSkrot);
+		var waluta = baza.Waluty.FirstOrDefault(w => w.KodISO == kodISO);
 		if (waluta == null || waluta.CzyDomyslna) return null;
 
 		var szukana = data.Date.AddDays(-1);
@@ -38,7 +39,8 @@ static class NBPService
 	public static KursNBP? ZnajdzKursDlaWartosci(Baza baza, string walutaSkrot, DateTime data, decimal kursWaluty)
 	{
 		if (String.IsNullOrWhiteSpace(walutaSkrot)) return null;
-		var waluta = baza.Waluty.FirstOrDefault(w => w.Skrot == walutaSkrot);
+		var kodISO = Waluta.NormalizujKodISO(walutaSkrot);
+		var waluta = baza.Waluty.FirstOrDefault(w => w.KodISO == kodISO);
 		if (waluta == null || waluta.CzyDomyslna) return null;
 
 		var oczekiwanyKurs = kursWaluty.Zaokragl(4);
@@ -66,7 +68,7 @@ static class NBPService
 
 	public static Task BackfillWalutyAsync(Baza baza, Waluta waluta, CancellationToken cancellationToken = default)
 	{
-		if (waluta.CzyDomyslna || String.IsNullOrWhiteSpace(waluta.Skrot)) return Task.CompletedTask;
+		if (waluta.CzyDomyslna || String.IsNullOrWhiteSpace(waluta.KodISO)) return Task.CompletedTask;
 		return PobierzZakresWalutyAsync(baza, waluta, DateTime.Today.AddDays(-365), DateTime.Today.AddDays(-1), cancellationToken);
 	}
 
@@ -74,7 +76,9 @@ static class NBPService
 	{
 		var waluty = baza.Waluty
 			.Where(waluta => !waluta.CzyDomyslna && !String.IsNullOrWhiteSpace(waluta.Skrot))
-			.OrderBy(waluta => waluta.Skrot)
+			.AsEnumerable()
+			.Where(waluta => !String.IsNullOrWhiteSpace(waluta.KodISO))
+			.OrderBy(waluta => waluta.KodISO)
 			.ToList();
 
 		foreach (var waluta in waluty)
@@ -134,7 +138,7 @@ static class NBPService
 	{
 		foreach (var tabela in new[] { "A", "B" })
 		{
-			var url = $"{tabela}/{waluta.Skrot.ToLowerInvariant()}/{od:yyyy-MM-dd}/{doDnia:yyyy-MM-dd}/?format=json";
+			var url = $"{tabela}/{waluta.KodISO.ToLowerInvariant()}/{od:yyyy-MM-dd}/{doDnia:yyyy-MM-dd}/?format=json";
 			using var response = await httpClient.GetAsync(url, cancellationToken);
 			if (response.StatusCode == HttpStatusCode.NotFound)
 			{
@@ -172,7 +176,7 @@ static class NBPService
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 
-			var url = $"{tabela}/{waluta.Skrot.ToLowerInvariant()}/{data:yyyy-MM-dd}/?format=json";
+			var url = $"{tabela}/{waluta.KodISO.ToLowerInvariant()}/{data:yyyy-MM-dd}/?format=json";
 			using var response = await httpClient.GetAsync(url, cancellationToken);
 			if (response.StatusCode == HttpStatusCode.NotFound) continue;
 			response.EnsureSuccessStatusCode();

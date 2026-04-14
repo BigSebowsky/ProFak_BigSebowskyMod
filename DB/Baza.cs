@@ -83,6 +83,7 @@ public class Baza : DbContext
 		NaprawHistorieMigracjiSqlite();
 #endif
 		Database.Migrate();
+		NormalizujWalutyDoISO();
 		UzupelnijDateKursuFaktur();
 	}
 
@@ -98,13 +99,94 @@ public class Baza : DbContext
 		foreach (var faktura in fakturyDoUzupelnienia)
 		{
 			if (faktura.Waluta == null || faktura.Waluta.CzyDomyslna) continue;
-			var kurs = NBPService.ZnajdzKursDlaWartosci(this, faktura.Waluta.Skrot, faktura.DataWystawienia, faktura.KursWaluty);
+			var kurs = NBPService.ZnajdzKursDlaWartosci(this, faktura.Waluta.KodISO, faktura.DataWystawienia, faktura.KursWaluty);
 			if (kurs == null) continue;
 			faktura.DataKursu = kurs.Data;
 			zmienione.Add(faktura);
 		}
 
 		if (zmienione.Count > 0) Zapisz(zmienione);
+	}
+
+	private void NormalizujWalutyDoISO()
+	{
+		var waluty = Waluty.OrderBy(waluta => waluta.Id).ToList();
+		if (waluty.Count == 0) return;
+
+		var wedlugKodu = new Dictionary<string, Waluta>(StringComparer.OrdinalIgnoreCase);
+		var zmienione = new List<Waluta>();
+		var doUsuniecia = new List<Waluta>();
+
+		foreach (var waluta in waluty)
+		{
+			var kodISO = Waluta.NormalizujKodISO(waluta.Skrot);
+			if (String.IsNullOrWhiteSpace(kodISO))
+			{
+				if (waluta.Skrot != kodISO)
+				{
+					waluta.Skrot = kodISO;
+					zmienione.Add(waluta);
+				}
+				continue;
+			}
+
+			if (!wedlugKodu.TryGetValue(kodISO, out var docelowa))
+			{
+				wedlugKodu[kodISO] = waluta;
+				if (waluta.Skrot != kodISO)
+				{
+					waluta.Skrot = kodISO;
+					zmienione.Add(waluta);
+				}
+				continue;
+			}
+
+			if (docelowa.Id == waluta.Id) continue;
+
+			ScalWaluty(waluta, docelowa, zmienione);
+			doUsuniecia.Add(waluta);
+		}
+
+		if (zmienione.Count > 0) Zapisz(zmienione.DistinctBy(waluta => waluta.Id).ToList());
+		if (doUsuniecia.Count > 0) Usun(doUsuniecia);
+	}
+
+	private void ScalWaluty(Waluta zrodlo, Waluta cel, List<Waluta> zmienione)
+	{
+		Faktury.Where(faktura => faktura.WalutaId == zrodlo.Id)
+			.ExecuteUpdate(aktualizacja => aktualizacja.SetProperty(faktura => faktura.WalutaId, cel.Id));
+		Kontrahenci.Where(kontrahent => kontrahent.DomyslnaWalutaId == zrodlo.Id)
+			.ExecuteUpdate(aktualizacja => aktualizacja.SetProperty(kontrahent => kontrahent.DomyslnaWalutaId, cel.Id));
+		RachunkiBankowe.Where(rachunek => rachunek.WalutaId == zrodlo.Id)
+			.ExecuteUpdate(aktualizacja => aktualizacja.SetProperty(rachunek => rachunek.WalutaId, cel.Id));
+
+		var zdublowaneKursy = KursyNBP
+			.Where(kurs => kurs.WalutaId == zrodlo.Id)
+			.Join(
+				KursyNBP.Where(kurs => kurs.WalutaId == cel.Id),
+				zrodloKurs => zrodloKurs.Data,
+				celKurs => celKurs.Data,
+				(zrodloKurs, _) => zrodloKurs.Id)
+			.ToList();
+		if (zdublowaneKursy.Count > 0)
+		{
+			KursyNBP.Where(kurs => zdublowaneKursy.Contains(kurs.Id)).ExecuteDelete();
+		}
+
+		KursyNBP.Where(kurs => kurs.WalutaId == zrodlo.Id)
+			.ExecuteUpdate(aktualizacja => aktualizacja.SetProperty(kurs => kurs.WalutaId, cel.Id));
+
+		if (zrodlo.CzyDomyslna && !cel.CzyDomyslna)
+		{
+			cel.CzyDomyslna = true;
+			zmienione.Add(cel);
+		}
+
+		if (String.IsNullOrWhiteSpace(cel.Nazwa) && !String.IsNullOrWhiteSpace(zrodlo.Nazwa))
+		{
+			cel.Nazwa = zrodlo.Nazwa;
+			zmienione.Add(cel);
+		}
 	}
 
 	private static void WykonajAutomatycznaKopieBazy()
@@ -366,11 +448,20 @@ public class Baza : DbContext
 	{
 		try
 		{
+			NormalizujDanePrzedZapisem();
 			SaveChanges();
 		}
 		finally
 		{
 			ChangeTracker.Entries().Where(e => e.Entity != null).ToList().ForEach(e => e.State = EntityState.Detached);
+		}
+	}
+
+	private void NormalizujDanePrzedZapisem()
+	{
+		foreach (var entry in ChangeTracker.Entries<Waluta>().Where(entry => entry.State == EntityState.Added || entry.State == EntityState.Modified))
+		{
+			entry.Entity.Normalizuj();
 		}
 	}
 

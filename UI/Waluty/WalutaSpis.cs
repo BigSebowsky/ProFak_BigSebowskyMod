@@ -6,7 +6,7 @@ class WalutaSpis : Spis<Waluta>
 {
 	public WalutaSpis()
 	{
-		DodajKolumne(nameof(Waluta.Skrot), "Skrót");
+		DodajKolumne(nameof(Waluta.KodISOFmt), "Kod ISO");
 		DodajKolumne(nameof(Waluta.Nazwa), "Nazwa", rozciagnij: true);
 		DodajKolumne(nameof(Waluta.CzyDomyslnaFmt), "Domyślna");
 		DodajKolumneId();
@@ -14,7 +14,7 @@ class WalutaSpis : Spis<Waluta>
 
 	protected override void Przeladuj()
 	{
-		Rekordy = Kontekst.Baza.Waluty.AsEnumerable().OrderBy(waluta => waluta.Skrot);
+		Rekordy = Kontekst.Baza.Waluty.AsEnumerable().OrderBy(waluta => waluta.KodISO);
 	}
 
 	protected override void UstawStylWiersza(Waluta rekord, string kolumna, DataGridViewCellStyle styl)

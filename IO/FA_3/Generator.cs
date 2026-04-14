@@ -120,7 +120,7 @@ public class Generator
 		ksefFaktura.Podmiot2.GV = FakturaPodmiot2GV.Item2;
 		ksefFaktura.Podmiot2.JST = FakturaPodmiot2JST.Item2;
 		ksefFaktura.Fa = new FakturaFa();
-		ksefFaktura.Fa.KodWaluty = dbFaktura.Waluta.Skrot == "zł" ? TKodWaluty.PLN : Enum.Parse<TKodWaluty>(dbFaktura.Waluta.Skrot);
+		ksefFaktura.Fa.KodWaluty = Enum.Parse<TKodWaluty>(dbFaktura.Waluta.KodISO);
 		ksefFaktura.Fa.P_1 = dbFaktura.DataWystawienia;
 		ksefFaktura.Fa.P_2 = dbFaktura.Numer;
 		ksefFaktura.Fa.P_6 = dbFaktura.DataSprzedazy;
@@ -934,7 +934,8 @@ public class Generator
 
 		faktura.SposobPlatnosciRef = DopasujSposobPlatnosci(baza, faktura);
 
-		var waluta = baza.Waluty.FirstOrDefault(waluta => waluta.Skrot.ToLower() == faktura.Waluta.Skrot.ToLower());
+		var kodWaluty = Waluta.NormalizujKodISO(faktura.Waluta.Skrot);
+		var waluta = baza.Waluty.FirstOrDefault(waluta => waluta.KodISO == kodWaluty);
 		if (waluta == null) baza.Zapisz(waluta = faktura.Waluta);
 		faktura.WalutaRef = waluta;
 		if (!waluta.CzyDomyslna && faktura.KursWaluty != 0 && faktura.KursWaluty != 1)
@@ -1041,8 +1042,8 @@ public class Generator
 		if (faktura.Waluta == null && faktura.WalutaRef.IsNull) bledy.Add("Brak waluty faktury.");
 		else
 		{
-			var skrotWaluty = faktura.Waluta?.Skrot ?? "";
-			if (!String.IsNullOrWhiteSpace(skrotWaluty) && skrotWaluty != "zł" && !String.Equals(skrotWaluty, "PLN", StringComparison.OrdinalIgnoreCase))
+			var skrotWaluty = Waluta.NormalizujKodISO(faktura.Waluta?.Skrot);
+			if (!String.IsNullOrWhiteSpace(skrotWaluty) && !Waluta.CzyPolskiZloty(skrotWaluty))
 			{
 				if (faktura.KursWaluty <= 0) bledy.Add("Dla waluty obcej kurs waluty musi być większy od zera.");
 				if (!faktura.DataKursu.HasValue) bledy.Add("Dla waluty obcej brakuje daty kursu.");

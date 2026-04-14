@@ -1,3 +1,5 @@
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -106,8 +108,27 @@ static class NBPService
 			}
 		}
 
-		if (noweKursy.Count > 0) baza.Zapisz(noweKursy);
+		if (noweKursy.Count > 0)
+		{
+			try
+			{
+				baza.Zapisz(noweKursy);
+			}
+			catch (DbUpdateException ex) when (CzyDuplikatKursu(ex))
+			{
+				foreach (var kurs in noweKursy)
+				{
+					try { baza.Zapisz([kurs]); }
+					catch (DbUpdateException e2) when (CzyDuplikatKursu(e2)) { }
+				}
+			}
+		}
 	}
+
+	private static bool CzyDuplikatKursu(DbUpdateException ex)
+		=> ex.InnerException is SqliteException se
+		&& se.SqliteErrorCode == 19
+		&& se.Message.Contains("KursNBP.WalutaId", StringComparison.OrdinalIgnoreCase);
 
 	private static async Task<List<KursNBP>> PobierzKursyAsync(Waluta waluta, DateTime od, DateTime doDnia, CancellationToken cancellationToken)
 	{

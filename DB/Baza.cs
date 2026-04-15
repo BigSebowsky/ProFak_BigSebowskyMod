@@ -1,6 +1,7 @@
 ﻿#define nLOG_SQL
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 
 namespace ProFak.DB;
 
@@ -84,7 +85,133 @@ public class Baza : DbContext
 #endif
 		Database.Migrate();
 		NormalizujWalutyDoISO();
+		UzupelnijKrajeIKontaDoEksportu();
 		UzupelnijDateKursuFaktur();
+	}
+
+	private void UzupelnijKrajeIKontaDoEksportu()
+	{
+		var kraje = Kraje.ToList();
+		if (kraje.Count == 0) return;
+
+		var krajePoKodach = kraje
+			.Where(kraj => !String.IsNullOrWhiteSpace(kraj.KodISO2))
+			.ToDictionary(kraj => kraj.KodISO2.Trim().ToUpperInvariant(), StringComparer.OrdinalIgnoreCase);
+
+		var kontrahenci = Kontrahenci.ToList();
+		var zmienieniKontrahenci = new List<Kontrahent>();
+		foreach (var kontrahent in kontrahenci)
+		{
+			if (kontrahent.KrajId != null) continue;
+			var kraj = ZnajdzDomyslnyKrajKontrahenta(kontrahent, krajePoKodach);
+			if (kraj == null) continue;
+			kontrahent.KrajId = kraj.Id;
+			zmienieniKontrahenci.Add(kontrahent);
+		}
+		if (zmienieniKontrahenci.Count > 0) Zapisz(zmienieniKontrahenci);
+
+		var krajeKontrahentow = Kontrahenci
+			.Select(kontrahent => new { kontrahent.Id, kontrahent.KrajId })
+			.ToDictionary(kontrahent => kontrahent.Id, kontrahent => kontrahent.KrajId);
+
+		var rachunki = RachunkiBankowe.ToList();
+		var zmienioneRachunki = new List<RachunekBankowy>();
+		foreach (var rachunek in rachunki)
+		{
+			var czyZmieniony = false;
+
+			if (rachunek.KrajId == null)
+			{
+				var kraj = ZnajdzDomyslnyKrajRachunku(rachunek, krajePoKodach, krajeKontrahentow);
+				if (kraj != null)
+				{
+					rachunek.KrajId = kraj.Id;
+					czyZmieniony = true;
+				}
+			}
+
+			var numerEksportowy = WyznaczNumerEksportowy(rachunek);
+			if (!String.Equals(rachunek.NumerEksportowy ?? "", numerEksportowy ?? "", StringComparison.Ordinal))
+			{
+				rachunek.NumerEksportowy = numerEksportowy ?? "";
+				czyZmieniony = true;
+			}
+
+			if (!String.IsNullOrWhiteSpace(rachunek.Swift))
+			{
+				var swift = rachunek.Swift.Trim().ToUpperInvariant();
+				if (!String.Equals(rachunek.Swift, swift, StringComparison.Ordinal))
+				{
+					rachunek.Swift = swift;
+					czyZmieniony = true;
+				}
+			}
+
+			if (czyZmieniony) zmienioneRachunki.Add(rachunek);
+		}
+		if (zmienioneRachunki.Count > 0) Zapisz(zmienioneRachunki);
+	}
+
+	private static Kraj? ZnajdzDomyslnyKrajKontrahenta(Kontrahent kontrahent, IReadOnlyDictionary<string, Kraj> krajePoKodach)
+	{
+		var kod = WyznaczKodKrajuZNumeruIdentyfikacyjnego(kontrahent.NIP);
+		if (String.IsNullOrWhiteSpace(kod) && Regex.IsMatch(OczyscNumerAlfanumeryczny(kontrahent.NIP), @"^(PL)?\d{10}$")) kod = "PL";
+		if (String.IsNullOrWhiteSpace(kod) && kontrahent.CzyPodmiot) kod = "PL";
+		if (String.IsNullOrWhiteSpace(kod)) return null;
+		return krajePoKodach.TryGetValue(kod, out var kraj) ? kraj : null;
+	}
+
+	private static Kraj? ZnajdzDomyslnyKrajRachunku(RachunekBankowy rachunek, IReadOnlyDictionary<string, Kraj> krajePoKodach, IReadOnlyDictionary<int, int?> krajeKontrahentow)
+	{
+		var kod = WyznaczKodKrajuZRachunku(rachunek.NumerRachunku);
+		if (!String.IsNullOrWhiteSpace(kod)) return krajePoKodach.TryGetValue(kod, out var kraj) ? kraj : null;
+
+		if (krajeKontrahentow.TryGetValue(rachunek.KontrahentId, out var krajId) && krajId.HasValue)
+		{
+			return krajePoKodach.Values.FirstOrDefault(kraj => kraj.Id == krajId.Value);
+		}
+
+		return null;
+	}
+
+	private static string? WyznaczNumerEksportowy(RachunekBankowy rachunek)
+	{
+		var kandydat = NormalizujNumerEksportowy(rachunek.NumerEksportowy);
+		if (!String.IsNullOrWhiteSpace(kandydat)) return kandydat;
+
+		var zrodlo = rachunek.NumerRachunku ?? "";
+		var zrodloLower = zrodlo.ToLowerInvariant();
+		if (zrodloLower.Contains("sort") || zrodloLower.Contains("account") || zrodloLower.Contains("number")) return null;
+
+		kandydat = NormalizujNumerEksportowy(zrodlo);
+		return String.IsNullOrWhiteSpace(kandydat) ? null : kandydat;
+	}
+
+	private static string? NormalizujNumerEksportowy(string? numer)
+	{
+		var wynik = Regex.Replace((numer ?? "").Trim().ToUpperInvariant(), @"[\s-]+", "");
+		if (String.IsNullOrWhiteSpace(wynik)) return null;
+		return Regex.IsMatch(wynik, @"^[A-Z0-9]{10,34}$") ? wynik : null;
+	}
+
+	private static string? WyznaczKodKrajuZRachunku(string? numerRachunku)
+	{
+		var numer = OczyscNumerAlfanumeryczny(numerRachunku);
+		if (Regex.IsMatch(numer, @"^[A-Z]{2}[A-Z0-9]{8,32}$")) return numer[0..2];
+		if (Regex.IsMatch(numer, @"^\d{26}$")) return "PL";
+		return null;
+	}
+
+	private static string? WyznaczKodKrajuZNumeruIdentyfikacyjnego(string? numer)
+	{
+		var oczyszczony = OczyscNumerAlfanumeryczny(numer);
+		if (Regex.IsMatch(oczyszczony, @"^[A-Z]{2}[A-Z0-9]{2,32}$")) return oczyszczony[0..2];
+		return null;
+	}
+
+	private static string OczyscNumerAlfanumeryczny(string? tekst)
+	{
+		return Regex.Replace((tekst ?? "").Trim().ToUpperInvariant(), @"[^A-Z0-9]+", "");
 	}
 
 	private void UzupelnijDateKursuFaktur()
@@ -462,6 +589,17 @@ public class Baza : DbContext
 		foreach (var entry in ChangeTracker.Entries<Waluta>().Where(entry => entry.State == EntityState.Added || entry.State == EntityState.Modified))
 		{
 			entry.Entity.Normalizuj();
+		}
+
+		foreach (var entry in ChangeTracker.Entries<Kraj>().Where(entry => entry.State == EntityState.Added || entry.State == EntityState.Modified))
+		{
+			entry.Entity.KodISO2 = (entry.Entity.KodISO2 ?? "").Trim().ToUpperInvariant();
+		}
+
+		foreach (var entry in ChangeTracker.Entries<RachunekBankowy>().Where(entry => entry.State == EntityState.Added || entry.State == EntityState.Modified))
+		{
+			entry.Entity.NumerEksportowy = WyznaczNumerEksportowy(entry.Entity) ?? "";
+			entry.Entity.Swift = (entry.Entity.Swift ?? "").Trim().ToUpperInvariant();
 		}
 	}
 

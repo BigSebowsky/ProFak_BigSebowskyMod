@@ -13,6 +13,7 @@ class RachunekBankowySpis : Spis<RachunekBankowy>
 	{
 		DodajKolumne(nameof(RachunekBankowy.NazwaFmt), "Nazwa", rozciagnij: true);
 		DodajKolumne(nameof(RachunekBankowy.NumerRachunku), "Numer rachunku", rozciagnij: true);
+		DodajKolumne(nameof(RachunekBankowy.NumerEksportowy), "Eksport / KSeF", rozciagnij: true);
 		DodajKolumne(nameof(RachunekBankowy.NazwaBanku), "Bank");
 		DodajKolumne(nameof(RachunekBankowy.Swift), "SWIFT");
 		DodajKolumne(nameof(RachunekBankowy.KrajKodISO2), "Kraj");

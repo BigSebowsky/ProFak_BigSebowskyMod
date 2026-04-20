@@ -17,7 +17,6 @@ class KursyWalutEkran : UserControl, IKontrolkaZKontekstem
 	private readonly DataGridView dataGridViewKursy;
 	private readonly Label labelStatus;
 	private bool zaladowano;
-	private CancellationTokenSource? autoOdswiezCts;
 
 	private readonly BindingList<DzienKursowWiersz> dni = [];
 	private readonly BindingList<KursWalutyWiersz> kursy = [];
@@ -109,22 +108,6 @@ class KursyWalutEkran : UserControl, IKontrolkaZKontekstem
 		if (zaladowano || Kontekst == null) return;
 		zaladowano = true;
 		Przeladuj();
-		_ = AutoOdswiezKursyAsync();
-	}
-
-	private async Task AutoOdswiezKursyAsync()
-	{
-		using var cts = autoOdswiezCts = new CancellationTokenSource();
-		try
-		{
-			await NBPService.UzupelnijBrakujaceKursyAsync(Kontekst.Baza, cts.Token);
-			if (IsHandleCreated) BeginInvoke(Przeladuj);
-		}
-		catch { }
-		finally
-		{
-			if (autoOdswiezCts == cts) autoOdswiezCts = null;
-		}
 	}
 
 	protected override void OnResize(EventArgs e)
@@ -212,10 +195,9 @@ class KursyWalutEkran : UserControl, IKontrolkaZKontekstem
 
 	private void buttonPobierzNBP_Click(object? sender, EventArgs e)
 	{
-		autoOdswiezCts?.Cancel();
 		try
 		{
-			OknoPostepu.Uruchom(cancellationToken => NBPService.UzupelnijKursyAsync(Kontekst.Baza, dateTimePickerOdDnia.Value.Date, cancellationToken));
+			OknoPostepu.Uruchom(async cancellationToken => _ = await NBPService.UzupelnijKursyAsync(Kontekst.Baza, dateTimePickerOdDnia.Value.Date, cancellationToken));
 			Przeladuj();
 		}
 		catch (Exception exc)

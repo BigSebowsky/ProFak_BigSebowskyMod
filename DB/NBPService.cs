@@ -20,11 +20,22 @@ static class NBPService
 		return ZnajdzKursZData(baza, walutaSkrot, data)?.KursSredni;
 	}
 
+	public sealed class UzupelnienieKursowWynik
+	{
+		public int LiczbaNowychKursow { get; set; }
+		public int LiczbaWalut { get; set; }
+		public DateTime OdDnia { get; set; }
+		public DateTime DoDnia { get; set; }
+		public bool CzyUzupelniono => LiczbaNowychKursow > 0;
+	}
+
 	public static KursNBP? ZnajdzKursZData(Baza baza, string walutaSkrot, DateTime data)
 	{
 		if (String.IsNullOrWhiteSpace(walutaSkrot)) return null;
 		var kodISO = Waluta.NormalizujKodISO(walutaSkrot);
-		var waluta = baza.Waluty.FirstOrDefault(w => w.KodISO == kodISO);
+		var waluta = baza.Waluty
+			.AsEnumerable()
+			.FirstOrDefault(w => Waluta.NormalizujKodISO(w.Skrot) == kodISO);
 		if (waluta == null || waluta.CzyDomyslna) return null;
 
 		var szukana = data.Date.AddDays(-1);
@@ -40,7 +51,9 @@ static class NBPService
 	{
 		if (String.IsNullOrWhiteSpace(walutaSkrot)) return null;
 		var kodISO = Waluta.NormalizujKodISO(walutaSkrot);
-		var waluta = baza.Waluty.FirstOrDefault(w => w.KodISO == kodISO);
+		var waluta = baza.Waluty
+			.AsEnumerable()
+			.FirstOrDefault(w => Waluta.NormalizujKodISO(w.Skrot) == kodISO);
 		if (waluta == null || waluta.CzyDomyslna) return null;
 
 		var oczekiwanyKurs = kursWaluty.Zaokragl(4);
@@ -53,26 +66,26 @@ static class NBPService
 		return null;
 	}
 
-	public static Task UzupelnijKursyAsync(Baza baza, DateTime odDnia, CancellationToken cancellationToken = default)
+	public static Task<UzupelnienieKursowWynik> UzupelnijKursyAsync(Baza baza, DateTime odDnia, CancellationToken cancellationToken = default)
 	{
 		var od = odDnia.Date;
 		var doDnia = DateTime.Today.AddDays(-1);
-		if (od > doDnia) return Task.CompletedTask;
+		if (od > doDnia) return Task.FromResult(new UzupelnienieKursowWynik { OdDnia = od, DoDnia = doDnia });
 		return UzupelnijKursyAsync(baza, od, doDnia, cancellationToken);
 	}
 
-	public static async Task UzupelnijBrakujaceKursyAsync(Baza baza, CancellationToken cancellationToken = default)
+	public static async Task<UzupelnienieKursowWynik> UzupelnijBrakujaceKursyAsync(Baza baza, CancellationToken cancellationToken = default)
 	{
-		await UzupelnijKursyAsync(baza, DateTime.Today.AddDays(-365), DateTime.Today.AddDays(-1), cancellationToken);
+		return await UzupelnijKursyAsync(baza, DateTime.Today.AddDays(-365), DateTime.Today.AddDays(-1), cancellationToken);
 	}
 
-	public static Task BackfillWalutyAsync(Baza baza, Waluta waluta, CancellationToken cancellationToken = default)
+	public static async Task BackfillWalutyAsync(Baza baza, Waluta waluta, CancellationToken cancellationToken = default)
 	{
-		if (waluta.CzyDomyslna || String.IsNullOrWhiteSpace(waluta.KodISO)) return Task.CompletedTask;
-		return PobierzZakresWalutyAsync(baza, waluta, DateTime.Today.AddDays(-365), DateTime.Today.AddDays(-1), cancellationToken);
+		if (waluta.CzyDomyslna || String.IsNullOrWhiteSpace(waluta.KodISO)) return;
+		await PobierzZakresWalutyAsync(baza, waluta, DateTime.Today.AddDays(-365), DateTime.Today.AddDays(-1), cancellationToken);
 	}
 
-	private static async Task UzupelnijKursyAsync(Baza baza, DateTime od, DateTime doDnia, CancellationToken cancellationToken)
+	private static async Task<UzupelnienieKursowWynik> UzupelnijKursyAsync(Baza baza, DateTime od, DateTime doDnia, CancellationToken cancellationToken)
 	{
 		var waluty = baza.Waluty
 			.Where(waluta => !waluta.CzyDomyslna && !String.IsNullOrWhiteSpace(waluta.Skrot))
@@ -81,16 +94,25 @@ static class NBPService
 			.OrderBy(waluta => waluta.KodISO)
 			.ToList();
 
+		var wynik = new UzupelnienieKursowWynik
+		{
+			LiczbaWalut = waluty.Count,
+			OdDnia = od,
+			DoDnia = doDnia
+		};
+
 		foreach (var waluta in waluty)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			await PobierzZakresWalutyAsync(baza, waluta, od, doDnia, cancellationToken);
+			wynik.LiczbaNowychKursow += await PobierzZakresWalutyAsync(baza, waluta, od, doDnia, cancellationToken);
 		}
+
+		return wynik;
 	}
 
-	private static async Task PobierzZakresWalutyAsync(Baza baza, Waluta waluta, DateTime od, DateTime doDnia, CancellationToken cancellationToken)
+	private static async Task<int> PobierzZakresWalutyAsync(Baza baza, Waluta waluta, DateTime od, DateTime doDnia, CancellationToken cancellationToken)
 	{
-		if (od > doDnia) return;
+		if (od > doDnia) return 0;
 
 		var istniejaceDaty = baza.KursyNBP
 			.Where(kurs => kurs.WalutaId == waluta.Id && kurs.Data >= od.Date && kurs.Data <= doDnia.Date)
@@ -127,6 +149,8 @@ static class NBPService
 				}
 			}
 		}
+
+		return noweKursy.Count;
 	}
 
 	private static bool CzyDuplikatKursu(DbUpdateException ex)

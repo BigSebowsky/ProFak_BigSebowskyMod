@@ -380,7 +380,9 @@ public class Generator
 			.FirstOrDefault();
 
 		var kodWaluty = Waluta.NormalizujKodISO(faktura.Waluta.Skrot);
-		var waluta = baza.Waluty.FirstOrDefault(waluta => waluta.KodISO == kodWaluty);
+		var waluta = baza.Waluty
+			.AsEnumerable()
+			.FirstOrDefault(waluta => Waluta.NormalizujKodISO(waluta.Skrot) == kodWaluty);
 		if (waluta == null) baza.Zapisz(waluta = faktura.Waluta);
 		faktura.WalutaRef = waluta;
 		faktura.Waluta = null;

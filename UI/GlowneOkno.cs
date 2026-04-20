@@ -11,6 +11,7 @@ public partial class GlowneOkno : Form
 	private TreeNode? ostatnioWybrany;
 	private bool trwaAktualizacjaMenu;
 	private bool menuGotowe;
+	private bool czyUruchomionoAutoUzupelnienieKursow;
 
 	public GlowneOkno()
 	{
@@ -44,6 +45,14 @@ public partial class GlowneOkno : Form
 		RozwinMenu();
 		menuGotowe = true;
 		base.OnLoad(e);
+	}
+
+	protected override void OnShown(EventArgs e)
+	{
+		base.OnShown(e);
+		if (czyUruchomionoAutoUzupelnienieKursow) return;
+		czyUruchomionoAutoUzupelnienieKursow = true;
+		_ = AutoUzupelnijKursyPoStarcieAsync();
 	}
 
 	protected override void OnFormClosing(FormClosingEventArgs e)
@@ -137,6 +146,32 @@ public partial class GlowneOkno : Form
 #endif
 		menu.Nodes.Clear();
 		menu.Nodes.AddRange([faktury, rachunkiSprzedazy, podatki, kontrahenci, towary, slowniki, serwisowe]);
+	}
+
+	private async Task AutoUzupelnijKursyPoStarcieAsync()
+	{
+		try
+		{
+			using var kontekst = new Kontekst();
+			var wynik = await NBPService.UzupelnijBrakujaceKursyAsync(kontekst.Baza);
+			if (!wynik.CzyUzupelniono || !IsHandleCreated || IsDisposed) return;
+
+			BeginInvoke(() => MessageBox.Show(
+				$"Automatyczne uzupełnianie kursów walut zakończyło się powodzeniem.\n\nDodano {wynik.LiczbaNowychKursow} kursów NBP.",
+				ProFakInfo.ProductName,
+				MessageBoxButtons.OK,
+				MessageBoxIcon.Information));
+		}
+		catch (Exception exc)
+		{
+			if (!IsHandleCreated || IsDisposed) return;
+
+			BeginInvoke(() => MessageBox.Show(
+				$"Nie udało się automatycznie uzupełnić kursów walut.\n\nAby zrobić to ręcznie, przejdź do: Słowniki -> Kursy walut i kliknij \"Pobierz z NBP\".\nJeśli problem będzie się powtarzał, sprawdź połączenie z internetem oraz poprawność kodów walut.\n\nSzczegóły: {exc.Message}",
+				ProFakInfo.ProductName,
+				MessageBoxButtons.OK,
+				MessageBoxIcon.Warning));
+		}
 	}
 
 	private void PokazMenuKontekstowe(TreeNode wezel)

@@ -35,7 +35,7 @@ public class Importer
 			faktura.RazemBrutto = jpkFaktura.P_15;
 			faktura.TerminPlatnosci = faktura.DataSprzedazy;
 			faktura.Rodzaj = jpkFaktura.RodzajFaktury == JPKFakturaRodzajFaktury.KOREKTA ? RodzajFaktury.KorektaSprzedaży : RodzajFaktury.Sprzedaż;
-			faktura.WalutaRef = waluty.FirstOrDefault(e => e.KodISO == jpkFaktura.KodWaluty.ToString()) ?? waluty.FirstOrDefault(e => e.CzyDomyslna);
+			faktura.WalutaRef = waluty.FirstOrDefault(e => Waluta.NormalizujKodISO(e.Skrot) == jpkFaktura.KodWaluty.ToString()) ?? waluty.FirstOrDefault(e => e.CzyDomyslna);
 			faktura.UwagiPubliczne = jpkFaktura.PrzyczynaKorekty;
 			faktura.SposobPlatnosciRef = sposobPlatnosci;
 			if (jpkFaktura.P_106E_2) faktura.ProceduraMarzy = ProceduraMarży.BiuraPodróży;

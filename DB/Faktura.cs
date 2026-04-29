@@ -38,6 +38,7 @@ public class Faktura : Rekord<Faktura>
 	public bool CzyZakupSrodkowTrwalych { get; set; }
 	public bool CzyWDT { get; set; }
 	public bool CzyWNT { get; set; }
+	public bool CzyOdwrotneObciazenie { get; set; }
 	public ProceduraMarży ProceduraMarzy { get; set; }
 	public string OpisZdarzenia { get; set; } = "";
 
@@ -236,6 +237,7 @@ public class Faktura : Rekord<Faktura>
 		|| CzyPasuje(CzyTP ? "TP" : "", fraza)
 		|| CzyPasuje(CzyWDT ? "WDT" : "", fraza)
 		|| CzyPasuje(CzyWNT ? "WNT" : "", fraza)
+		|| CzyPasuje(CzyOdwrotneObciazenie ? "OO" : "", fraza)
 		;
 
 	public Faktura PrzygotujKorekte(Baza baza)
@@ -279,6 +281,7 @@ public class Faktura : Rekord<Faktura>
 		korekta.CzyZakupSrodkowTrwalych = bazowa.CzyZakupSrodkowTrwalych;
 		korekta.CzyWDT = bazowa.CzyWDT;
 		korekta.CzyWNT = bazowa.CzyWNT;
+		korekta.CzyOdwrotneObciazenie = bazowa.CzyOdwrotneObciazenie;
 		korekta.ProceduraMarzy = bazowa.ProceduraMarzy;
 		korekta.OpisZdarzenia = bazowa.OpisZdarzenia;
 
@@ -392,6 +395,7 @@ public class Faktura : Rekord<Faktura>
 		nowaFaktura.CzyZakupSrodkowTrwalych = CzyZakupSrodkowTrwalych;
 		nowaFaktura.CzyWDT = CzyWDT;
 		nowaFaktura.CzyWNT = CzyWNT;
+		nowaFaktura.CzyOdwrotneObciazenie = CzyOdwrotneObciazenie;
 		nowaFaktura.ProceduraMarzy = ProceduraMarzy;
 		nowaFaktura.OpisZdarzenia = OpisZdarzenia;
 

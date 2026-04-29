@@ -67,6 +67,7 @@ partial class FakturaEdytor : FakturaEdytorBase
 		kontroler.Powiazanie(checkBoxReczneKwoty, faktura => faktura.CzyWartosciReczne, UstawRazem);
 		kontroler.Powiazanie(checkBoxWDT, faktura => faktura.CzyWDT);
 		kontroler.Powiazanie(checkBoxWNT, faktura => faktura.CzyWNT);
+		kontroler.Powiazanie(checkBoxOdwrotneObciazenie, faktura => faktura.CzyOdwrotneObciazenie);
 		kontroler.Powiazanie(textBoxOpisZdarzenia, faktura => faktura.OpisZdarzenia);
 		kontroler.Powiazanie(comboBoxProceduraMarzy, faktura => faktura.ProceduraMarzy);
 

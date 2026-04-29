@@ -129,7 +129,7 @@ public class Generator
 		ksefFaktura.Fa.Adnotacje = new FakturaFaAdnotacje();
 		ksefFaktura.Fa.Adnotacje.P_16 = TWybor1_2.Item2;
 		ksefFaktura.Fa.Adnotacje.P_17 = TWybor1_2.Item2;
-		ksefFaktura.Fa.Adnotacje.P_18 = TWybor1_2.Item2;
+		ksefFaktura.Fa.Adnotacje.P_18 = dbFaktura.CzyOdwrotneObciazenie ? TWybor1_2.Item1 : TWybor1_2.Item2;
 		ksefFaktura.Fa.Adnotacje.P_18A = dbFaktura.CzyMechanizmPodzielonejPlatnosci ? TWybor1_2.Item1 : TWybor1_2.Item2;
 		ksefFaktura.Fa.Adnotacje.Zwolnienie = new FakturaFaAdnotacjeZwolnienie();
 		ksefFaktura.Fa.Adnotacje.Zwolnienie.P_19N = TWybor1.Item1;
@@ -649,7 +649,7 @@ public class Generator
 			}
 			if (ksefFaktura.Fa.Adnotacje.P_16 == TWybor1_2.Item1) uwagi.AppendLine("Metoda kasowa");
 			if (ksefFaktura.Fa.Adnotacje.P_17 == TWybor1_2.Item1) uwagi.AppendLine("Samofakturowanie");
-			if (ksefFaktura.Fa.Adnotacje.P_18 == TWybor1_2.Item1) uwagi.AppendLine("Odwrotne obciążenie");
+			if (ksefFaktura.Fa.Adnotacje.P_18 == TWybor1_2.Item1) { dbFaktura.CzyOdwrotneObciazenie = true; uwagi.AppendLine("Odwrotne obciążenie"); }
 			if (ksefFaktura.Fa.Adnotacje.P_23 == TWybor1_2.Item1) uwagi.AppendLine("Procedura trójstronna uproszczona");
 
 			// Pominięte: NoweSrodkiTransportu

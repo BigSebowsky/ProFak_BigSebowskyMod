@@ -79,6 +79,7 @@ partial class FakturaEdytor
 		label23 = new Label();
 		comboBoxProceduraMarzy = new ComboBox();
 		checkBoxReczneKwoty = new CheckBox();
+		checkBoxOdwrotneObciazenie = new CheckBox();
 		tabPageKSeF = new TabPage();
 		tableLayoutPanel8 = new TableLayoutPanel();
 		textBoxKSeFXML = new TextBox();
@@ -619,17 +620,19 @@ partial class FakturaEdytor
 		tableLayoutPanel7.Controls.Add(textBoxOpisZdarzenia, 1, 2);
 		tableLayoutPanel7.Controls.Add(label23, 0, 3);
 		tableLayoutPanel7.Controls.Add(comboBoxProceduraMarzy, 1, 3);
-		tableLayoutPanel7.Controls.Add(checkBoxReczneKwoty, 3, 4);
+		tableLayoutPanel7.Controls.Add(checkBoxOdwrotneObciazenie, 3, 4);
+		tableLayoutPanel7.Controls.Add(checkBoxReczneKwoty, 3, 5);
 		tableLayoutPanel7.Location = new Point(6, 6);
 		tableLayoutPanel7.Name = "tableLayoutPanel7";
-		tableLayoutPanel7.RowCount = 6;
+		tableLayoutPanel7.RowCount = 7;
+		tableLayoutPanel7.RowStyles.Add(new RowStyle());
 		tableLayoutPanel7.RowStyles.Add(new RowStyle());
 		tableLayoutPanel7.RowStyles.Add(new RowStyle());
 		tableLayoutPanel7.RowStyles.Add(new RowStyle());
 		tableLayoutPanel7.RowStyles.Add(new RowStyle());
 		tableLayoutPanel7.RowStyles.Add(new RowStyle());
 		tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-		tableLayoutPanel7.Size = new Size(583, 152);
+		tableLayoutPanel7.Size = new Size(583, 177);
 		tableLayoutPanel7.TabIndex = 0;
 		// 
 		// label1
@@ -695,7 +698,7 @@ partial class FakturaEdytor
 		checkBoxWNT.UseVisualStyleBackColor = true;
 		// 
 		// checkBoxTP
-		// 
+		//
 		checkBoxTP.Anchor = AnchorStyles.Left;
 		checkBoxTP.AutoSize = true;
 		checkBoxTP.Location = new Point(376, 63);
@@ -704,6 +707,15 @@ partial class FakturaEdytor
 		checkBoxTP.TabIndex = 6;
 		checkBoxTP.Text = "Podmiot powiązany";
 		checkBoxTP.UseVisualStyleBackColor = true;
+		//
+		// checkBoxOdwrotneObciazenie
+		//
+		checkBoxOdwrotneObciazenie.Anchor = AnchorStyles.Left;
+		checkBoxOdwrotneObciazenie.AutoSize = true;
+		checkBoxOdwrotneObciazenie.Name = "checkBoxOdwrotneObciazenie";
+		checkBoxOdwrotneObciazenie.TabIndex = 9;
+		checkBoxOdwrotneObciazenie.Text = "Odwrotne obciążenie";
+		checkBoxOdwrotneObciazenie.UseVisualStyleBackColor = true;
 		// 
 		// checkBoxZakupSrodkowTrwalych
 		// 
@@ -1484,6 +1496,7 @@ partial class FakturaEdytor
 	private System.Windows.Forms.Label label1;
 	private System.Windows.Forms.Label label19;
 	private System.Windows.Forms.CheckBox checkBoxTP;
+	private System.Windows.Forms.CheckBox checkBoxOdwrotneObciazenie;
 	private System.Windows.Forms.ComboBox comboBoxProcentKosztow;
 	private System.Windows.Forms.ComboBox comboBoxProcentVat;
 	private ButtonDPI buttonNowySprzedawca;

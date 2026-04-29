@@ -40,15 +40,7 @@ class DaneStartowe
 			baza.Zapisz(new SposobPlatnosci { CzyDomyslny = false, LiczbaDni = 0, Nazwa = "Karta" });
 		}
 
-		if (!baza.StawkiVat.Any())
-		{
-			baza.Zapisz(new StawkaVat { CzyDomyslna = true, Wartosc = 23, Skrot = "23%" });
-			baza.Zapisz(new StawkaVat { CzyDomyslna = false, Wartosc = 8, Skrot = "8%" });
-			baza.Zapisz(new StawkaVat { CzyDomyslna = false, Wartosc = 5, Skrot = "5%" });
-			baza.Zapisz(new StawkaVat { CzyDomyslna = false, Wartosc = 0, Skrot = "0%" });
-			baza.Zapisz(new StawkaVat { CzyDomyslna = false, Wartosc = 0, Skrot = "NP" });
-			baza.Zapisz(new StawkaVat { CzyDomyslna = false, Wartosc = 0, Skrot = "ZW" });
-		}
+		UpewnijSieZeIstniejaStawkiVat(baza);
 
 		if (!baza.Waluty.Any())
 		{
@@ -484,5 +476,40 @@ class DaneStartowe
 			baza.Zapisz(new UrzadSkarbowy { Kod = "3220", Nazwa = "URZĄD SKARBOWY W WAŁCZU" });
 			baza.Zapisz(new UrzadSkarbowy { Kod = "3271", Nazwa = "ZACHODNIOPOMORSKI URZĄD SKARBOWY W SZCZECINIE" });
 		}
+	}
+
+	private static void UpewnijSieZeIstniejaStawkiVat(Baza baza)
+	{
+		var istniejace = baza.StawkiVat
+			.AsEnumerable()
+			.ToDictionary(stawka => stawka.KodKSeFZnormalizowany, StringComparer.OrdinalIgnoreCase);
+
+		var domyslneStawki = new[]
+		{
+			new StawkaVat { CzyDomyslna = true, KodKSeF = "23" },
+			new StawkaVat { CzyDomyslna = false, KodKSeF = "22" },
+			new StawkaVat { CzyDomyslna = false, KodKSeF = "8" },
+			new StawkaVat { CzyDomyslna = false, KodKSeF = "7" },
+			new StawkaVat { CzyDomyslna = false, KodKSeF = "5" },
+			new StawkaVat { CzyDomyslna = false, KodKSeF = "4" },
+			new StawkaVat { CzyDomyslna = false, KodKSeF = "3" },
+			new StawkaVat { CzyDomyslna = false, KodKSeF = "0 KR" },
+			new StawkaVat { CzyDomyslna = false, KodKSeF = "0 WDT" },
+			new StawkaVat { CzyDomyslna = false, KodKSeF = "0 EX" },
+			new StawkaVat { CzyDomyslna = false, KodKSeF = "ZW" },
+			new StawkaVat { CzyDomyslna = false, KodKSeF = "OO" },
+			new StawkaVat { CzyDomyslna = false, KodKSeF = "NP I" },
+			new StawkaVat { CzyDomyslna = false, KodKSeF = "NP II" },
+		};
+
+		var nowe = new List<StawkaVat>();
+		foreach (var stawka in domyslneStawki)
+		{
+			stawka.Normalizuj();
+			if (istniejace.ContainsKey(stawka.KodKSeFZnormalizowany)) continue;
+			nowe.Add(stawka);
+		}
+
+		if (nowe.Count > 0) baza.Zapisz(nowe);
 	}
 }

@@ -43,8 +43,8 @@ partial class TowarEdytor : TowarEdytorBase
 
 		new Slownik<StawkaVat>(
 			Kontekst, comboBoxStawkaVat, buttonStawkaVat,
-			Kontekst.Baza.StawkiVat.OrderBy(stawka => stawka.Skrot).ToList,
-			stawka => stawka.Skrot,
+			Kontekst.Baza.StawkiVat.OrderBy(stawka => stawka.KodKSeF).ThenBy(stawka => stawka.Skrot).ToList,
+			stawka => stawka.SkrotFmt,
 			stawka => { if (stawka == null) return; Rekord.StawkaVat = stawka; PrzeliczCeny(); },
 			Spisy.StawkiVat)
 			.Zainstaluj();

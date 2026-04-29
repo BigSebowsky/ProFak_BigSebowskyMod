@@ -302,47 +302,11 @@ public class Generator
 				ksefFaktura.Fa.P_13_11 ??= 0;
 				ksefFaktura.Fa.P_13_11 += dbPozycja.WartoscBrutto;
 			}
-			else if (dbFaktura.CzyWDT)
-			{
-				ksefFaktura.Fa.P_13_6_2 ??= 0;
-				ksefFaktura.Fa.P_13_6_2 += dbPozycja.WartoscNetto;
-				ksefWiersz.P_12 = TStawkaPodatku.Item0_WDT;
-			}
-			else if (dbPozycja.StawkaVat.Skrot.ToLower().Contains("zw"))
-			{
-				ksefFaktura.Fa.P_13_7 ??= 0;
-				ksefFaktura.Fa.P_13_7 += dbPozycja.WartoscNetto;
-				ksefWiersz.P_12 = TStawkaPodatku.zw;
-			}
-			else if (dbPozycja.StawkaVat.Wartosc == 0)
-			{
-				ksefFaktura.Fa.P_13_6_1 ??= 0;
-				ksefFaktura.Fa.P_13_6_1 += dbPozycja.WartoscNetto;
-				ksefWiersz.P_12 = TStawkaPodatku.Item0_KR;
-			}
-			else if (dbPozycja.StawkaVat.Wartosc <= 5)
-			{
-				ksefFaktura.Fa.P_13_3 ??= 0;
-				ksefFaktura.Fa.P_14_3 ??= 0;
-				ksefFaktura.Fa.P_13_3 += dbPozycja.WartoscNetto;
-				ksefFaktura.Fa.P_14_3 += dbPozycja.WartoscVat;
-				ksefWiersz.P_12 = TStawkaPodatku.Item5;
-			}
-			else if (dbPozycja.StawkaVat.Wartosc <= 8)
-			{
-				ksefFaktura.Fa.P_13_2 ??= 0;
-				ksefFaktura.Fa.P_14_2 ??= 0;
-				ksefFaktura.Fa.P_13_2 += dbPozycja.WartoscNetto;
-				ksefFaktura.Fa.P_14_2 += dbPozycja.WartoscVat;
-				ksefWiersz.P_12 = TStawkaPodatku.Item8;
-			}
 			else
 			{
-				ksefFaktura.Fa.P_13_1 ??= 0;
-				ksefFaktura.Fa.P_14_1 ??= 0;
-				ksefFaktura.Fa.P_13_1 += dbPozycja.WartoscNetto;
-				ksefFaktura.Fa.P_14_1 += dbPozycja.WartoscVat;
-				ksefWiersz.P_12 = TStawkaPodatku.Item23;
+				var kodKSeF = PobierzKodKSeFDlaPozycji(dbFaktura, dbPozycja.StawkaVat);
+				ksefWiersz.P_12 = MapujKodKSeFNaStawke(kodKSeF);
+				DodajPodsumowanieStawki(ksefFaktura.Fa, kodKSeF, dbPozycja.WartoscNetto, dbPozycja.WartoscVat);
 			}
 			if (dbPozycja.CzyPrzedKorekta) ksefWiersz.StanPrzed = TWybor1.Item1;
 
@@ -531,18 +495,9 @@ public class Generator
 			dbPozycja.Towar = new Towar();
 			dbPozycja.Towar.Nazwa = pozycja.P_7 ?? "";
 			dbPozycja.Towar.JednostkaMiary = dbPozycja.JednostkaMiary = new JednostkaMiary { Nazwa = pozycja.P_8A, Skrot = pozycja.P_8A };
-			dbPozycja.StawkaVat = new StawkaVat();
-			if (pozycja.P_12 == TStawkaPodatku.Item23) dbPozycja.StawkaVat = new StawkaVat { Wartosc = 23, Skrot = "23" };
-			else if (pozycja.P_12 == TStawkaPodatku.Item22) dbPozycja.StawkaVat = new StawkaVat { Wartosc = 22, Skrot = "22" };
-			else if (pozycja.P_12 == TStawkaPodatku.Item8) dbPozycja.StawkaVat = new StawkaVat { Wartosc = 8, Skrot = "8" };
-			else if (pozycja.P_12 == TStawkaPodatku.Item7) dbPozycja.StawkaVat = new StawkaVat { Wartosc = 7, Skrot = "7" };
-			else if (pozycja.P_12 == TStawkaPodatku.Item5) dbPozycja.StawkaVat = new StawkaVat { Wartosc = 5, Skrot = "5" };
-			else if (pozycja.P_12 == TStawkaPodatku.Item4) dbPozycja.StawkaVat = new StawkaVat { Wartosc = 4, Skrot = "4" };
-			else if (pozycja.P_12 == TStawkaPodatku.Item3) dbPozycja.StawkaVat = new StawkaVat { Wartosc = 3, Skrot = "3" };
-			else if (pozycja.P_12 == TStawkaPodatku.Item0_KR || pozycja.P_12 == TStawkaPodatku.Item0_WDT || pozycja.P_12 == TStawkaPodatku.Item0_EX) dbPozycja.StawkaVat = new StawkaVat { Wartosc = 0, Skrot = "0" };
-			else if (pozycja.P_12 == TStawkaPodatku.zw) dbPozycja.StawkaVat = new StawkaVat { Wartosc = 0, Skrot = "ZW" };
-			else if (pozycja.P_12 == TStawkaPodatku.np_I || pozycja.P_12 == TStawkaPodatku.np_II) dbPozycja.StawkaVat = new StawkaVat { Wartosc = 0, Skrot = "NP" };
-			else dbPozycja.StawkaVat = new StawkaVat { Wartosc = 23, Skrot = "23" };
+			var kodStawki = MapujStawkeNaKodKSeF(pozycja.P_12.GetValueOrDefault(TStawkaPodatku.Item23));
+			dbPozycja.StawkaVat = new StawkaVat { KodKSeF = kodStawki };
+			dbPozycja.StawkaVat.Normalizuj();
 			if (dbPozycja.CzyWedlugCenBrutto)
 			{
 				dbPozycja.CenaNetto = (dbPozycja.CenaBrutto * 100m / (100 + dbPozycja.StawkaVat.Wartosc)).Zaokragl();
@@ -977,7 +932,11 @@ public class Generator
 			// Zawsze ustawione przez Zbuduj:
 			ArgumentNullException.ThrowIfNull(pozycja.StawkaVat);
 			ArgumentNullException.ThrowIfNull(pozycja.JednostkaMiary);
-			var stawkaVat = baza.StawkiVat.FirstOrDefault(stawkaVat => stawkaVat.Skrot == pozycja.StawkaVat.Skrot);
+			var kodKSeFStawki = pozycja.StawkaVat.KodKSeFZnormalizowany;
+			var stawkaVat = baza.StawkiVat
+				.AsEnumerable()
+				.FirstOrDefault(stawkaVat => stawkaVat.KodKSeFZnormalizowany == kodKSeFStawki);
+			if (stawkaVat == null) stawkaVat = baza.StawkiVat.FirstOrDefault(stawkaVat => stawkaVat.Skrot == pozycja.StawkaVat.Skrot);
 			if (stawkaVat == null) stawkaVat = baza.StawkiVat.FirstOrDefault(stawkaVat => stawkaVat.Wartosc == pozycja.StawkaVat.Wartosc);
 			if (stawkaVat == null) baza.Zapisz(stawkaVat = pozycja.StawkaVat);
 			pozycja.StawkaVatRef = stawkaVat;
@@ -1256,6 +1215,119 @@ public class Generator
 	private static string OczyscNumerIdentyfikacyjny(string? numer)
 	{
 		return Regex.Replace((numer ?? "").Trim().ToUpperInvariant(), @"[\s-]+", "");
+	}
+
+	private static string PobierzKodKSeFDlaPozycji(DBFaktura faktura, StawkaVat stawkaVat)
+	{
+		var kod = stawkaVat.KodKSeFZnormalizowany;
+		if (faktura.CzyWDT && stawkaVat.CzyZeroKraj) return "0 WDT";
+		return kod;
+	}
+
+	private static TStawkaPodatku MapujKodKSeFNaStawke(string kodKSeF)
+	{
+		return StawkaVat.NormalizujKodKSeF(kodKSeF) switch
+		{
+			"23" => TStawkaPodatku.Item23,
+			"22" => TStawkaPodatku.Item22,
+			"8" => TStawkaPodatku.Item8,
+			"7" => TStawkaPodatku.Item7,
+			"5" => TStawkaPodatku.Item5,
+			"4" => TStawkaPodatku.Item4,
+			"3" => TStawkaPodatku.Item3,
+			"0 KR" => TStawkaPodatku.Item0_KR,
+			"0 WDT" => TStawkaPodatku.Item0_WDT,
+			"0 EX" => TStawkaPodatku.Item0_EX,
+			"ZW" => TStawkaPodatku.zw,
+			"OO" => TStawkaPodatku.oo,
+			"NP I" => TStawkaPodatku.np_I,
+			"NP II" => TStawkaPodatku.np_II,
+			_ => TStawkaPodatku.Item23,
+		};
+	}
+
+	private static string MapujStawkeNaKodKSeF(TStawkaPodatku stawkaPodatku)
+	{
+		return stawkaPodatku switch
+		{
+			TStawkaPodatku.Item23 => "23",
+			TStawkaPodatku.Item22 => "22",
+			TStawkaPodatku.Item8 => "8",
+			TStawkaPodatku.Item7 => "7",
+			TStawkaPodatku.Item5 => "5",
+			TStawkaPodatku.Item4 => "4",
+			TStawkaPodatku.Item3 => "3",
+			TStawkaPodatku.Item0_KR => "0 KR",
+			TStawkaPodatku.Item0_WDT => "0 WDT",
+			TStawkaPodatku.Item0_EX => "0 EX",
+			TStawkaPodatku.zw => "ZW",
+			TStawkaPodatku.oo => "OO",
+			TStawkaPodatku.np_I => "NP I",
+			TStawkaPodatku.np_II => "NP II",
+			_ => "23",
+		};
+	}
+
+	private static void DodajPodsumowanieStawki(FakturaFa faktura, string kodKSeF, decimal wartoscNetto, decimal wartoscVat)
+	{
+		switch (StawkaVat.NormalizujKodKSeF(kodKSeF))
+		{
+			case "23":
+			case "22":
+				faktura.P_13_1 ??= 0;
+				faktura.P_14_1 ??= 0;
+				faktura.P_13_1 += wartoscNetto;
+				faktura.P_14_1 += wartoscVat;
+				break;
+			case "8":
+			case "7":
+				faktura.P_13_2 ??= 0;
+				faktura.P_14_2 ??= 0;
+				faktura.P_13_2 += wartoscNetto;
+				faktura.P_14_2 += wartoscVat;
+				break;
+			case "5":
+			case "3":
+				faktura.P_13_3 ??= 0;
+				faktura.P_14_3 ??= 0;
+				faktura.P_13_3 += wartoscNetto;
+				faktura.P_14_3 += wartoscVat;
+				break;
+			case "4":
+				faktura.P_13_4 ??= 0;
+				faktura.P_14_4 ??= 0;
+				faktura.P_13_4 += wartoscNetto;
+				faktura.P_14_4 += wartoscVat;
+				break;
+			case "0 KR":
+				faktura.P_13_6_1 ??= 0;
+				faktura.P_13_6_1 += wartoscNetto;
+				break;
+			case "0 WDT":
+				faktura.P_13_6_2 ??= 0;
+				faktura.P_13_6_2 += wartoscNetto;
+				break;
+			case "0 EX":
+				faktura.P_13_6_3 ??= 0;
+				faktura.P_13_6_3 += wartoscNetto;
+				break;
+			case "ZW":
+				faktura.P_13_7 ??= 0;
+				faktura.P_13_7 += wartoscNetto;
+				break;
+			case "NP I":
+				faktura.P_13_8 ??= 0;
+				faktura.P_13_8 += wartoscNetto;
+				break;
+			case "NP II":
+				faktura.P_13_9 ??= 0;
+				faktura.P_13_9 += wartoscNetto;
+				break;
+			case "OO":
+				faktura.P_13_10 ??= 0;
+				faktura.P_13_10 += wartoscNetto;
+				break;
+		}
 	}
 
 	private static string SerializujDoXml(KSEFFaktura faktura)

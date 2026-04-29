@@ -7,6 +7,7 @@ class StawkaVatEdytor : EdytorDwieKolumny<StawkaVat>
 	public StawkaVatEdytor()
 	{
 		DodajTextBox(stawkaVat => stawkaVat.Skrot, "Skrót", wymagane: true);
+		DodajTextBox(stawkaVat => stawkaVat.KodKSeF, "Kod KSeF", wymagane: true);
 		DodajNumericUpDown(stawkaVat => stawkaVat.Wartosc, "Wartość");
 		DodajCheckBox(stawkaVat => stawkaVat.CzyDomyslna, "Domyślna");
 		UstawRozmiar();

@@ -84,6 +84,7 @@ public class Baza : DbContext
 		NaprawHistorieMigracjiSqlite();
 #endif
 		Database.Migrate();
+		NormalizujStawkiVatDoKSeF();
 		NormalizujWalutyDoISO();
 		UzupelnijKrajeIKontaDoEksportu();
 		UzupelnijDateKursuFaktur();
@@ -312,6 +313,71 @@ public class Baza : DbContext
 		if (String.IsNullOrWhiteSpace(cel.Nazwa) && !String.IsNullOrWhiteSpace(zrodlo.Nazwa))
 		{
 			cel.Nazwa = zrodlo.Nazwa;
+			zmienione.Add(cel);
+		}
+	}
+
+	private void NormalizujStawkiVatDoKSeF()
+	{
+		var stawki = StawkiVat.OrderBy(stawka => stawka.Id).ToList();
+		if (stawki.Count == 0) return;
+
+		var wedlugKodu = new Dictionary<string, StawkaVat>(StringComparer.OrdinalIgnoreCase);
+		var zmienione = new List<StawkaVat>();
+		var doUsuniecia = new List<StawkaVat>();
+
+		foreach (var stawka in stawki)
+		{
+			stawka.Normalizuj();
+			var kod = stawka.KodKSeFZnormalizowany;
+			if (!wedlugKodu.TryGetValue(kod, out var docelowa))
+			{
+				wedlugKodu[kod] = stawka;
+				zmienione.Add(stawka);
+				continue;
+			}
+
+			if (docelowa.Id == stawka.Id) continue;
+
+			ScalStawkiVat(stawka, docelowa, zmienione);
+			doUsuniecia.Add(stawka);
+		}
+
+		if (zmienione.Count > 0) Zapisz(zmienione.DistinctBy(stawka => stawka.Id).ToList());
+		if (doUsuniecia.Count > 0) Usun(doUsuniecia);
+	}
+
+	private void ScalStawkiVat(StawkaVat zrodlo, StawkaVat cel, List<StawkaVat> zmienione)
+	{
+		PozycjeFaktur.Where(pozycja => pozycja.StawkaVatId == zrodlo.Id)
+			.ExecuteUpdate(aktualizacja => aktualizacja.SetProperty(pozycja => pozycja.StawkaVatId, cel.Id));
+		Towary.Where(towar => towar.StawkaVatId == zrodlo.Id)
+			.ExecuteUpdate(aktualizacja => aktualizacja.SetProperty(towar => towar.StawkaVatId, cel.Id));
+
+		if (zrodlo.CzyDomyslna && !cel.CzyDomyslna)
+		{
+			cel.CzyDomyslna = true;
+			zmienione.Add(cel);
+		}
+
+		var docelowyKod = StawkaVat.NormalizujKodKSeF(cel.KodKSeF, cel.Skrot, cel.Wartosc);
+		if (!String.Equals(cel.KodKSeF, docelowyKod, StringComparison.Ordinal))
+		{
+			cel.KodKSeF = docelowyKod;
+			zmienione.Add(cel);
+		}
+
+		var docelowySkrot = StawkaVat.DomyslnySkrotDlaKoduKSeF(docelowyKod);
+		if (!String.Equals(cel.Skrot, docelowySkrot, StringComparison.Ordinal))
+		{
+			cel.Skrot = docelowySkrot;
+			zmienione.Add(cel);
+		}
+
+		var docelowaWartosc = StawkaVat.DomyslnaWartoscDlaKoduKSeF(docelowyKod, cel.Wartosc);
+		if (cel.Wartosc != docelowaWartosc)
+		{
+			cel.Wartosc = docelowaWartosc;
 			zmienione.Add(cel);
 		}
 	}
@@ -592,6 +658,11 @@ public class Baza : DbContext
 		}
 
 		foreach (var entry in ChangeTracker.Entries<Waluta>().Where(entry => entry.State == EntityState.Added || entry.State == EntityState.Modified))
+		{
+			entry.Entity.Normalizuj();
+		}
+
+		foreach (var entry in ChangeTracker.Entries<StawkaVat>().Where(entry => entry.State == EntityState.Added || entry.State == EntityState.Modified))
 		{
 			entry.Entity.Normalizuj();
 		}

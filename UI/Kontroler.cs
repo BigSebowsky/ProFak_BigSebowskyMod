@@ -73,7 +73,18 @@ class Kontroler<TModel>
 
 	public void Powiazanie(TextBox textBox, Func<TModel, string> pobierzWartosc, Action<TModel, string>? ustawWartosc, Action? wartoscZmieniona = null)
 	{
-		textBox.TextChanged += delegate { AktualizujModel(textBox, ustawWartosc, txt => txt.Text); wartoscZmieniona?.Invoke(); };
+		textBox.TextChanged += delegate
+		{
+			var oczyszczony = SanitizacjaTekstu.UsunNiedozwoloneZnakiXml(textBox.Text) ?? "";
+			if (!String.Equals(textBox.Text, oczyszczony, StringComparison.Ordinal))
+			{
+				var selectionStart = Math.Min(textBox.SelectionStart, oczyszczony.Length);
+				textBox.Text = oczyszczony;
+				textBox.SelectionStart = selectionStart;
+			}
+			AktualizujModel(textBox, ustawWartosc, txt => txt.Text);
+			wartoscZmieniona?.Invoke();
+		};
 		DodajPowiazanie(textBox, pobierzWartosc, (txt, wartosc) => txt.Text = wartosc);
 	}
 
@@ -85,7 +96,17 @@ class Kontroler<TModel>
 
 	public void Powiazanie(ComboBox comboBox, Func<TModel, string> pobierzWartosc, Action<TModel, string>? ustawWartosc, Action? wartoscZmieniona = null)
 	{
-		comboBox.TextChanged += delegate { AktualizujModel(comboBox, ustawWartosc, comboBox => comboBox.Text); wartoscZmieniona?.Invoke(); };
+		comboBox.TextChanged += delegate
+		{
+			var oczyszczony = SanitizacjaTekstu.UsunNiedozwoloneZnakiXml(comboBox.Text) ?? "";
+			if (!String.Equals(comboBox.Text, oczyszczony, StringComparison.Ordinal))
+			{
+				comboBox.Text = oczyszczony;
+				comboBox.SelectionStart = comboBox.Text.Length;
+			}
+			AktualizujModel(comboBox, ustawWartosc, comboBox => comboBox.Text);
+			wartoscZmieniona?.Invoke();
+		};
 		DodajPowiazanie(comboBox, pobierzWartosc, (comboBox, wartosc) => { comboBox.Text = wartosc; });
 	}
 

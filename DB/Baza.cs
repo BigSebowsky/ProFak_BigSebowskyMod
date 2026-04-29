@@ -586,6 +586,11 @@ public class Baza : DbContext
 
 	private void NormalizujDanePrzedZapisem()
 	{
+		foreach (var entry in ChangeTracker.Entries().Where(entry => entry.State == EntityState.Added || entry.State == EntityState.Modified))
+		{
+			NormalizujTeksty(entry.Entity);
+		}
+
 		foreach (var entry in ChangeTracker.Entries<Waluta>().Where(entry => entry.State == EntityState.Added || entry.State == EntityState.Modified))
 		{
 			entry.Entity.Normalizuj();
@@ -600,6 +605,19 @@ public class Baza : DbContext
 		{
 			entry.Entity.NumerEksportowy = WyznaczNumerEksportowy(entry.Entity) ?? "";
 			entry.Entity.Swift = (entry.Entity.Swift ?? "").Trim().ToUpperInvariant();
+		}
+	}
+
+	private static void NormalizujTeksty(object? rekord)
+	{
+		if (rekord == null) return;
+		var typ = rekord.GetType();
+		foreach (var wlasciwosc in typ.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance))
+		{
+			if (!wlasciwosc.CanRead || !wlasciwosc.CanWrite || wlasciwosc.PropertyType != typeof(string) || wlasciwosc.GetIndexParameters().Length > 0) continue;
+			var wartosc = (string?)wlasciwosc.GetValue(rekord);
+			var oczyszczona = SanitizacjaTekstu.UsunNiedozwoloneZnakiXml(wartosc);
+			if (!String.Equals(wartosc, oczyszczona, StringComparison.Ordinal)) wlasciwosc.SetValue(rekord, oczyszczona);
 		}
 	}
 

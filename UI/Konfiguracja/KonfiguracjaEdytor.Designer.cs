@@ -30,6 +30,9 @@ partial class KonfiguracjaEdytor
 	private void InitializeComponent()
 	{
 		tabControl = new TabControl();
+		tabPageKSeF = new TabPage();
+		flowLayoutPanelKSeF = new FlowLayoutPanel();
+		checkBoxWysylajPlatnoscDoKSeF = new CheckBox();
 		tabPageEMail = new TabPage();
 		tableLayoutPanel1 = new TableLayoutPanel();
 		label2 = new Label();
@@ -86,6 +89,8 @@ partial class KonfiguracjaEdytor
 		tableLayoutPanel2 = new TableLayoutPanel();
 		((System.ComponentModel.ISupportInitialize)errorProvider).BeginInit();
 		tabControl.SuspendLayout();
+		tabPageKSeF.SuspendLayout();
+		flowLayoutPanelKSeF.SuspendLayout();
 		tabPageEMail.SuspendLayout();
 		tableLayoutPanel1.SuspendLayout();
 		((System.ComponentModel.ISupportInitialize)numericUpDownSMTPort).BeginInit();
@@ -102,6 +107,7 @@ partial class KonfiguracjaEdytor
 		tableLayoutPanel2.SetColumnSpan(tabControl, 2);
 		tabControl.Controls.Add(tabPageEMail);
 		tabControl.Controls.Add(tabPageWyglad);
+		tabControl.Controls.Add(tabPageKSeF);
 		tabControl.Dock = DockStyle.Fill;
 		tabControl.Location = new Point(3, 3);
 		tabControl.Name = "tabControl";
@@ -312,9 +318,9 @@ partial class KonfiguracjaEdytor
 		linkLabelTrescPomoc.TabStop = true;
 		linkLabelTrescPomoc.Text = "[?]";
 		linkLabelTrescPomoc.LinkClicked += linkLabelTrescPomoc_LinkClicked;
-		// 
+		//
 		// tabPageWyglad
-		// 
+		//
 		tabPageWyglad.Controls.Add(tableLayoutPanel3);
 		tabPageWyglad.Location = new Point(4, 24);
 		tabPageWyglad.Name = "tabPageWyglad";
@@ -323,6 +329,38 @@ partial class KonfiguracjaEdytor
 		tabPageWyglad.TabIndex = 1;
 		tabPageWyglad.Text = "Wygląd";
 		tabPageWyglad.UseVisualStyleBackColor = true;
+		//
+		// tabPageKSeF
+		//
+		tabPageKSeF.Controls.Add(flowLayoutPanelKSeF);
+		tabPageKSeF.Location = new Point(4, 24);
+		tabPageKSeF.Name = "tabPageKSeF";
+		tabPageKSeF.Padding = new Padding(3);
+		tabPageKSeF.Size = new Size(786, 469);
+		tabPageKSeF.TabIndex = 2;
+		tabPageKSeF.Text = "KSeF";
+		tabPageKSeF.UseVisualStyleBackColor = true;
+		//
+		// flowLayoutPanelKSeF
+		//
+		flowLayoutPanelKSeF.Controls.Add(checkBoxWysylajPlatnoscDoKSeF);
+		flowLayoutPanelKSeF.Dock = DockStyle.Fill;
+		flowLayoutPanelKSeF.FlowDirection = FlowDirection.TopDown;
+		flowLayoutPanelKSeF.Location = new Point(3, 3);
+		flowLayoutPanelKSeF.Name = "flowLayoutPanelKSeF";
+		flowLayoutPanelKSeF.Size = new Size(780, 463);
+		flowLayoutPanelKSeF.TabIndex = 0;
+		flowLayoutPanelKSeF.WrapContents = false;
+		//
+		// checkBoxWysylajPlatnoscDoKSeF
+		//
+		checkBoxWysylajPlatnoscDoKSeF.AutoSize = true;
+		checkBoxWysylajPlatnoscDoKSeF.Location = new Point(3, 3);
+		checkBoxWysylajPlatnoscDoKSeF.Name = "checkBoxWysylajPlatnoscDoKSeF";
+		checkBoxWysylajPlatnoscDoKSeF.Size = new Size(360, 19);
+		checkBoxWysylajPlatnoscDoKSeF.TabIndex = 0;
+		checkBoxWysylajPlatnoscDoKSeF.Text = "Wysyłaj informacje o płatności do KSeF (sekcja Płatność w XML)";
+		checkBoxWysylajPlatnoscDoKSeF.UseVisualStyleBackColor = true;
 		// 
 		// tableLayoutPanel3
 		// 
@@ -769,6 +807,9 @@ partial class KonfiguracjaEdytor
 		tableLayoutPanel3.PerformLayout();
 		((System.ComponentModel.ISupportInitialize)numericUpDownSzerokoscMenu).EndInit();
 		((System.ComponentModel.ISupportInitialize)numericUpDownWysokoscWierszy).EndInit();
+		tabPageKSeF.ResumeLayout(false);
+		flowLayoutPanelKSeF.ResumeLayout(false);
+		flowLayoutPanelKSeF.PerformLayout();
 		tableLayoutPanel2.ResumeLayout(false);
 		ResumeLayout(false);
 	}
@@ -829,4 +870,7 @@ partial class KonfiguracjaEdytor
 	private LinkLabel linkLabelFormatDaty;
 	private LinkLabel linkLabelFormatCzasu;
 	private LinkLabel linkLabelFormatKwoty;
+	private TabPage tabPageKSeF;
+	private FlowLayoutPanel flowLayoutPanelKSeF;
+	private CheckBox checkBoxWysylajPlatnoscDoKSeF;
 }

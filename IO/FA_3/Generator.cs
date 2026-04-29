@@ -32,7 +32,8 @@ public class Generator
 			.Where(e => e.Id == dbFakturaRef.Id)
 			.FirstOrDefault() ?? throw new ApplicationException($"Nie znaleziono faktury {dbFakturaRef}.");
 		var bledyBiznesowe = ZweryfikujBiznesowo(dbFaktura);
-		var ksefFaktura = Zbuduj(dbFaktura);
+		var konfiguracja = baza.Konfiguracja.FirstOrDefault() ?? Konfiguracja.Domyslna;
+		var ksefFaktura = Zbuduj(dbFaktura, konfiguracja.WysylajPlatnoscDoKSeF);
 		var xml = SerializujDoXml(ksefFaktura);
 		ZweryfikujKSeF(ksefFaktura, xml, dbFaktura.Numer, bledyBiznesowe);
 		return xml;
@@ -63,7 +64,7 @@ public class Generator
 		return ksefAdres;
 	}
 
-	private static KSEFFaktura Zbuduj(DBFaktura dbFaktura)
+	private static KSEFFaktura Zbuduj(DBFaktura dbFaktura, bool wysylajPlatnosc)
 	{
 		// Pobrane przez wywołanie w ZbudujXML
 		ArgumentNullException.ThrowIfNull(dbFaktura.Sprzedawca);
@@ -74,7 +75,7 @@ public class Generator
 		ksefFaktura.Naglowek.KodFormularza = new TNaglowekKodFormularza();
 		ksefFaktura.Naglowek.WariantFormularza = TNaglowekWariantFormularza.Item3;
 		ksefFaktura.Naglowek.DataWytworzeniaFa = DateTime.Now;
-		ksefFaktura.Naglowek.SystemInfo = ProFakInfo.UserAgent;
+		ksefFaktura.Naglowek.SystemInfo = "PROFAKURA";
 		ksefFaktura.Podmiot1 = new FakturaPodmiot1();
 		ksefFaktura.Podmiot1.DaneIdentyfikacyjne = new TPodmiot1();
 		var kodKrajuSprzedawcy = PobierzKodKraju(dbFaktura.Sprzedawca, dbFaktura.NIPSprzedawcy, TKodKraju.PL);
@@ -152,29 +153,32 @@ public class Generator
 			: dbFaktura.Rodzaj == DB.RodzajFaktury.KorektaSprzedaży || dbFaktura.Rodzaj == RodzajFaktury.KorektaVatMarży ? TRodzajFaktury.KOR
 			: throw new ApplicationException("Nieobsługiwany rodzaj faktury: " + dbFaktura.RodzajFmt);
 		if (dbFaktura.CzyTP) { ksefFaktura.Fa.TP = TWybor1.Item1; }
-		ksefFaktura.Fa.Platnosc = new FakturaFaPlatnosc();
 		var wplaty = dbFaktura.Wplaty.Where(e => !e.CzyRozliczenie).ToList();
 		var obciazenia = dbFaktura.Wplaty.Where(e => e.CzyRozliczenie && e.Kwota < 0).ToList();
 		var odliczenia = dbFaktura.Wplaty.Where(e => e.CzyRozliczenie && e.Kwota > 0).ToList();
-		if (dbFaktura.PozostaloDoZaplaty == 0 && wplaty.Count > 0)
+		if (wysylajPlatnosc)
 		{
-			ksefFaktura.Fa.Platnosc.Zaplacono = TWybor1.Item1;
-			ksefFaktura.Fa.Platnosc.DataZaplaty = wplaty.Last().Data;
+			ksefFaktura.Fa.Platnosc = new FakturaFaPlatnosc();
+			if (dbFaktura.PozostaloDoZaplaty == 0 && wplaty.Count > 0)
+			{
+				ksefFaktura.Fa.Platnosc.Zaplacono = TWybor1.Item1;
+				ksefFaktura.Fa.Platnosc.DataZaplaty = wplaty.Last().Data;
+			}
+			else if (dbFaktura.PozostaloDoZaplaty < dbFaktura.RazemBrutto + obciazenia.Sum(e => e.Kwota) - odliczenia.Sum(e => e.Kwota))
+			{
+				ksefFaktura.Fa.Platnosc.ZnacznikZaplatyCzesciowej = TWybor1_2.Item1;
+				foreach (var wplata in wplaty)
+					ksefFaktura.Fa.Platnosc.ZaplataCzesciowa.Add(new FakturaFaPlatnoscZaplataCzesciowa { KwotaZaplatyCzesciowej = wplata.Kwota, DataZaplatyCzesciowej = wplata.Data });
+			}
+			if (dbFaktura.PozostaloDoZaplaty > 0) ksefFaktura.Fa.Platnosc.TerminPlatnosci.Add(new FakturaFaPlatnoscTerminPlatnosci { Termin = dbFaktura.TerminPlatnosci });
+			if ((dbFaktura.OpisSposobuPlatnosci ?? "").Contains("gotówk", StringComparison.InvariantCultureIgnoreCase)) ksefFaktura.Fa.Platnosc.FormaPlatnosci = TFormaPlatnosci.Item1;
+			else if ((dbFaktura.OpisSposobuPlatnosci ?? "").Contains("karta", StringComparison.InvariantCultureIgnoreCase)) ksefFaktura.Fa.Platnosc.FormaPlatnosci = TFormaPlatnosci.Item2;
+			else if ((dbFaktura.OpisSposobuPlatnosci ?? "").Contains("kredyt", StringComparison.InvariantCultureIgnoreCase)) ksefFaktura.Fa.Platnosc.FormaPlatnosci = TFormaPlatnosci.Item5;
+			else if ((dbFaktura.OpisSposobuPlatnosci ?? "").Contains("mobiln", StringComparison.InvariantCultureIgnoreCase)) ksefFaktura.Fa.Platnosc.FormaPlatnosci = TFormaPlatnosci.Item7;
+			else ksefFaktura.Fa.Platnosc.FormaPlatnosci = TFormaPlatnosci.Item6;
+			var ksefRachunek = ZbudujRachunekBankowyKSeF(dbFaktura);
+			if (ksefRachunek != null) ksefFaktura.Fa.Platnosc.RachunekBankowy.Add(ksefRachunek);
 		}
-		else if (dbFaktura.PozostaloDoZaplaty < dbFaktura.RazemBrutto + obciazenia.Sum(e => e.Kwota) - odliczenia.Sum(e => e.Kwota))
-		{
-			ksefFaktura.Fa.Platnosc.ZnacznikZaplatyCzesciowej = TWybor1_2.Item1;
-			foreach (var wplata in wplaty)
-				ksefFaktura.Fa.Platnosc.ZaplataCzesciowa.Add(new FakturaFaPlatnoscZaplataCzesciowa { KwotaZaplatyCzesciowej = wplata.Kwota, DataZaplatyCzesciowej = wplata.Data });
-		}
-		if (dbFaktura.PozostaloDoZaplaty > 0) ksefFaktura.Fa.Platnosc.TerminPlatnosci.Add(new FakturaFaPlatnoscTerminPlatnosci { Termin = dbFaktura.TerminPlatnosci });
-		if ((dbFaktura.OpisSposobuPlatnosci ?? "").Contains("gotówk", StringComparison.InvariantCultureIgnoreCase)) ksefFaktura.Fa.Platnosc.FormaPlatnosci = TFormaPlatnosci.Item1;
-		else if ((dbFaktura.OpisSposobuPlatnosci ?? "").Contains("karta", StringComparison.InvariantCultureIgnoreCase)) ksefFaktura.Fa.Platnosc.FormaPlatnosci = TFormaPlatnosci.Item2;
-		else if ((dbFaktura.OpisSposobuPlatnosci ?? "").Contains("kredyt", StringComparison.InvariantCultureIgnoreCase)) ksefFaktura.Fa.Platnosc.FormaPlatnosci = TFormaPlatnosci.Item5;
-		else if ((dbFaktura.OpisSposobuPlatnosci ?? "").Contains("mobiln", StringComparison.InvariantCultureIgnoreCase)) ksefFaktura.Fa.Platnosc.FormaPlatnosci = TFormaPlatnosci.Item7;
-		else ksefFaktura.Fa.Platnosc.FormaPlatnosci = TFormaPlatnosci.Item6;
-		var ksefRachunek = ZbudujRachunekBankowyKSeF(dbFaktura);
-		if (ksefRachunek != null) ksefFaktura.Fa.Platnosc.RachunekBankowy.Add(ksefRachunek);
 
 		if (obciazenia.Count != 0)
 		{

@@ -51,6 +51,8 @@ partial class KonfiguracjaEdytor : KonfiguracjaEdytorBase
 		kontroler.Powiazanie(comboBoxFormatCzasu, konfiguracja => konfiguracja.FormatCzasu, PrzeliczPrzykladCzasu);
 		kontroler.Powiazanie(comboBoxFormatKwoty, konfiguracja => konfiguracja.FormatKwoty, PrzeliczPrzykladKwoty);
 
+		kontroler.Powiazanie(checkBoxWysylajPlatnoscDoKSeF, konfiguracja => konfiguracja.WysylajPlatnoscDoKSeF);
+
 		textBoxRozmiarCzcionki.PlaceholderText = DefaultFont.Size.ToString();
 		textBoxNazwaCzcionki.PlaceholderText = DefaultFont.FontFamily.Name;
 	}

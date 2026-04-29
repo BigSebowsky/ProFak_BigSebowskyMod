@@ -36,6 +36,9 @@ public class Konfiguracja : Rekord<Konfiguracja>
 	public string FormatCzasu { get; set; } = "";
 	public string FormatKwoty { get; set; } = "";
 
+	// Wersja 4
+	public bool WysylajPlatnoscDoKSeF { get; set; }
+
 	public bool CzyDomyslna => SMTPSerwer == Domyslna.SMTPSerwer || String.IsNullOrEmpty(SMTPSerwer);
 
 	public override bool CzyPasuje(string fraza) => false;
@@ -80,6 +83,11 @@ public class Konfiguracja : Rekord<Konfiguracja>
 			FormatCzasu = "yyyy-MM-dd HH:mm:ss";
 			FormatKwoty = "#,##0.00";
 			Wersja = 3;
+		}
+		if (Wersja < 4)
+		{
+			WysylajPlatnoscDoKSeF = false;
+			Wersja = 4;
 		}
 	}
 

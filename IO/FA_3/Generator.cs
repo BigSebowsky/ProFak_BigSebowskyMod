@@ -3,6 +3,7 @@ using ProFak.DB;
 using ProFak.IO.FA_3.DefinicjeTypy;
 using System.Collections;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -32,14 +33,9 @@ public class Generator
 			.FirstOrDefault() ?? throw new ApplicationException($"Nie znaleziono faktury {dbFakturaRef}.");
 		var bledyBiznesowe = ZweryfikujBiznesowo(dbFaktura);
 		var ksefFaktura = Zbuduj(dbFaktura);
-		ZweryfikujKSeF(ksefFaktura, dbFaktura.Numer, bledyBiznesowe);
-		var xo = new XmlAttributeOverrides();
-		var xs = new XmlSerializer(typeof(KSEFFaktura), xo);
-		var xml = new StringBuilder();
-		using var xw = XmlWriter.Create(xml, new XmlWriterSettings() { OmitXmlDeclaration = true, Indent = true });
-		var nss = new XmlSerializerNamespaces();
-		xs.Serialize(xw, ksefFaktura, nss);
-		return xml.ToString();
+		var xml = SerializujDoXml(ksefFaktura);
+		ZweryfikujKSeF(ksefFaktura, xml, dbFaktura.Numer, bledyBiznesowe);
+		return xml;
 	}
 
 	public static DBFaktura ZbudujDB(Baza baza, string xml)
@@ -1176,10 +1172,10 @@ public class Generator
 		return bledy;
 	}
 
-	private static void ZweryfikujKSeF(KSEFFaktura faktura, string numerFaktury, IEnumerable<string>? dodatkoweBledy = null)
+	private static void ZweryfikujKSeF(KSEFFaktura faktura, string xml, string numerFaktury, IEnumerable<string>? dodatkoweBledy = null)
 	{
 		var bledy = dodatkoweBledy?.Where(b => !String.IsNullOrWhiteSpace(b)).ToList() ?? new List<string>();
-		WalidujObiekt(faktura, nameof(KSEFFaktura), bledy, new HashSet<object>(ReferenceEqualityComparer.Instance));
+		WalidujXml(xml, bledy);
 		WalidujRachunkiBankowe(faktura, bledy);
 		if (!bledy.Any()) return;
 
@@ -1189,80 +1185,33 @@ public class Generator
 			.ToList();
 		if (!unikalneBledy.Any()) return;
 
-		throw new ApplicationException(
+		throw new WalidacjaKSeFException(
 			$"Nie można wysłać faktury {numerFaktury} do KSeF, bo lokalna walidacja wykryła błędy danych:\n"
 			+ String.Join("\n", unikalneBledy.Select(b => $"• {b}"))
 			+ "\n\nPopraw dane faktury i spróbuj ponownie.");
 	}
 
-	private static void WalidujObiekt(object? obiekt, string sciezka, List<string> bledy, HashSet<object> odwiedzone)
+	private static void WalidujXml(string xml, List<string> bledy)
 	{
-		if (obiekt == null) return;
-		var typ = obiekt.GetType();
-		if (typ == typeof(string) || typ.IsValueType || typ.IsEnum) return;
-		if (!odwiedzone.Add(obiekt)) return;
-
-		var wyniki = new List<ValidationResult>();
-		Validator.TryValidateObject(obiekt, new ValidationContext(obiekt), wyniki, true);
-		foreach (var wynik in wyniki)
+		if (String.IsNullOrWhiteSpace(xml))
 		{
-			if (CzyPominacWynikWalidacji(typ, wynik)) continue;
-			var pola = wynik.MemberNames?.Any() == true
-				? String.Join(", ", wynik.MemberNames.Select(FormatujPole))
-				: sciezka;
-			bledy.Add($"{sciezka}: {pola} - {wynik.ErrorMessage}");
+			bledy.Add("Nie udało się wygenerować XML faktury.");
+			return;
 		}
 
-		foreach (var wlasciwosc in typ.GetProperties())
+		try
 		{
-			if (!wlasciwosc.CanRead || wlasciwosc.GetIndexParameters().Length > 0) continue;
-			var wartosc = wlasciwosc.GetValue(obiekt);
-			if (wartosc == null) continue;
-			var typWlasciwosci = wlasciwosc.PropertyType;
-			var sciezkaWlasciwosci = $"{sciezka}.{wlasciwosc.Name}";
-
-			if (typWlasciwosci == typeof(string) || typWlasciwosci.IsValueType || typWlasciwosci.IsEnum) continue;
-
-			if (wartosc is IEnumerable kolekcja)
+			using var stringReader = new StringReader(xml);
+			using var reader = XmlReader.Create(stringReader, new XmlReaderSettings
 			{
-				var index = 0;
-				foreach (var element in kolekcja)
-				{
-					WalidujObiekt(element, $"{sciezkaWlasciwosci}[{index}]", bledy, odwiedzone);
-					index++;
-				}
-				continue;
-			}
-
-			WalidujObiekt(wartosc, sciezkaWlasciwosci, bledy, odwiedzone);
+				DtdProcessing = DtdProcessing.Prohibit
+			});
+			while (reader.Read()) { }
 		}
-	}
-
-	private static bool CzyPominacWynikWalidacji(Type typ, ValidationResult wynik)
-	{
-		var pola = wynik.MemberNames?.ToList();
-		if (pola == null || pola.Count == 0) return false;
-
-		var czyWszystkieNietekstoweValue = true;
-		foreach (var nazwaPola in pola)
+		catch (Exception exc)
 		{
-			var wlasciwosc = typ.GetProperty(nazwaPola);
-			if (wlasciwosc == null)
-			{
-				czyWszystkieNietekstoweValue = false;
-				continue;
-			}
-
-			var typWlasciwosci = Nullable.GetUnderlyingType(wlasciwosc.PropertyType) ?? wlasciwosc.PropertyType;
-			var czyPoleGenerowane = nazwaPola.EndsWith("Value") || nazwaPola.EndsWith("ValueSpecified");
-			var czyNietekstoweProste = typWlasciwosci != typeof(string) && (typWlasciwosci.IsValueType || typWlasciwosci.IsEnum);
-			if (!(czyPoleGenerowane && czyNietekstoweProste))
-			{
-				czyWszystkieNietekstoweValue = false;
-			}
+			bledy.Add($"Wygenerowany XML faktury jest niepoprawny: {exc.Message}");
 		}
-
-		return czyWszystkieNietekstoweValue;
 	}
 
 	private static void WalidujRachunkiBankowe(KSEFFaktura faktura, List<string> bledy)
@@ -1307,5 +1256,63 @@ public class Generator
 	private static string OczyscNumerIdentyfikacyjny(string? numer)
 	{
 		return Regex.Replace((numer ?? "").Trim().ToUpperInvariant(), @"[\s-]+", "");
+	}
+
+	private static string SerializujDoXml(KSEFFaktura faktura)
+	{
+		OczyscTekstyDlaXml(faktura);
+		var xo = new XmlAttributeOverrides();
+		var xs = new XmlSerializer(typeof(KSEFFaktura), xo);
+		var xml = new StringBuilder();
+		using var xw = XmlWriter.Create(xml, new XmlWriterSettings() { OmitXmlDeclaration = true, Indent = true });
+		var nss = new XmlSerializerNamespaces();
+		xs.Serialize(xw, faktura, nss);
+		return xml.ToString();
+	}
+
+	private static void OczyscTekstyDlaXml(object? obiekt)
+	{
+		if (obiekt == null) return;
+
+		var typ = obiekt.GetType();
+		if (CzyTypProsty(typ)) return;
+
+		if (obiekt is IEnumerable kolekcja && obiekt is not string)
+		{
+			foreach (var element in kolekcja) OczyscTekstyDlaXml(element);
+			return;
+		}
+
+		foreach (var wlasciwosc in typ.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+		{
+			if (!wlasciwosc.CanRead || wlasciwosc.GetIndexParameters().Length > 0) continue;
+
+			if (wlasciwosc.PropertyType == typeof(string))
+			{
+				if (!wlasciwosc.CanWrite) continue;
+				var wartosc = (string?)wlasciwosc.GetValue(obiekt);
+				var oczyszczona = OczyscTekstDlaXml(wartosc);
+				if (!String.Equals(wartosc, oczyszczona, StringComparison.Ordinal)) wlasciwosc.SetValue(obiekt, oczyszczona);
+				continue;
+			}
+
+			if (CzyTypProsty(wlasciwosc.PropertyType)) continue;
+			OczyscTekstyDlaXml(wlasciwosc.GetValue(obiekt));
+		}
+	}
+
+	private static string? OczyscTekstDlaXml(string? tekst) => SanitizacjaTekstu.UsunNiedozwoloneZnakiXml(tekst);
+
+	private static bool CzyTypProsty(Type typ)
+	{
+		typ = Nullable.GetUnderlyingType(typ) ?? typ;
+		return typ.IsPrimitive
+			|| typ.IsEnum
+			|| typ == typeof(string)
+			|| typ == typeof(decimal)
+			|| typ == typeof(DateTime)
+			|| typ == typeof(DateTimeOffset)
+			|| typ == typeof(TimeSpan)
+			|| typ == typeof(Guid);
 	}
 }

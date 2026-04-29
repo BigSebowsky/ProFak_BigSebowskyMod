@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+using ProFak.IO.FA_3;
+using System.Diagnostics;
 
 namespace ProFak.UI;
 
@@ -16,14 +17,33 @@ public partial class OknoBledu : Form
 		textBoxWyjatek.Text = exc.ToString();
 	}
 
+	public OknoBledu(string tekst, bool pokazLink = false)
+		: this()
+	{
+		textBoxWyjatek.Text = tekst;
+		linkLabelURL.Visible = pokazLink;
+	}
+
 	private void linkLabelURL_LinkClicked(object? sender, LinkLabelLinkClickedEventArgs e)
 	{
 		Process.Start(new ProcessStartInfo { UseShellExecute = true, FileName = ProFakInfo.IssuesUrl });
 	}
 
+	private void buttonKopiuj_Click(object? sender, EventArgs e)
+	{
+		if (String.IsNullOrWhiteSpace(textBoxWyjatek.Text)) return;
+		Clipboard.SetText(textBoxWyjatek.Text);
+	}
+
 	public static void Pokaz(Exception exc)
 	{
-		if (exc.GetType() == typeof(ApplicationException))
+		if (exc is WalidacjaKSeFException)
+		{
+			using var okno = new OknoBledu(exc.Message);
+			okno.Text = ProFakInfo.ProductName + " - Walidacja KSeF";
+			okno.ShowDialog();
+		}
+		else if (exc.GetType() == typeof(ApplicationException))
 		{
 			MessageBox.Show(exc.Message, ProFakInfo.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
 		}

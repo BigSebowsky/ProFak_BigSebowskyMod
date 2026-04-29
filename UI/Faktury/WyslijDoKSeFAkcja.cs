@@ -25,17 +25,9 @@ class WyslijDoKSeFAkcja : AkcjaNaSpisie<Faktura>
 					var res = MessageBox.Show($"Faktura {faktura.Numer} już była wysłana do KSeF. Czy chcesz ją wysłać ponownie?", "ProFak", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
 					if (res == DialogResult.Cancel) return;
 					if (res == DialogResult.No) continue;
-					if (String.IsNullOrWhiteSpace(faktura.XMLKSeF))
-					{
-						faktura.XMLKSeF = IO.FA_3.Generator.ZbudujXML(kontekst.Baza, faktura);
-						kontekst.Baza.Zapisz(faktura);
-					}
 				}
-				else
-				{
-					faktura.XMLKSeF = IO.FA_3.Generator.ZbudujXML(kontekst.Baza, faktura);
-					kontekst.Baza.Zapisz(faktura);
-				}
+				faktura.XMLKSeF = IO.FA_3.Generator.ZbudujXML(kontekst.Baza, faktura);
+				kontekst.Baza.Zapisz(faktura);
 				doWyslania.Add(faktura);
 			}
 

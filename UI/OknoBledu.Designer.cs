@@ -35,6 +35,7 @@ partial class OknoBledu
 		this.textBoxWyjatek = new System.Windows.Forms.TextBox();
 		this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
 		this.buttonOK = new System.Windows.Forms.Button();
+		this.buttonKopiuj = new System.Windows.Forms.Button();
 		this.linkLabelURL = new System.Windows.Forms.LinkLabel();
 		this.tableLayoutPanel1.SuspendLayout();
 		this.flowLayoutPanel1.SuspendLayout();
@@ -83,6 +84,7 @@ partial class OknoBledu
 		this.flowLayoutPanel1.AutoSize = true;
 		this.flowLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 		this.flowLayoutPanel1.Controls.Add(this.buttonOK);
+		this.flowLayoutPanel1.Controls.Add(this.buttonKopiuj);
 		this.flowLayoutPanel1.Controls.Add(this.linkLabelURL);
 		this.flowLayoutPanel1.Location = new System.Drawing.Point(6, 415);
 		this.flowLayoutPanel1.Name = "flowLayoutPanel1";
@@ -99,11 +101,21 @@ partial class OknoBledu
 		this.buttonOK.Text = "OK";
 		this.buttonOK.UseVisualStyleBackColor = true;
 		// 
+		// buttonKopiuj
+		// 
+		this.buttonKopiuj.Location = new System.Drawing.Point(84, 3);
+		this.buttonKopiuj.Name = "buttonKopiuj";
+		this.buttonKopiuj.Size = new System.Drawing.Size(97, 23);
+		this.buttonKopiuj.TabIndex = 2;
+		this.buttonKopiuj.Text = "Kopiuj błąd";
+		this.buttonKopiuj.UseVisualStyleBackColor = true;
+		this.buttonKopiuj.Click += new System.EventHandler(this.buttonKopiuj_Click);
+		// 
 		// linkLabelURL
 		// 
 		this.linkLabelURL.Anchor = System.Windows.Forms.AnchorStyles.Left;
 		this.linkLabelURL.AutoSize = true;
-		this.linkLabelURL.Location = new System.Drawing.Point(84, 7);
+		this.linkLabelURL.Location = new System.Drawing.Point(187, 7);
 		this.linkLabelURL.Name = "linkLabelURL";
 		this.linkLabelURL.Size = new System.Drawing.Size(350, 15);
 		this.linkLabelURL.TabIndex = 1;
@@ -135,5 +147,6 @@ partial class OknoBledu
 	private System.Windows.Forms.TextBox textBoxWyjatek;
 	private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
 	private System.Windows.Forms.Button buttonOK;
+	private System.Windows.Forms.Button buttonKopiuj;
 	private System.Windows.Forms.LinkLabel linkLabelURL;
 }

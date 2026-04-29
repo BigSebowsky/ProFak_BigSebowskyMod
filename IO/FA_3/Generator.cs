@@ -1206,6 +1206,7 @@ public class Generator
 		Validator.TryValidateObject(obiekt, new ValidationContext(obiekt), wyniki, true);
 		foreach (var wynik in wyniki)
 		{
+			if (CzyPominacWynikWalidacji(typ, wynik)) continue;
 			var pola = wynik.MemberNames?.Any() == true
 				? String.Join(", ", wynik.MemberNames.Select(FormatujPole))
 				: sciezka;
@@ -1235,6 +1236,33 @@ public class Generator
 
 			WalidujObiekt(wartosc, sciezkaWlasciwosci, bledy, odwiedzone);
 		}
+	}
+
+	private static bool CzyPominacWynikWalidacji(Type typ, ValidationResult wynik)
+	{
+		var pola = wynik.MemberNames?.ToList();
+		if (pola == null || pola.Count == 0) return false;
+
+		var czyWszystkieNietekstoweValue = true;
+		foreach (var nazwaPola in pola)
+		{
+			var wlasciwosc = typ.GetProperty(nazwaPola);
+			if (wlasciwosc == null)
+			{
+				czyWszystkieNietekstoweValue = false;
+				continue;
+			}
+
+			var typWlasciwosci = Nullable.GetUnderlyingType(wlasciwosc.PropertyType) ?? wlasciwosc.PropertyType;
+			var czyPoleGenerowane = nazwaPola.EndsWith("Value") || nazwaPola.EndsWith("ValueSpecified");
+			var czyNietekstoweProste = typWlasciwosci != typeof(string) && (typWlasciwosci.IsValueType || typWlasciwosci.IsEnum);
+			if (!(czyPoleGenerowane && czyNietekstoweProste))
+			{
+				czyWszystkieNietekstoweValue = false;
+			}
+		}
+
+		return czyWszystkieNietekstoweValue;
 	}
 
 	private static void WalidujRachunkiBankowe(KSEFFaktura faktura, List<string> bledy)

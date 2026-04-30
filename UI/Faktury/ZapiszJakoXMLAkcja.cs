@@ -93,8 +93,7 @@ class ZapiszJakoXMLLokalneAkcja : ZapiszJakoXMLAkcja
 	{
 		var plik = WybierzPlik(faktura.NumerKSeFJakoNazwaPliku);
 		if (plik == null) return;
-		var xml = faktura.XMLKSeF;
-		if (String.IsNullOrEmpty(xml) && faktura.CzySprzedaz) xml = IO.FA_3.Generator.ZbudujXML(kontekst.Baza, faktura);
+		var xml = ZapewnijLokalnyXml(kontekst, faktura);
 		ZapiszXml(plik, faktura, xml);
 	}
 
@@ -108,11 +107,32 @@ class ZapiszJakoXMLLokalneAkcja : ZapiszJakoXMLAkcja
 			foreach (var faktura in faktury)
 			{
 				if (cancellationToken.IsCancellationRequested) break;
-				var xml = faktura.XMLKSeF;
-				if (String.IsNullOrEmpty(xml) && faktura.CzySprzedaz) xml = IO.FA_3.Generator.ZbudujXML(kontekst.Baza, faktura);
+				var xml = ZapewnijLokalnyXml(kontekst, faktura);
 				var plik = Path.Combine(katalog, faktura.NumerKSeFJakoNazwaPliku) + ".xml";
 				ZapiszXml(plik, faktura, xml);
 			}
 		});
+	}
+
+	private static string ZapewnijLokalnyXml(Kontekst kontekst, Faktura faktura)
+	{
+		if (!faktura.CzySprzedaz)
+		{
+			if (String.IsNullOrWhiteSpace(faktura.XMLKSeF))
+				throw new ApplicationException($"Brak XML KSeF dla faktury {faktura.NumerKSeFJakoNazwaPliku}.");
+			return faktura.XMLKSeF;
+		}
+
+		if (String.IsNullOrWhiteSpace(faktura.Numer))
+			throw new ApplicationException("Przed zapisaniem XML należy zapisać fakturę w celu nadania jej numeru.");
+
+		kontekst.Baza.Zapisz(faktura);
+		if (String.IsNullOrWhiteSpace(faktura.NumerKSeF) || String.IsNullOrWhiteSpace(faktura.XMLKSeF))
+		{
+			faktura.XMLKSeF = IO.FA_3.Generator.ZbudujXML(kontekst.Baza, faktura);
+			kontekst.Baza.Zapisz(faktura);
+		}
+
+		return faktura.XMLKSeF;
 	}
 }

@@ -660,26 +660,65 @@ partial class FakturaEdytor : FakturaEdytorBase
 		};
 	}
 
+	private void ZapiszBiezacyStanFaktury()
+	{
+		if (Kontekst == null || Rekord == null) return;
+		Kontekst.Baza.Zapisz(Rekord);
+	}
+
+	private string ZapewnijLokalnyXmlKSeF()
+	{
+		if (String.IsNullOrWhiteSpace(Rekord.Numer))
+			throw new ApplicationException("Przed wygenerowaniem postaci ustrukturyzowanej należy zapisać fakturę w celu nadania jej numeru.");
+
+		ZapiszBiezacyStanFaktury();
+		Rekord.XMLKSeF = IO.FA_3.Generator.ZbudujXML(Kontekst.Baza, Rekord);
+		Kontekst.Baza.Zapisz(Rekord);
+		return Rekord.XMLKSeF;
+	}
+
+	private string ZapewnijOdnosnikKSeF()
+	{
+		if (!String.IsNullOrEmpty(Rekord.URLKSeF)) return Rekord.URLKSeF;
+
+		var xml = String.IsNullOrEmpty(Rekord.NumerKSeF) ? ZapewnijLokalnyXmlKSeF() : Rekord.XMLKSeF;
+		if (String.IsNullOrWhiteSpace(xml)) throw new ApplicationException("Brak danych XML KSeF dla tej faktury.");
+
+		var podmiot = Kontekst.Baza.Kontrahenci.First(kontrahent => kontrahent.CzyPodmiot);
+		using var api = new IO.KSEF2.API(podmiot.SrodowiskoKSeF);
+		Rekord.URLKSeF = api.ZbudujUrl(xml, Rekord.NIPSprzedawcy, Rekord.DataWystawienia);
+		Kontekst.Baza.Zapisz(Rekord);
+		return Rekord.URLKSeF;
+	}
+
 	private void toolStripMenuItemGenerujXML_Click(object? sender, EventArgs e)
 	{
-		if (String.IsNullOrEmpty(Rekord.Numer))
-		{
-			MessageBox.Show("Przed wygenerowaniem postaci ustrukturyzowanej należy zapisać fakturę w celu nadania jej numeru.", "ProFak", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-			return;
-		}
 		if (!String.IsNullOrWhiteSpace(Rekord.XMLKSeF) && MessageBox.Show("Faktura ma już wygenerowaną postać ustrukturyzowaną. Czy na pewno chcesz ją wygenerować ponownie?", "ProFak", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) != DialogResult.Yes) return;
-		Kontekst.Baza.Zapisz(Rekord);
-		var xml = IO.FA_3.Generator.ZbudujXML(Kontekst.Baza, Rekord);
-		Rekord.XMLKSeF = xml;
-		kontroler.AktualizujKontrolki();
+		try
+		{
+			ZapewnijLokalnyXmlKSeF();
+			kontroler.AktualizujKontrolki();
+		}
+		catch (ApplicationException ex)
+		{
+			MessageBox.Show(ex.Message, "ProFak", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+		}
 	}
 
 	private void toolStripMenuItemZapiszXML_Click(object sender, EventArgs e)
 	{
-		var nowyKontekst = new Kontekst(Kontekst);
-		var akcja = new ZapiszJakoXMLLokalneAkcja();
-		IEnumerable<Faktura> rekord = [ Rekord ];
-		akcja.Uruchom(nowyKontekst, ref rekord);
+		try
+		{
+			ZapiszBiezacyStanFaktury();
+			var nowyKontekst = new Kontekst(Kontekst);
+			var akcja = new ZapiszJakoXMLLokalneAkcja();
+			IEnumerable<Faktura> rekord = [ Rekord ];
+			akcja.Uruchom(nowyKontekst, ref rekord);
+		}
+		catch (ApplicationException ex)
+		{
+			MessageBox.Show(ex.Message, "ProFak", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+		}
 	}
 
 	private void toolStripMenuItemZapiszWizualizacje_Click(object sender, EventArgs e)
@@ -702,26 +741,26 @@ partial class FakturaEdytor : FakturaEdytorBase
 
 	private void toolStripMenuItemKopiujOdnosnik_Click(object sender, EventArgs e)
 	{
-		var url = Rekord.URLKSeF;
-		if (String.IsNullOrEmpty(url))
+		try
 		{
-			var podmiot = Kontekst.Baza.Kontrahenci.First(kontrahent => kontrahent.CzyPodmiot);
-			using var api = new IO.KSEF2.API(podmiot.SrodowiskoKSeF);
-			url = api.ZbudujUrl(Rekord.XMLKSeF, Rekord.NIPSprzedawcy, Rekord.DataWystawienia);
+			Clipboard.SetText(ZapewnijOdnosnikKSeF());
 		}
-		Clipboard.SetText(url);
+		catch (ApplicationException ex)
+		{
+			MessageBox.Show(ex.Message, "ProFak", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+		}
 	}
 
 	private void toolStripMenuItemOtworzOdnosnik_Click(object sender, EventArgs e)
 	{
-		var url = Rekord.URLKSeF;
-		if (String.IsNullOrEmpty(url))
+		try
 		{
-			var podmiot = Kontekst.Baza.Kontrahenci.First(kontrahent => kontrahent.CzyPodmiot);
-			using var api = new IO.KSEF2.API(podmiot.SrodowiskoKSeF);
-			url = api.ZbudujUrl(Rekord.XMLKSeF, Rekord.NIPSprzedawcy, Rekord.DataWystawienia);
+			Process.Start(new ProcessStartInfo { UseShellExecute = true, FileName = ZapewnijOdnosnikKSeF() });
 		}
-		Process.Start(new ProcessStartInfo { UseShellExecute = true, FileName = url });
+		catch (ApplicationException ex)
+		{
+			MessageBox.Show(ex.Message, "ProFak", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+		}
 	}
 
 	private void linkLabelUwagiPomoc_LinkClicked(object? sender, LinkLabelLinkClickedEventArgs e)

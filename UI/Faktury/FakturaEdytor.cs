@@ -296,15 +296,15 @@ partial class FakturaEdytor : FakturaEdytorBase
 	private IEnumerable<Kontrahent> PobierzKontrahentowDoSlownika(bool czyNabywca)
 	{
 		var czyPodmiot = czyNabywca == !CzySprzedaz;
-		var aktualnyRef = Rekord == null
-			? default(Ref<Kontrahent>)
-			: czyNabywca ? Rekord.NabywcaRef : Rekord.SprzedawcaRef;
+		var aktualnyId = Rekord == null
+			? 0
+			: czyNabywca ? Rekord.NabywcaId.GetValueOrDefault() : Rekord.SprzedawcaId.GetValueOrDefault();
 		return Kontekst.Baza.Kontrahenci
 			.Where(kontrahent => !kontrahent.CzyArchiwalny && kontrahent.CzyPodmiot == czyPodmiot)
 			.Where(kontrahent =>
 				!kontrahent.CzyImportKSeF
 				|| (!CzySprzedaz && !czyNabywca)
-				|| (aktualnyRef.IsNotNull && kontrahent.Ref == aktualnyRef));
+				|| (aktualnyId != 0 && kontrahent.Id == aktualnyId));
 	}
 
 	private static string FormatujKontrahentaDoSlownika(Kontrahent kontrahent, string opis)
@@ -614,7 +614,7 @@ partial class FakturaEdytor : FakturaEdytorBase
 
 	private void buttonNowySprzedawca_Click(object? sender, EventArgs e)
 	{
-		var kontrahent = new Kontrahent { Nazwa = comboBoxNazwaSprzedawcy.Text, NIP = comboBoxNIPSprzedawcy.Text, AdresRejestrowy = textBoxDaneSprzedawcy.Text };
+		var kontrahent = UtworzNowegoKontrahentaZeSlownika(comboBoxNazwaSprzedawcy.Text, comboBoxNIPSprzedawcy.Text, textBoxDaneSprzedawcy.Text);
 		if (!EdytorNowegoKontrahenta(kontrahent)) return;
 		slownikSprzedawcaNazwa.Przeladuj();
 		slownikSprzedawcaNIP.Przeladuj();
@@ -624,7 +624,7 @@ partial class FakturaEdytor : FakturaEdytorBase
 
 	private void buttonNowyNabywca_Click(object? sender, EventArgs e)
 	{
-		var kontrahent = new Kontrahent { Nazwa = comboBoxNazwaNabywcy.Text, NIP = comboBoxNIPNabywcy.Text, AdresRejestrowy = textBoxDaneNabywcy.Text };
+		var kontrahent = UtworzNowegoKontrahentaZeSlownika(comboBoxNazwaNabywcy.Text, comboBoxNIPNabywcy.Text, textBoxDaneNabywcy.Text);
 		if (!EdytorNowegoKontrahenta(kontrahent)) return;
 		slownikNabywcaNazwa.Przeladuj();
 		slownikNabywcaNIP.Przeladuj();
@@ -646,6 +646,18 @@ partial class FakturaEdytor : FakturaEdytorBase
 		nowyKontekst.Baza.Zapisz(kontrahent);
 		transakcja.Zatwierdz();
 		return true;
+	}
+
+	private static Kontrahent UtworzNowegoKontrahentaZeSlownika(string nazwa, string nip, string adres)
+	{
+		return new Kontrahent
+		{
+			CzyPodmiot = false,
+			CzyImportKSeF = false,
+			Nazwa = nazwa,
+			NIP = nip,
+			AdresRejestrowy = adres
+		};
 	}
 
 	private void toolStripMenuItemGenerujXML_Click(object? sender, EventArgs e)
